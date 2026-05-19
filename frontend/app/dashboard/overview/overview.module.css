@@ -1,0 +1,513 @@
+/* overview.module.css */
+
+.page {
+    padding-bottom: 48px;
+    font-family: 'Inter', -apple-system, sans-serif;
+    animation: fadeIn 0.4s ease;
+    width: 100%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Header ─────────────────────────────────────── */
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-top: 32px;
+}
+
+.pageTitle {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px;
+    letter-spacing: -0.4px;
+}
+
+.pageSubtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.dateBadge {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 14px;
+}
+
+/* ─── Stat Cards ─────────────────────────────────── */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 36px 32px;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+}
+
+.statCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* Clickable card variant */
+.statCardLink {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.statCardLink:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.statArrow {
+    margin-left: auto;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.statCardLink:hover .statArrow {
+    color: #94a3b8;
+    transform: translateX(3px);
+}
+
+/* Icon colour variants — cards stay neutral, icons stay vivid */
+.blue .statIcon {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.violet .statIcon {
+    background: #f5f3ff;
+    color: #8b5cf6;
+}
+
+.amber .statIcon {
+    background: #fffbeb;
+    color: #f59e0b;
+}
+
+.emerald .statIcon {
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+.rose .statIcon {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.indigo .statIcon {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.statIcon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.statIcon svg {
+    width: 32px;
+    height: 32px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.statBody {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.statValue {
+    font-size: 42px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.statLabel {
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 6px;
+}
+
+.statSub {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* ─── Bottom panels ──────────────────────────────── */
+.panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1100px) {
+    .panels {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+.panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.panelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.panelTitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.panelLink {
+    font-size: 13px;
+    color: #3b82f6;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.panelLink:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+/* ─── Member list ────────────────────────────────── */
+.memberList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.memberRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.memberAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.memberInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.memberName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.memberEmail {
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.groupBadge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    background: #eff6ff;
+    color: #3b82f6;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+
+/* ─── Event list ─────────────────────────────────── */
+.eventList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.eventRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.eventDateBox {
+    width: 44px;
+    height: 48px;
+    background: #eff6ff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.eventMonth {
+    font-size: 10px;
+    font-weight: 700;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.eventDay {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1d4ed8;
+    line-height: 1;
+}
+
+.eventInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.eventName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eventMeta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    gap: 10px;
+}
+
+.eventType {
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-weight: 600;
+    color: #475569;
+}
+
+
+/* ─── Fundraising panel ──────────────────────────── */
+.fundraisingCard {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.fundraisingAmount {
+    font-size: 40px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -1px;
+}
+
+.fundraisingLabel {
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.fundraisingBar {
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.fundraisingFill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 99px;
+    transition: width 0.8s ease;
+}
+
+.fundraisingMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.fundraisingNote {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* ─── Skeleton loading ────────────────────────────── */
+.skeletonList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.skeletonRow {
+    height: 40px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    border-radius: 8px;
+    animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+/* ─── Action Bar ─────────────────────────────────── */
+.actionBar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-top: 32px;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    text-decoration: none;
+}
+
+.actionButton:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+}
+
+.actionButton svg {
+    stroke-width: 2.5;
+}

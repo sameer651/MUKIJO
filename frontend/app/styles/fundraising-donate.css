@@ -1,0 +1,139 @@
+.donation-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.donation-header {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 28px;
+}
+
+.back-to-campaigns {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-to-campaigns:hover {
+    color: #10b981;
+}
+
+.support-title {
+    font-size: 24px;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.support-subtitle {
+    color: #64748b;
+}
+
+.donation-form-card {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #f1f5f9;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+}
+
+.donation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.amount-input-wrapper {
+    position: relative;
+}
+
+.currency-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: #64748b;
+}
+
+.amount-input {
+    padding-left: 42px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+
+.progress-summary {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.summary-label {
+    color: #64748b;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.summary-value.progress {
+    color: #10b981;
+}
+
+.donate-submit-btn {
+    padding: 14px 28px;
+    font-size: 16px;
+    justify-content: center;
+    width: 100%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.donate-submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.donate-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

@@ -1,0 +1,316 @@
+.create-group-page {
+    min-height: 100vh;
+    background: #f8fafc;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.create-group-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Progress Stepper */
+.progress-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding: 0 40px;
+}
+
+.step-dot {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+
+.step-dot.active {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.step-line {
+    flex: 1;
+    height: 3px;
+    background: #e2e8f0;
+    margin: 0 10px;
+    border-radius: 2px;
+}
+
+.step-line.active {
+    background: #2563eb;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+}
+
+.step-header {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.step-header h1 {
+    font-size: 28px;
+    color: #0f172a;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.step-header p {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 15px;
+    display: block;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    color: #2563eb;
+}
+
+/* Activity List (One-per-line style) */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Custom Scrollbar for list */
+.activity-list::-webkit-scrollbar {
+    width: 6px;
+}
+.activity-list::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.choice-card-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: #ffffff;
+    border: 2px solid #f1f5f9;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.2s all ease;
+    width: 100%;
+}
+
+.choice-card-row .icon {
+    font-size: 22px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.choice-card-row .label {
+    font-weight: 600;
+    color: #334155;
+    font-size: 16px;
+}
+
+.choice-card-row:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    transform: translateX(4px);
+}
+
+.choice-card-row.selected {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.choice-card-row.selected .label {
+    color: white;
+}
+
+/* Age Grid */
+.age-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.age-card {
+    padding: 18px 24px;
+    background: #ffffff;
+    border: 2px solid #f1f5f9;
+    border-radius: 14px;
+    font-weight: 600;
+    color: #334155;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.age-card:hover {
+    border-color: #2563eb;
+    background: #f8fafc;
+}
+
+.age-card.selected {
+    background: #1e293b;
+    border-color: #1e293b;
+    color: white;
+}
+
+/* Inputs */
+.input-section {
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: 0.2s;
+    outline: none;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.input-group textarea {
+    height: 120px;
+    resize: none;
+}
+
+/* Buttons */
+.next-btn, .submit-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.next-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.next-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.submit-btn {
+    background: #10b981;
+    color: white;
+}
+
+.submit-btn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .form-card {
+        padding: 25px;
+    }
+    .progress-stepper {
+        padding: 0 10px;
+    }
+}
+
+
+
+/* Success Message Styles */
+.success-message {
+    text-align: center;
+    padding: 20px 0;
+    animation: successScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.success-message h1 {
+    font-size: 32px;
+    color: #10b981;
+    margin-bottom: 12px;
+}
+
+.success-message p {
+    color: #64748b;
+    font-size: 18px;
+}
+
+@keyframes successScale {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}

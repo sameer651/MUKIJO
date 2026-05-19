@@ -1,0 +1,326 @@
+/* SignupPage.module.css */
+/* All styles for the Mukijo Club Signup Page */
+/* Easy to edit: each section is clearly labelled */
+
+/* ─── Page Background ────────────────────────────────────────────────── */
+
+.pageWrapper {
+    min-height: 100vh;
+    background-color: #f4f6f9;
+    /* Light grey background for the whole page */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ─── Card (white box in the center) ────────────────────────────────── */
+
+.card {
+    background-color: #ffffff;
+    /* White card */
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    width: 100%;
+    max-width: 560px;
+    /* Limit width on large screens */
+    padding: 40px 36px;
+}
+
+/* ─── Brand / Logo Area ──────────────────────────────────────────────── */
+
+.brand {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.brandName {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a73e8;
+    /* Blue brand color */
+    letter-spacing: -0.5px;
+}
+
+.brandTag {
+    display: block;
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ─── Step Indicator (the 1 --- 2 dots at the top) ──────────────────── */
+
+.stepIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    gap: 0;
+}
+
+.stepDot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e8e8e8;
+    /* Grey for inactive step */
+    color: #999;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activeDot {
+    background-color: #1a73e8;
+    /* Blue for active step */
+    color: #ffffff;
+}
+
+.stepLine {
+    height: 2px;
+    width: 80px;
+    background-color: #e0e0e0;
+    margin: 0 8px;
+}
+
+/* ─── Step Container ─────────────────────────────────────────────────── */
+
+.stepContainer {
+    display: block;
+}
+
+.stepTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+    text-align: center;
+}
+
+.stepSubtitle {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    margin: 0 0 28px 0;
+}
+
+/* ─── Form Fields ────────────────────────────────────────────────────── */
+
+.fieldGroup {
+    margin-bottom: 20px;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+/* Text and email and phone inputs */
+.input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #d8d8d8;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+    background-color: #fafafa;
+    outline: none;
+    box-sizing: border-box;
+    /* So padding doesn't break layout */
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: #1a73e8;
+    /* Blue border when typing */
+    background-color: #fff;
+}
+
+.input::placeholder {
+    color: #bbb;
+}
+
+/* Dropdowns / Selects */
+.select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #d8d8d8;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+    background-color: #fafafa;
+    outline: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    appearance: auto;
+    /* Show the default dropdown arrow */
+    transition: border-color 0.2s;
+}
+
+.select:focus {
+    border-color: #1a73e8;
+    /* Blue border when focused */
+    background-color: #fff;
+}
+
+/* ─── Two Columns (First name + Last name side by side) ─────────────── */
+
+.twoColumns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Two equal columns */
+    gap: 16px;
+}
+
+/* On small screens, stack them vertically */
+@media (max-width: 480px) {
+    .twoColumns {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ─── Terms Text (the paragraph above the Yes/No dropdown) ──────────── */
+
+.termsText {
+    font-size: 13px;
+    color: #555;
+    background-color: #f0f4ff;
+    /* Light blue background */
+    border-left: 3px solid #1a73e8;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+/* ─── Button Row (Previous + Next / Sign Up) ─────────────────────────── */
+
+.buttonRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+}
+
+/* Next Button (Step 1) */
+.nextButton {
+    background-color: #1a73e8;
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-left: auto;
+    /* Push to the right */
+}
+
+.nextButton:hover {
+    background-color: #1558b0;
+}
+
+.nextButton:active {
+    transform: scale(0.97);
+}
+
+/* Previous Button (Step 2) */
+.prevButton {
+    background-color: transparent;
+    color: #1a73e8;
+    border: 1.5px solid #1a73e8;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.prevButton:hover {
+    background-color: #f0f4ff;
+}
+
+.prevButton:active {
+    transform: scale(0.97);
+}
+
+/* Sign Up Button (Step 2) */
+.submitButton {
+    background-color: #28a745;
+    /* Green for final submit */
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.submitButton:hover {
+    background-color: #1e7e34;
+}
+
+.submitButton:active {
+    transform: scale(0.97);
+}
+
+/* ─── Success Screen ─────────────────────────────────────────────────── */
+
+.successContainer {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.successIcon {
+    width: 64px;
+    height: 64px;
+    background-color: #28a745;
+    color: #fff;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+}
+
+.successTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+}
+
+.successText {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ─── Responsive: smaller padding on mobile ──────────────────────────── */
+
+@media (max-width: 480px) {
+    .card {
+        padding: 28px 20px;
+    }
+
+    .brandName {
+        font-size: 24px;
+    }
+}

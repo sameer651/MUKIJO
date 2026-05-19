@@ -1,0 +1,139 @@
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 20px 70px;
+  background: #f6f8fb;
+  color: #0f172a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.landing-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  padding: 0 34px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.landing-topbar strong {
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.landing-shell {
+  width: min(980px, 100%);
+}
+
+.landing-header {
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+.landing-header span {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.landing-header h1 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.landing-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.landing-box {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-box:hover {
+  transform: translateY(-3px);
+  border-color: #93c5fd;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+.landing-icon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 8px;
+}
+
+.landing-box strong {
+  display: block;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.landing-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 820px) {
+  .landing-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-header h1 {
+    font-size: 26px;
+  }
+
+  .landing-box {
+    min-height: 150px;
+  }
+
+  .landing-topbar {
+    padding: 0 20px;
+  }
+}

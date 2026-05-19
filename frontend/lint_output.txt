@@ -1,0 +1,148 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\creategroup\page.jsx
+  177:55  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  177:67  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\fundraising\donate\[id]\page.jsx
+  61:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\fundraising\page.jsx
+   39:12  warning  'g1' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   39:16  warning  'g2' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   96:12  warning  'loading' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  116:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  114 |
+  115 |     useEffect(() => {
+> 116 |         fetchCampaigns();
+      |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  117 |     }, []);
+  118 |
+  119 |     const handleDelete = async (id) => {  react-hooks/set-state-in-effect
+  128:18  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\group\[id]\page.jsx
+   11:12  warning  'adminName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  108:19  warning  'host' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  146:19  warning  'host' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  205:19  warning  'host' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  235:19  warning  'host' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\overview\page.jsx
+  42:24  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  40 |     useEffect(() => {
+  41 |         const userId = localStorage.getItem("userId");
+> 42 |         if (!userId) { setLoading(false); return; }
+     |                        ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |
+  44 |         fetch(`http://127.0.0.1:8001/dashboard/overview?owner_id=${userId}`)
+  45 |             .then(r => r.ok ? r.json() : null)  react-hooks/set-state-in-effect
+  50:11  warning  'getInitials' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  53:11  warning  'avatarColors' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  61:79  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react/no-unescaped-entities
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\dashboard\settings\page.jsx
+  12:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  10 |
+  11 |     useEffect(() => {
+> 12 |         setClubName(localStorage.getItem("clubName") || "");
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  13 |         setUserName(localStorage.getItem("userName") || "");
+  14 |     }, []);
+  15 |  react-hooks/set-state-in-effect
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\login\page.jsx
+   14:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  12 |     useEffect(() => {
+  13 |         if (searchParams.get("registered") === "true") {
+> 14 |             setShowSuccess(true);
+     |             ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  15 |         }
+  16 |     }, [searchParams]);
+  17 |  react-hooks/set-state-in-effect
+  138:24  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react/no-unescaped-entities
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\app\verify\page.jsx
+  15:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  13 |     useEffect(() => {
+  14 |         if (!token) {
+> 15 |             setStatus("error");
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |             setMessage("Invalid verification link.");
+  17 |             return;
+  18 |         }  react-hooks/set-state-in-effect
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\components\dashboard\Sidebar.jsx
+  13:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  11 |
+  12 |     useEffect(() => {
+> 13 |         setClubName(localStorage.getItem("clubName") || "My Club");
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |         const fetchGroups = async () => {
+  15 |             const userId = localStorage.getItem("userId");
+  16 |             if (!userId) return;  react-hooks/set-state-in-effect
+
+C:\Users\user\OneDrive\Desktop\mukijoclub\frontend\components\dashboard\TopHeader.jsx
+  11:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   9 |         const storedName = localStorage.getItem("userName");
+  10 |         if (storedName) {
+> 11 |             setName(storedName);
+     |             ^^^^^^^ Avoid calling setState() directly within an effect
+  12 |         }
+  13 |     }, []);
+  14 |  react-hooks/set-state-in-effect
+
+G£û 23 problems (11 errors, 12 warnings)
+
