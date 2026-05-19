@@ -1,0 +1,31 @@
+# Environments & Secrets
+.env
+.env.local
+.env.*
+backend/.env
+backend/.env.*
+
+# Python Cache & Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+backend/__pycache__/
+backend/**/*.pyc
+
+# Virtual Environments
+venv/
+.venv/
+env/
+backend/venv/
+backend/.venv/
+
+# Logs
+*.log
+backend/*.log
+backend/uvicorn*.log
+
+# Frontend-specific patterns (if needed globally)
+frontend/.next/
+frontend/node_modules/
+frontend/out/

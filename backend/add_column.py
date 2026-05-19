@@ -14,6 +14,7 @@ def add_columns():
         conn.execute(text("ALTER TABLE groups ADD COLUMN IF NOT EXISTS owner_id INTEGER REFERENCES users(id);"))
         conn.execute(text("ALTER TABLE events ADD COLUMN IF NOT EXISTS start_time VARCHAR;"))
         conn.execute(text("ALTER TABLE events ADD COLUMN IF NOT EXISTS end_time VARCHAR;"))
+        conn.execute(text("ALTER TABLE members ADD COLUMN IF NOT EXISTS password VARCHAR;"))
         conn.commit()
     print("Columns added successfully")
 

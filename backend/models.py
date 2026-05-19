@@ -26,19 +26,56 @@ class Event(Base):
     __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, index=True)
-    group_id = Column(Integer, ForeignKey("groups.id"))
+    group_id = Column(Integer, ForeignKey("groups.id"), nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     name = Column(String, nullable=False)
-    type = Column(String, nullable=False)
+    type = Column(String, nullable=False) # Event category
     date = Column(String, nullable=False)
     time = Column(String, nullable=False)
     start_time = Column(String, nullable=True)
     end_time = Column(String, nullable=True)
     location = Column(String, nullable=True)
-
     description = Column(Text, nullable=True)
-
+    
+    # Event Details & Cover Image
+    cover_image = Column(String, nullable=True)
+    registration_deadline = Column(String, nullable=True)
+    max_participants = Column(Integer, nullable=True)
+    
+    # Event Settings
+    auto_reminder = Column(Boolean, default=False)
+    attendance_tracking = Column(Boolean, default=False)
+    is_public = Column(Boolean, default=True)
+    allow_guest = Column(Boolean, default=False)
+    allow_waiting_list = Column(Boolean, default=False)
+    
+    # Attachments
+    rules_pdf = Column(String, nullable=True)
+    schedule_file = Column(String, nullable=True)
+    permission_forms = Column(String, nullable=True)
+    match_fixtures = Column(String, nullable=True)
+    event_posters = Column(String, nullable=True)
 
     group = relationship("Group", back_populates="events")
+    owner = relationship("User", back_populates="events")
+    registrations = relationship("EventRegistration", back_populates="event", cascade="all, delete-orphan")
+
+class EventRegistration(Base):
+    __tablename__ = "event_registrations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
+    member_id = Column(Integer, ForeignKey("members.id"), nullable=True)
+    participant_name = Column(String, nullable=False)
+    participant_email = Column(String, nullable=True)
+    participant_role = Column(String, nullable=True) # Coach, Parent, Player, Guest, etc.
+    status = Column(String, default="pending") # pending, accepted, declined, maybe, waitlisted
+    attendance = Column(String, default="not_marked") # present, absent, late, not_marked
+    invited_at = Column(DateTime, default=datetime.utcnow)
+    responded_at = Column(DateTime, nullable=True)
+
+    event = relationship("Event", back_populates="registrations")
+    member = relationship("Member")
 
 class Member(Base):
     __tablename__ = "members"
@@ -50,6 +87,7 @@ class Member(Base):
     email = Column(String, nullable=False)
     phone = Column(String, nullable=False)
     role = Column(String, default="Member")
+    password = Column(String, nullable=True)
 
     group = relationship("Group", back_populates="members")
     payments = relationship("Payment", back_populates="member")
@@ -75,10 +113,13 @@ class User(Base):
     verification_token = Column(String, nullable=True)
 
     groups = relationship("Group", back_populates="owner")
+    events = relationship("Event", back_populates="owner")
     fundraising_campaigns = relationship("FundraisingCampaign", back_populates="owner")
     payments = relationship("Payment", back_populates="owner")
     courses = relationship("Course", back_populates="owner")
     course_registrations = relationship("CourseRegistration", back_populates="owner")
+    signup_forms = relationship("SignupForm", back_populates="owner", cascade="all, delete-orphan")
+    signup_submissions = relationship("SignupSubmission", back_populates="owner", cascade="all, delete-orphan")
 
 class FundraisingCampaign(Base):
     __tablename__ = "fundraising_campaigns"
@@ -116,6 +157,26 @@ class Payment(Base):
     owner = relationship("User", back_populates="payments")
     group = relationship("Group", back_populates="payments")
     member = relationship("Member", back_populates="payments")
+    gateway_orders = relationship("PaymentGatewayOrder", back_populates="payment", cascade="all, delete-orphan")
+
+class PaymentGatewayOrder(Base):
+    __tablename__ = "payment_gateway_orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    razorpay_order_id = Column(String, unique=True, index=True, nullable=False)
+    razorpay_payment_id = Column(String, nullable=True)
+    razorpay_signature = Column(String, nullable=True)
+    amount = Column(Integer, nullable=False)
+    currency = Column(String, default="INR")
+    receipt = Column(String, nullable=True)
+    status = Column(String, default="created")
+    raw_order = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    verified_at = Column(DateTime, nullable=True)
+
+    payment = relationship("Payment", back_populates="gateway_orders")
 
 class Course(Base):
     __tablename__ = "courses"
@@ -160,3 +221,26 @@ class CourseRegistration(Base):
     owner = relationship("User", back_populates="course_registrations")
     course = relationship("Course", back_populates="registrations")
     member = relationship("Member", back_populates="course_registrations")
+
+class SignupForm(Base):
+    __tablename__ = "signup_forms"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    role = Column(String, nullable=False) # Coach, Parent, Player, Referee
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    fields = Column(Text, nullable=False) # JSON encoded fields array
+
+    owner = relationship("User", back_populates="signup_forms")
+
+class SignupSubmission(Base):
+    __tablename__ = "signup_submissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    role = Column(String, nullable=False) # Coach, Parent, Player, Referee
+    submitted_data = Column(Text, nullable=False) # JSON encoded data dictionary
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="signup_submissions")

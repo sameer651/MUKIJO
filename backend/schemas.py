@@ -29,6 +29,24 @@ class EventCreate(BaseModel):
     end_time: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
+    owner_id: Optional[int] = None
+    group_id: Optional[int] = None
+    
+    cover_image: Optional[str] = None
+    registration_deadline: Optional[str] = None
+    max_participants: Optional[int] = None
+    
+    auto_reminder: Optional[bool] = False
+    attendance_tracking: Optional[bool] = False
+    is_public: Optional[bool] = True
+    allow_guest: Optional[bool] = False
+    allow_waiting_list: Optional[bool] = False
+    
+    rules_pdf: Optional[str] = None
+    schedule_file: Optional[str] = None
+    permission_forms: Optional[str] = None
+    match_fixtures: Optional[str] = None
+    event_posters: Optional[str] = None
 
 class EventUpdate(BaseModel):
     name: Optional[str] = None
@@ -39,10 +57,28 @@ class EventUpdate(BaseModel):
     end_time: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
+    group_id: Optional[int] = None
+    
+    cover_image: Optional[str] = None
+    registration_deadline: Optional[str] = None
+    max_participants: Optional[int] = None
+    
+    auto_reminder: Optional[bool] = None
+    attendance_tracking: Optional[bool] = None
+    is_public: Optional[bool] = None
+    allow_guest: Optional[bool] = None
+    allow_waiting_list: Optional[bool] = None
+    
+    rules_pdf: Optional[str] = None
+    schedule_file: Optional[str] = None
+    permission_forms: Optional[str] = None
+    match_fixtures: Optional[str] = None
+    event_posters: Optional[str] = None
 
 class EventResponse(BaseModel):
     id: int
-    group_id: int
+    group_id: Optional[int] = None
+    owner_id: Optional[int] = None
     name: str
     type: str
     date: str
@@ -50,8 +86,53 @@ class EventResponse(BaseModel):
     start_time: Optional[str]
     end_time: Optional[str]
     location: Optional[str]
-
     description: Optional[str]
+    
+    cover_image: Optional[str] = None
+    registration_deadline: Optional[str] = None
+    max_participants: Optional[int] = None
+    
+    auto_reminder: bool
+    attendance_tracking: bool
+    is_public: bool
+    allow_guest: bool
+    allow_waiting_list: bool
+    
+    rules_pdf: Optional[str] = None
+    schedule_file: Optional[str] = None
+    permission_forms: Optional[str] = None
+    match_fixtures: Optional[str] = None
+    event_posters: Optional[str] = None
+    group_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+from datetime import datetime
+
+class EventRegistrationCreate(BaseModel):
+    event_id: int
+    member_id: Optional[int] = None
+    participant_name: str
+    participant_email: Optional[str] = None
+    participant_role: Optional[str] = "Member"
+    status: Optional[str] = "pending"
+
+class EventRegistrationUpdate(BaseModel):
+    status: Optional[str] = None
+    attendance: Optional[str] = None
+
+class EventRegistrationResponse(BaseModel):
+    id: int
+    event_id: int
+    member_id: Optional[int] = None
+    participant_name: str
+    participant_email: Optional[str] = None
+    participant_role: Optional[str] = None
+    status: str
+    attendance: str
+    invited_at: datetime
+    responded_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -180,6 +261,30 @@ class PaymentResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class RazorpayOrderCreate(BaseModel):
+    payment_id: int
+    owner_id: int
+
+class RazorpayOrderResponse(BaseModel):
+    key_id: str
+    razorpay_order_id: str
+    local_order_id: int
+    payment_id: int
+    amount: int
+    currency: str
+    name: str
+    description: Optional[str] = None
+    prefill_name: Optional[str] = None
+    prefill_email: Optional[str] = None
+    prefill_contact: Optional[str] = None
+
+class RazorpayVerifyRequest(BaseModel):
+    payment_id: int
+    owner_id: int
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
 class CourseCreate(BaseModel):
     title: str
     owner_id: int
@@ -271,3 +376,39 @@ class CourseRegistrationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+from datetime import datetime
+
+class SignupFormCreate(BaseModel):
+    owner_id: int
+    role: str
+    title: str
+    description: Optional[str] = None
+    fields: str # JSON list of fields: label, type, required, etc.
+
+class SignupFormResponse(BaseModel):
+    id: int
+    owner_id: int
+    role: str
+    title: str
+    description: Optional[str]
+    fields: str
+
+    class Config:
+        from_attributes = True
+
+class SignupSubmissionCreate(BaseModel):
+    owner_id: int
+    role: str
+    submitted_data: str # JSON dictionary of submission data
+
+class SignupSubmissionResponse(BaseModel):
+    id: int
+    owner_id: int
+    role: str
+    submitted_data: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
