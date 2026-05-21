@@ -6,6 +6,36 @@ import { useEffect, useState } from "react";
 import "../../fundraising.css";
 import "../../../../styles/fundraising-donate.css";
 
+function loadRazorpayCheckout() {
+    if (typeof window === "undefined") return Promise.reject(new Error("Checkout is not available."));
+    if (window.Razorpay) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+        const existingScript = document.querySelector("script[src='https://checkout.razorpay.com/v1/checkout.js']");
+        if (existingScript) {
+            existingScript.addEventListener("load", resolve, { once: true });
+            existingScript.addEventListener("error", () => reject(new Error("Could not load Razorpay Checkout.")), { once: true });
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("Could not load Razorpay Checkout."));
+        document.body.appendChild(script);
+    });
+}
+
+async function getErrorMessage(response, fallback) {
+    try {
+        const data = await response.json();
+        return data.detail || data.message || fallback;
+    } catch {
+        return fallback;
+    }
+}
+
 export default function DonationFormPage() {
     const { id } = useParams();
     const router = useRouter();
@@ -17,10 +47,11 @@ export default function DonationFormPage() {
     });
     const [loading, setLoading] = useState(false);
 
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
     useEffect(() => {
         const fetchCampaign = async () => {
             try {
-                const userId = localStorage.getItem("userId");
                 const res = await fetch(`http://127.0.0.1:8001/fundraising?owner_id=${userId}`);
                 if (res.ok) {
                     const data = await res.json();
@@ -31,18 +62,25 @@ export default function DonationFormPage() {
                 console.error(err);
             }
         };
-        fetchCampaign();
-    }, [id]);
+        if (userId) {
+            fetchCampaign();
+        }
+    }, [id, userId]);
 
     const handleChange = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.amount || parseInt(form.amount) <= 0) return;
+        if (!userId) {
+            alert("Session error. Please log in again.");
+            return;
+        }
 
         setLoading(true);
         try {
-            const res = await fetch(`http://127.0.0.1:8001/fundraising/${id}/donate`, {
+            // 1. Initiate temporary Payment record
+            const initiateRes = await fetch(`http://127.0.0.1:8001/fundraising/${id}/initiate-donation`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -52,15 +90,109 @@ export default function DonationFormPage() {
                 })
             });
 
-            if (res.ok) {
-                alert("Thank you for your donation!");
-                router.push("/dashboard/fundraising");
-            } else {
-                alert("Failed to process donation");
+            if (!initiateRes.ok) {
+                alert(await getErrorMessage(initiateRes, "Failed to initiate donation session"));
+                setLoading(false);
+                return;
             }
-        } catch {
-            alert("Connection error");
-        } finally {
+
+            const { payment_id, owner_id } = await initiateRes.json();
+
+            // 2. Load Razorpay Checkout library
+            await loadRazorpayCheckout();
+
+            // 3. Create Razorpay order
+            const orderRes = await fetch("http://127.0.0.1:8001/payments/razorpay/order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    payment_id: payment_id,
+                    owner_id: owner_id
+                })
+            });
+
+            if (!orderRes.ok) {
+                alert(await getErrorMessage(orderRes, "Failed to create Secure Razorpay Transaction order"));
+                setLoading(false);
+                return;
+            }
+
+            const order = await orderRes.json();
+
+            // 4. Open secure Razorpay checkout modal
+            const checkout = new window.Razorpay({
+                key: order.key_id,
+                amount: order.amount,
+                currency: order.currency,
+                name: order.name || "Mukijo Club",
+                description: order.description || `Donation to: ${campaign.title}`,
+                order_id: order.razorpay_order_id,
+                prefill: {
+                    name: form.donor_name || "",
+                    email: form.donor_email || "",
+                },
+                theme: {
+                    color: "#2563eb",
+                },
+                handler: async (response) => {
+                    setLoading(true);
+                    try {
+                        // 5. Verify transaction signature
+                        const verifyRes = await fetch("http://127.0.0.1:8001/payments/razorpay/verify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                payment_id: payment_id,
+                                owner_id: owner_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                            })
+                        });
+
+                        if (!verifyRes.ok) {
+                            alert(await getErrorMessage(verifyRes, "Payment verification failed."));
+                            setLoading(false);
+                            return;
+                        }
+
+                        // 6. Complete and register campaign donation
+                        const completeRes = await fetch(`http://127.0.0.1:8001/fundraising/${id}/complete-donation`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                payment_id: payment_id,
+                                owner_id: owner_id
+                            })
+                        });
+
+                        if (completeRes.ok) {
+                            alert("Thank you so much for your premium donation!");
+                            router.push("/dashboard/fundraising");
+                        } else {
+                            alert(await getErrorMessage(completeRes, "Failed to finalize donation in system. Please contact club support."));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Network verification error occurred.");
+                    } finally {
+                        setLoading(false);
+                    }
+                },
+                modal: {
+                    ondismiss: () => setLoading(false),
+                },
+            });
+
+            checkout.on("payment.failed", (response) => {
+                setLoading(false);
+                alert(response?.error?.description || "Payment failed. Please try again.");
+            });
+
+            checkout.open();
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred while launching Razorpay secure payment flow.");
             setLoading(false);
         }
     };
@@ -106,12 +238,12 @@ export default function DonationFormPage() {
                         </div>
                         <div className="summary-row">
                             <span className="summary-label">Current Progress:</span>
-                            <span className="summary-value progress">{Math.round((campaign.raised / campaign.goal) * 100)}%</span>
+                            <span className="summary-value progress">{campaign.goal > 0 ? Math.round((campaign.raised / campaign.goal) * 100) : 0}%</span>
                         </div>
                     </div>
 
                     <button type="submit" disabled={loading} className="donate-submit-btn">
-                        {loading ? "Processing..." : "Complete Donation"}
+                        {loading ? "Processing Secure Payment..." : "Complete donation"}
                     </button>
                 </form>
             </div>

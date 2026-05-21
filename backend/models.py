@@ -41,6 +41,7 @@ class Event(Base):
     cover_image = Column(String, nullable=True)
     registration_deadline = Column(String, nullable=True)
     max_participants = Column(Integer, nullable=True)
+    fee = Column(Integer, default=0)
     
     # Event Settings
     auto_reminder = Column(Boolean, default=False)

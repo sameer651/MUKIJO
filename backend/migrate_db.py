@@ -17,6 +17,7 @@ def migrate():
             ("cover_image", "VARCHAR"),
             ("registration_deadline", "VARCHAR"),
             ("max_participants", "INTEGER"),
+            ("fee", "INTEGER DEFAULT 0"),
             ("auto_reminder", "BOOLEAN DEFAULT FALSE"),
             ("attendance_tracking", "BOOLEAN DEFAULT FALSE"),
             ("is_public", "BOOLEAN DEFAULT TRUE"),

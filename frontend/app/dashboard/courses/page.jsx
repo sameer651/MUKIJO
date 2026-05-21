@@ -4,17 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BookOpen,
     CalendarDays,
-    Check,
     ClipboardList,
     IndianRupee,
     MapPin,
     Plus,
     Search,
-    Trash2,
-    UserPlus,
     Users,
     X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import api from "../../../lib/api";
 import "../../styles/course-registration.css";
 
@@ -33,15 +31,6 @@ const emptyCourse = {
     fee: "0",
     status: "open",
     group_id: "",
-};
-
-const emptyRegistration = {
-    member_id: "",
-    participant_name: "",
-    participant_email: "",
-    participant_phone: "",
-    payment_status: "unpaid",
-    notes: "",
 };
 
 const statusLabels = {
@@ -72,16 +61,13 @@ function dateText(value) {
 }
 
 export default function CoursesPage() {
+    const router = useRouter();
+
     const [courses, setCourses] = useState([]);
     const [summary, setSummary] = useState(null);
     const [groups, setGroups] = useState([]);
-    const [members, setMembers] = useState([]);
-    const [registrations, setRegistrations] = useState([]);
-    const [selectedCourseId, setSelectedCourseId] = useState(null);
     const [courseForm, setCourseForm] = useState(emptyCourse);
-    const [registrationForm, setRegistrationForm] = useState(emptyRegistration);
     const [showCourseModal, setShowCourseModal] = useState(false);
-    const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [filter, setFilter] = useState("all");
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -90,19 +76,6 @@ export default function CoursesPage() {
 
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
     const isMember = typeof window !== "undefined" ? localStorage.getItem("isMember") === "true" : false;
-    const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : "";
-    const userEmail = typeof window !== "undefined" ? localStorage.getItem("userEmail") : "";
-    const userPhone = typeof window !== "undefined" ? localStorage.getItem("userPhone") : "";
-
-    const selectedCourse = useMemo(
-        () => courses.find((course) => course.id === selectedCourseId) || courses[0] || null,
-        [courses, selectedCourseId]
-    );
-
-    const myRegistration = useMemo(() => {
-        if (!userEmail) return null;
-        return registrations.find(r => r.participant_email?.toLowerCase() === userEmail.toLowerCase());
-    }, [registrations, userEmail]);
 
     const loadCourses = useCallback(async () => {
         if (!userId) {
@@ -112,19 +85,15 @@ export default function CoursesPage() {
         }
 
         try {
-            const [coursesRes, summaryRes, groupsRes, membersRes] = await Promise.all([
+            const [coursesRes, summaryRes, groupsRes] = await Promise.all([
                 api.get("/courses"),
                 api.get("/courses/summary"),
                 api.get("/groups"),
-                api.get("/members"),
             ]);
 
-            const courseData = coursesRes.data || [];
-            setCourses(courseData);
+            setCourses(coursesRes.data || []);
             setSummary(summaryRes.data || null);
             setGroups(groupsRes.data || []);
-            setMembers(membersRes.data || []);
-            setSelectedCourseId((current) => current || courseData[0]?.id || null);
         } catch (err) {
             console.error("Failed to load courses:", err);
             setError("Could not load course registrations.");
@@ -133,30 +102,9 @@ export default function CoursesPage() {
         }
     }, [userId]);
 
-    const loadRegistrations = useCallback(async () => {
-        if (!userId || !selectedCourse) {
-            setRegistrations([]);
-            return;
-        }
-
-        try {
-            const response = await api.get(`/courses/${selectedCourse.id}/registrations`, {
-                params: { owner_id: userId },
-            });
-            setRegistrations(response.data || []);
-        } catch (err) {
-            console.error("Failed to load registrations:", err);
-            setError("Could not load course registrations.");
-        }
-    }, [selectedCourse, userId]);
-
     useEffect(() => {
         loadCourses();
     }, [loadCourses]);
-
-    useEffect(() => {
-        loadRegistrations();
-    }, [loadRegistrations]);
 
     const visibleCourses = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -175,17 +123,8 @@ export default function CoursesPage() {
         });
     }, [courses, filter, search]);
 
-    const memberOptions = useMemo(() => {
-        if (!selectedCourse?.group_id) return members;
-        return members.filter((member) => String(member.group_id) === String(selectedCourse.group_id));
-    }, [members, selectedCourse]);
-
     const updateCourseField = (field, value) => {
         setCourseForm((current) => ({ ...current, [field]: value }));
-    };
-
-    const updateRegistrationField = (field, value) => {
-        setRegistrationForm((current) => ({ ...current, [field]: value }));
     };
 
     const createCourse = async (event) => {
@@ -216,87 +155,6 @@ export default function CoursesPage() {
             setError(err?.response?.data?.detail || "Could not create this course.");
         } finally {
             setSaving(false);
-        }
-    };
-
-    const registerParticipant = async (event) => {
-        event.preventDefault();
-        setError("");
-
-        if (!selectedCourse) return;
-        if (!registrationForm.member_id && !registrationForm.participant_name.trim()) {
-            setError("Choose a member or enter a participant name.");
-            return;
-        }
-
-        setSaving(true);
-        try {
-            await api.post(`/courses/${selectedCourse.id}/registrations`, {
-                ...registrationForm,
-                owner_id: Number(userId),
-                member_id: registrationForm.member_id ? Number(registrationForm.member_id) : null,
-                participant_name: registrationForm.participant_name.trim() || null,
-                participant_email: registrationForm.participant_email.trim() || null,
-                participant_phone: registrationForm.participant_phone.trim() || null,
-                notes: registrationForm.notes.trim() || null,
-            });
-            setShowRegisterModal(false);
-            setRegistrationForm(emptyRegistration);
-            await Promise.all([loadCourses(), loadRegistrations()]);
-        } catch (err) {
-            console.error("Failed to register participant:", err);
-            setError(err?.response?.data?.detail || "Could not register this participant.");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleSelfRegister = async () => {
-        if (!selectedCourse) return;
-        setError("");
-        setSaving(true);
-        try {
-            await api.post(`/courses/${selectedCourse.id}/registrations`, {
-                owner_id: Number(userId),
-                member_id: null,
-                participant_name: userName || "Active Member",
-                participant_email: userEmail,
-                participant_phone: userPhone || "",
-                payment_status: "unpaid",
-                notes: "Self-registered via Member Dashboard",
-            });
-            alert(`Congratulations! You have successfully registered for ${selectedCourse.title}!`);
-            await Promise.all([loadCourses(), loadRegistrations()]);
-        } catch (err) {
-            console.error("Failed to self-register:", err);
-            alert(err?.response?.data?.detail || "Could not complete registration.");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const updateRegistration = async (registration, patch) => {
-        if (!userId) return;
-        try {
-            await api.put(`/course-registrations/${registration.id}`, patch, {
-                params: { owner_id: userId },
-            });
-            await Promise.all([loadCourses(), loadRegistrations()]);
-        } catch (err) {
-            console.error("Failed to update registration:", err);
-            setError("Could not update this registration.");
-        }
-    };
-
-    const deleteCourse = async (courseId) => {
-        if (!userId || !confirm("Delete this course and its registrations?")) return;
-        try {
-            await api.delete(`/courses/${courseId}`, { params: { owner_id: userId } });
-            setSelectedCourseId(null);
-            await loadCourses();
-        } catch (err) {
-            console.error("Failed to delete course:", err);
-            setError("Could not delete this course.");
         }
     };
 
@@ -370,192 +228,28 @@ export default function CoursesPage() {
                 </div>
             ) : (
                 <div className="courses-layout">
-                    <div className="courses-list">
-                        {visibleCourses.map((course) => (
-                            <button
-                                key={course.id}
-                                className={`course-card ${selectedCourse?.id === course.id ? "active" : ""}`}
-                                onClick={() => setSelectedCourseId(course.id)}
-                            >
-                                <div className="course-card-head">
-                                    <div>
-                                        <h3>{course.title}</h3>
-                                        <span>{course.code || course.category}</span>
-                                    </div>
-                                    <small className={`course-status ${course.status}`}>{statusLabels[course.status] || course.status}</small>
-                                </div>
-                                <p>{course.description || "No description added."}</p>
-                                <div className="course-meta-grid">
-                                    <span><Users size={14} /> {course.registration_count}/{course.capacity}</span>
-                                    <span><IndianRupee size={14} /> {Number(course.fee || 0).toLocaleString("en-IN")}</span>
-                                    <span><CalendarDays size={14} /> {dateText(course.start_date)}</span>
-                                    <span><MapPin size={14} /> {course.location || "TBA"}</span>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-
-                    {selectedCourse && (
-                        <div className="course-detail">
-                            <div className="course-detail-top">
+                    {visibleCourses.map((course) => (
+                        <button
+                            key={course.id}
+                            className="course-card"
+                            onClick={() => router.push(`/dashboard/courses/${course.id}`)}
+                        >
+                            <div className="course-card-head">
                                 <div>
-                                    <span className="courses-kicker">{selectedCourse.group_name || "Whole club"}</span>
-                                    <h2>{selectedCourse.title}</h2>
-                                    <p>{selectedCourse.description || "No description added."}</p>
+                                    <h3>{course.title}</h3>
+                                    <span>{course.code || course.category}</span>
                                 </div>
-                                <div className="course-detail-actions">
-                                    {isMember ? (
-                                        myRegistration ? (
-                                            <span style={{ 
-                                                display: "inline-flex", 
-                                                alignItems: "center", 
-                                                gap: "6px", 
-                                                background: "#dcfce7", 
-                                                color: "#16a34a", 
-                                                fontWeight: "700", 
-                                                padding: "10px 20px", 
-                                                borderRadius: "12px", 
-                                                fontSize: "14px" 
-                                            }}>
-                                                <Check size={16} /> Registered
-                                            </span>
-                                        ) : selectedCourse.status === "full" ? (
-                                            <span style={{ 
-                                                display: "inline-flex", 
-                                                alignItems: "center", 
-                                                background: "#fee2e2", 
-                                                color: "#ef4444", 
-                                                fontWeight: "700", 
-                                                padding: "10px 20px", 
-                                                borderRadius: "12px", 
-                                                fontSize: "14px" 
-                                            }}>
-                                                Course Full
-                                            </span>
-                                        ) : selectedCourse.status !== "open" ? (
-                                            <span style={{ 
-                                                display: "inline-flex", 
-                                                alignItems: "center", 
-                                                background: "#f1f5f9", 
-                                                color: "#64748b", 
-                                                fontWeight: "700", 
-                                                padding: "10px 20px", 
-                                                borderRadius: "12px", 
-                                                fontSize: "14px" 
-                                            }}>
-                                                Closed
-                                            </span>
-                                        ) : (
-                                            <button className="courses-primary-btn" onClick={handleSelfRegister} disabled={saving}>
-                                                <UserPlus size={16} />
-                                                Confirm Registration
-                                            </button>
-                                        )
-                                    ) : (
-                                        <>
-                                            <button className="courses-primary-btn" onClick={() => setShowRegisterModal(true)}>
-                                                <UserPlus size={16} />
-                                                Register
-                                            </button>
-                                            <button className="courses-icon-btn danger" onClick={() => deleteCourse(selectedCourse.id)}>
-                                                <Trash2 size={17} />
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
+                                <small className={`course-status ${course.status}`}>{statusLabels[course.status] || course.status}</small>
                             </div>
-
-                            <div className="course-detail-grid">
-                                <div><span>Instructor</span><strong>{selectedCourse.instructor || "Not assigned"}</strong></div>
-                                <div><span>Schedule</span><strong>{selectedCourse.schedule || "Not scheduled"}</strong></div>
-                                <div><span>Dates</span><strong>{dateText(selectedCourse.start_date)} - {dateText(selectedCourse.end_date)}</strong></div>
-                                <div><span>Seats Left</span><strong>{selectedCourse.available_seats}</strong></div>
+                            <p>{course.description || "No description added."}</p>
+                            <div className="course-meta-grid">
+                                <span><Users size={14} /> {course.registration_count}/{course.capacity}</span>
+                                <span><IndianRupee size={14} /> {Number(course.fee || 0).toLocaleString("en-IN")}</span>
+                                <span><CalendarDays size={14} /> {dateText(course.start_date)}</span>
+                                <span><MapPin size={14} /> {course.location || "TBA"}</span>
                             </div>
-
-                            {/* Secure Registration Panels */}
-                            {isMember ? (
-                                <div className="registrations-panel" style={{ background: "#f8fafc", padding: "24px", borderRadius: "20px", border: "1px solid #e2e8f0", marginTop: "24px" }}>
-                                    <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "#1e293b", fontWeight: "800" }}>Your Enrollment Status</h3>
-                                    <p style={{ margin: "0 0 20px 0", fontSize: "12px", color: "#64748b" }}>Manage your registration and payment status for this cricket batch.</p>
-                                    
-                                    {myRegistration ? (
-                                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", background: "white", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
-                                                <div>
-                                                    <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase" }}>Registration Status</span>
-                                                    <strong style={{ display: "block", fontSize: "14px", color: "#16a34a", marginTop: "3px" }}>✓ Registered & Confirmed</strong>
-                                                </div>
-                                                <span style={{ fontSize: "12px", fontWeight: "700", padding: "6px 14px", background: "#dcfce7", color: "#16a34a", borderRadius: "20px" }}>
-                                                    ACTIVE
-                                                </span>
-                                            </div>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", background: "white", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
-                                                <div>
-                                                    <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase" }}>Fee Payment Status</span>
-                                                    <strong style={{ display: "block", fontSize: "14px", color: myRegistration.payment_status === "paid" ? "#16a34a" : "#d97706", marginTop: "3px" }}>
-                                                        {myRegistration.payment_status === "paid" ? "Paid" : "Pending Payment / Unpaid"}
-                                                    </strong>
-                                                </div>
-                                                <span style={{ 
-                                                    fontSize: "12px", 
-                                                    fontWeight: "700", 
-                                                    padding: "6px 14px", 
-                                                    background: myRegistration.payment_status === "paid" ? "#dcfce7" : "#fef3c7", 
-                                                    color: myRegistration.payment_status === "paid" ? "#16a34a" : "#d97706", 
-                                                    borderRadius: "20px" 
-                                                }}>
-                                                    {myRegistration.payment_status.toUpperCase()}
-                                                </span>
-                                            </div>
-                                            {myRegistration.notes && (
-                                                <div style={{ padding: "14px 18px", background: "#f8fafc", borderRadius: "12px", border: "1px dashed #e2e8f0", fontSize: "13px", color: "#64748b" }}>
-                                                    <strong>Note:</strong> {myRegistration.notes}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div style={{ textAlign: "center", padding: "30px 10px" }}>
-                                            <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#64748b" }}>You are not enrolled in this course yet. Click "Confirm Registration" above to instantly claim your seat!</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="registrations-panel">
-                                    <div className="registrations-head">
-                                        <h3>Registrations ({registrations.length})</h3>
-                                    </div>
-                                    {registrations.length > 0 ? (
-                                        <div className="registrations-list">
-                                            {registrations.map((registration) => (
-                                                <div className="registration-row" key={registration.id}>
-                                                    <div>
-                                                        <strong>{registration.participant_name}</strong>
-                                                        <span>{registration.participant_email || "No email"} · {statusLabels[registration.status] || registration.status}</span>
-                                                    </div>
-                                                    <div className="registration-actions">
-                                                        <button
-                                                            className={`mini-pill ${registration.payment_status}`}
-                                                            onClick={() => updateRegistration(registration, { payment_status: registration.payment_status === "paid" ? "unpaid" : "paid" })}
-                                                        >
-                                                            {registration.payment_status === "paid" ? <Check size={13} /> : <IndianRupee size={13} />}
-                                                            {statusLabels[registration.payment_status] || registration.payment_status}
-                                                        </button>
-                                                        {registration.status !== "cancelled" && (
-                                                            <button className="courses-icon-btn" onClick={() => updateRegistration(registration, { status: "cancelled" })}>
-                                                                <X size={15} />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="courses-empty compact">No registrations for this course yet.</div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
+                        </button>
+                    ))}
                 </div>
             )}
 
@@ -587,32 +281,6 @@ export default function CoursesPage() {
                         <div className="courses-modal-actions">
                             <button type="button" className="courses-secondary-btn" onClick={() => setShowCourseModal(false)}>Cancel</button>
                             <button type="submit" className="courses-primary-btn" disabled={saving}>{saving ? "Saving..." : "Create Course"}</button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            {showRegisterModal && selectedCourse && (
-                <div className="courses-modal-backdrop">
-                    <form className="courses-modal narrow" onSubmit={registerParticipant}>
-                        <div className="courses-modal-head">
-                            <div>
-                                <h2>Register Participant</h2>
-                                <p>{selectedCourse.title}</p>
-                            </div>
-                            <button type="button" className="courses-icon-btn" onClick={() => setShowRegisterModal(false)}><X size={18} /></button>
-                        </div>
-                        <div className="courses-form-grid single">
-                            <label>Existing Member<select value={registrationForm.member_id} onChange={(e) => updateRegistrationField("member_id", e.target.value)}><option value="">Register by name instead</option>{memberOptions.map((member) => <option key={member.id} value={member.id}>{member.first_name} {member.last_name} - {member.group_name}</option>)}</select></label>
-                            <label>Participant Name<input value={registrationForm.participant_name} onChange={(e) => updateRegistrationField("participant_name", e.target.value)} placeholder="Required for non-members" disabled={Boolean(registrationForm.member_id)} /></label>
-                            <label>Email<input value={registrationForm.participant_email} onChange={(e) => updateRegistrationField("participant_email", e.target.value)} placeholder="participant@example.com" disabled={Boolean(registrationForm.member_id)} /></label>
-                            <label>Phone<input value={registrationForm.participant_phone} onChange={(e) => updateRegistrationField("participant_phone", e.target.value)} placeholder="Phone number" disabled={Boolean(registrationForm.member_id)} /></label>
-                            <label>Payment<select value={registrationForm.payment_status} onChange={(e) => updateRegistrationField("payment_status", e.target.value)}><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="waived">Waived</option></select></label>
-                            <label>Notes<textarea value={registrationForm.notes} onChange={(e) => updateRegistrationField("notes", e.target.value)} placeholder="Optional registration note" /></label>
-                        </div>
-                        <div className="courses-modal-actions">
-                            <button type="button" className="courses-secondary-btn" onClick={() => setShowRegisterModal(false)}>Cancel</button>
-                            <button type="submit" className="courses-primary-btn" disabled={saving}>{saving ? "Registering..." : "Register"}</button>
                         </div>
                     </form>
                 </div>

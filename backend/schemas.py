@@ -35,6 +35,7 @@ class EventCreate(BaseModel):
     cover_image: Optional[str] = None
     registration_deadline: Optional[str] = None
     max_participants: Optional[int] = None
+    fee: Optional[int] = 0
     
     auto_reminder: Optional[bool] = False
     attendance_tracking: Optional[bool] = False
@@ -62,6 +63,7 @@ class EventUpdate(BaseModel):
     cover_image: Optional[str] = None
     registration_deadline: Optional[str] = None
     max_participants: Optional[int] = None
+    fee: Optional[int] = None
     
     auto_reminder: Optional[bool] = None
     attendance_tracking: Optional[bool] = None
@@ -91,6 +93,7 @@ class EventResponse(BaseModel):
     cover_image: Optional[str] = None
     registration_deadline: Optional[str] = None
     max_participants: Optional[int] = None
+    fee: Optional[int] = 0
     
     auto_reminder: bool
     attendance_tracking: bool

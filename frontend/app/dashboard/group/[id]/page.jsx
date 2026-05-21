@@ -278,7 +278,7 @@ export default function GroupProfilePage() {
                                             <span>{payment.member_name || "Group request"} - {payment.due_date || "No due date"}</span>
                                         </div>
                                         <div className="group-payment-side">
-                                            <strong>Rs. {Number(payment.amount || 0).toLocaleString("en-IN")}</strong>
+                                            <strong>{"\u20B9"}{Number(payment.amount || 0).toLocaleString("en-IN")}</strong>
                                             <span className={`group-payment-status ${payment.status}`}>{payment.status}</span>
                                         </div>
                                     </div>
@@ -318,11 +318,11 @@ export default function GroupProfilePage() {
                 </div>
                 <div>
                     <span>Pending Payments</span>
-                    <strong>Rs. {pendingTotal.toLocaleString("en-IN")}</strong>
+                    <strong>{"\u20B9"}{pendingTotal.toLocaleString("en-IN")}</strong>
                 </div>
                 <div>
                     <span>Collected</span>
-                    <strong>Rs. {paidTotal.toLocaleString("en-IN")}</strong>
+                    <strong>{"\u20B9"}{paidTotal.toLocaleString("en-IN")}</strong>
                 </div>
             </section>
 

@@ -77,7 +77,7 @@ export default function MemberSection() {
     return (
         <section className="event-section" style={{ borderRadius: 0, border: "none", boxShadow: "none", padding: "32px 48px", minHeight: "calc(100vh - 96px)" }}>
             <div className="event-top">
-                <span>{isMember ? "Squad Roster / Teammates" : "Club Members"}</span>
+                <span>Members</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#f1f5f9", borderRadius: "10px", padding: "8px 14px", border: "1px solid #e2e8f0" }}>
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="#94a3b8" strokeWidth="2" fill="none">
                         <circle cx="11" cy="11" r="8"></circle>

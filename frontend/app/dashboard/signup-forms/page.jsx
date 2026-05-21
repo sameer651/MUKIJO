@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FileText, Users, ArrowLeft, Plus, Trash2, Eye, Check, X, ShieldAlert, Sparkles } from "lucide-react";
 import "../../styles/signup-forms.css";
 
@@ -27,13 +27,7 @@ export default function SignupFormsDashboard() {
 
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
-    useEffect(() => {
-        if (userId) {
-            fetchData();
-        }
-    }, [userId]);
-
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             // Fetch Forms
@@ -64,7 +58,13 @@ export default function SignupFormsDashboard() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [userId]);
+
+    useEffect(() => {
+        if (userId) {
+            fetchData();
+        }
+    }, [userId, fetchData]);
 
     function handleStartEdit(form) {
         let parsedFields = [];
@@ -350,8 +350,6 @@ export default function SignupFormsDashboard() {
                 <div className="cards-grid">
                     {forms.map((form, idx) => {
                         const isCoach = form.role.toLowerCase() === "coach";
-                        const isReferee = form.role.toLowerCase() === "referee";
-                        
                         const displayTitle = isCoach ? "Coaches Form" : `${form.role}s Form`;
                         const displaySubtitle = `${form.role} Registration`;
                         

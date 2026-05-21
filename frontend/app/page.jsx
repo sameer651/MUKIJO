@@ -1,6 +1,33 @@
 import Link from "next/link";
-import { Shield, Users, LogIn, UserPlus } from "lucide-react";
+import { Shield, Users } from "lucide-react";
 import "./styles/landing.css";
+
+const ACTION_BOXES = [
+  {
+    href: "/login",
+    title: "Login as Club Admin",
+    description: "Sign in to manage your club, rosters, events, and finances.",
+    variant: "admin-login",
+  },
+  {
+    href: "/register",
+    title: "Register as Club Admin",
+    description: "Create a new club admin account to set up your organization.",
+    variant: "admin-register",
+  },
+  {
+    href: "/login-member",
+    title: "Login as Member",
+    description: "Sign in as a coach, player, parent, or referee.",
+    variant: "member-login",
+  },
+  {
+    href: "/register-member",
+    title: "Register as Member",
+    description: "Join your club as a member with your role and details.",
+    variant: "member-register",
+  },
+];
 
 export default function Home() {
   return (
@@ -13,54 +40,29 @@ export default function Home() {
       <section className="landing-shell">
         <div className="landing-header">
           <span className="welcome-tag">Welcome to Mukijo Club</span>
-          <h1>Select Your Dedicated Workspace</h1>
-          <p className="welcome-sub">Choose your dedicated path to sign in or register below</p>
+          <h1>Choose how you want to continue</h1>
+          <p className="welcome-sub">Select one of the options below to sign in or register</p>
         </div>
 
-        <div className="landing-split-container">
-          {/* Left Column: Admin Portal */}
-          <div className="portal-card admin-portal">
-            <div className="portal-icon-wrapper">
-              <Shield size={36} className="portal-icon" />
-            </div>
-            <h2>Club Administrator Hub</h2>
-            <p className="portal-subtitle">For managers, academy directors, and owners</p>
-            <p className="portal-desc">
-              Configure custom player onboarding forms, manage club rosters, build coaching courses, schedule fixtures, broadcast announcements, and track campaign finances.
-            </p>
-            <div className="portal-actions">
-              <Link href="/login" className="portal-btn btn-admin-login">
-                <LogIn size={18} />
-                <span>Login as Club Admin</span>
+        <div className="landing-boxes-grid">
+          {ACTION_BOXES.map((box) => {
+            const isAdmin = box.variant.startsWith("admin");
+            return (
+              <Link
+                key={box.variant}
+                href={box.href}
+                className="action-box"
+              >
+                <div className="action-box__icon">
+                  {isAdmin ? <Shield size={22} /> : <Users size={22} />}
+                </div>
+                <div className="action-box__content">
+                  <h2>{box.title}</h2>
+                  <p>{box.description}</p>
+                </div>
               </Link>
-              <Link href="/register" className="portal-btn btn-admin-register">
-                <UserPlus size={18} />
-                <span>Register a New Club</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column: Member Portal */}
-          <div className="portal-card member-portal">
-            <div className="portal-icon-wrapper">
-              <Users size={36} className="portal-icon" />
-            </div>
-            <h2>Squad Member Portal</h2>
-            <p className="portal-subtitle">For coaches, players, parents, and referees</p>
-            <p className="portal-desc">
-              View upcoming match fixtures and practice itineraries, respond with event RSVPs, manage active child/player profiles, mark match attendance, and submit match scorecards.
-            </p>
-            <div className="portal-actions">
-              <Link href="/login-member" className="portal-btn btn-member-login">
-                <LogIn size={18} />
-                <span>Login as Member</span>
-              </Link>
-              <Link href="/register-member" className="portal-btn btn-member-register">
-                <UserPlus size={18} />
-                <span>Register / Join Club</span>
-              </Link>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </section>
 

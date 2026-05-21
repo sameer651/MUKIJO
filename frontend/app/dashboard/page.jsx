@@ -12,12 +12,10 @@ import InfoCard from "../../components/dashboard/InfoCard";
 export default function DashboardPage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("Events");
-    const [isMember, setIsMember] = useState(false);
     const [checking, setChecking] = useState(true);
 
     useEffect(() => {
         const storedIsMember = localStorage.getItem("isMember") === "true";
-        setIsMember(storedIsMember);
         if (storedIsMember) {
             router.replace("/dashboard/overview");
         } else {

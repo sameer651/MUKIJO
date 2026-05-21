@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, CheckCircle, ArrowLeft } from "lucide-react";
 import styles from "../../app/styles/signup.module.css";
 
 export default function CustomRoleRegistration({ role, onBack, onComplete }) {
@@ -50,7 +49,7 @@ export default function CustomRoleRegistration({ role, onBack, onComplete }) {
                     let parsedFields = [];
                     try {
                         parsedFields = typeof data.fields === "string" ? JSON.parse(data.fields) : data.fields;
-                    } catch (e) {
+                    } catch {
                         parsedFields = [];
                     }
                     setFormConfig({ ...data, fields: parsedFields });

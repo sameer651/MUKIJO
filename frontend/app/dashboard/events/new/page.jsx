@@ -19,6 +19,7 @@ export default function NewEventPage() {
     const [description, setDescription] = useState("");
     const [groupId, setGroupId] = useState("");
     const [maxParticipants, setMaxParticipants] = useState("");
+    const [eventFee, setEventFee] = useState("");
     const [registrationDeadline, setRegistrationDeadline] = useState("");
 
     // Settings
@@ -106,6 +107,7 @@ export default function NewEventPage() {
             cover_image: finalCover,
             registration_deadline: registrationDeadline || null,
             max_participants: maxParticipants ? parseInt(maxParticipants) : null,
+            fee: eventFee ? parseInt(eventFee) : 0,
             auto_reminder: autoReminder,
             attendance_tracking: attendanceTracking,
             is_public: isPublic,
@@ -320,6 +322,18 @@ export default function NewEventPage() {
                                 placeholder="No limit (leave empty)" 
                                 value={maxParticipants} 
                                 onChange={(e) => setMaxParticipants(e.target.value)} 
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="eventFee">Event Fee (₹)</label>
+                            <input
+                                type="number"
+                                id="eventFee"
+                                min="0"
+                                placeholder="0 for free event"
+                                value={eventFee}
+                                onChange={(e) => setEventFee(e.target.value)}
                             />
                         </div>
                     </div>

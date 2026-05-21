@@ -488,7 +488,10 @@
 .actionButton {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    width: 190px;
+    min-height: 46px;
     background: #3b82f6;
     color: white;
     border: none;
@@ -510,4 +513,27 @@
 
 .actionButton svg {
     stroke-width: 2.5;
+}
+
+.actionSymbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.rupeeIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
 }

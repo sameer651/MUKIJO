@@ -16,7 +16,7 @@ const StatCard = ({ icon, label, value, sub, color, loading, href }) => {
             {href && (
                 <span className={styles.statArrow}>
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="9 18 15 12 9 6"/>
+                        <polyline points="9 18 15 12 9 6" />
                     </svg>
                 </span>
             )}
@@ -33,6 +33,20 @@ const StatCard = ({ icon, label, value, sub, color, loading, href }) => {
     return <div className={`${styles.statCard} ${styles[color]}`}>{content}</div>;
 };
 
+function getEventDateParts(event) {
+    const rawDate = event?.start_time || event?.start_date || event?.date;
+    const eventDate = rawDate ? new Date(rawDate) : null;
+
+    if (!eventDate || Number.isNaN(eventDate.getTime())) {
+        return { month: "TBA", day: "" };
+    }
+
+    return {
+        month: eventDate.toLocaleDateString("en-US", { month: "short" }),
+        day: String(eventDate.getDate()),
+    };
+}
+
 export default function OverviewPage() {
     const [isMember, setIsMember] = useState(false);
     const [memberRole, setMemberRole] = useState("Member");
@@ -45,16 +59,10 @@ export default function OverviewPage() {
     const [realMembers, setRealMembers] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // RSVP interactive status
-    const [rsvps, setRsvps] = useState({});
-    
-    // Referee Score form
-    const [refScoreHome, setRefScoreHome] = useState("0");
-    const [refScoreAway, setRefScoreAway] = useState("0");
-    const [refReportSubmitted, setRefReportSubmitted] = useState(false);
+    // Event response status
+    const [responses, setResponses] = useState({});
 
-    // Parent Child Toggle
-    const [selectedChildIndex, setSelectedChildIndex] = useState(0);
+    const [campaigns, setCampaigns] = useState([]);
 
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
@@ -73,7 +81,19 @@ export default function OverviewPage() {
         const fetchData = async () => {
             setLoading(true);
             try {
+                // Fetch active fundraising campaigns for all roles
+                try {
+                    const campaignsRes = await fetch(`http://127.0.0.1:8001/fundraising?owner_id=${userId || 1}`);
+                    if (campaignsRes.ok) {
+                        const camps = await campaignsRes.json();
+                        setCampaigns(camps);
+                    }
+                } catch (e) {
+                    console.error("Error fetching campaigns on overview:", e);
+                }
+
                 if (!storedIsMember) {
+                    // Admin overview
                     // Admin overview
                     const res = await fetch(`http://127.0.0.1:8001/dashboard/overview?owner_id=${userId}`);
                     if (res.ok) {
@@ -93,7 +113,7 @@ export default function OverviewPage() {
                         fetch(`http://127.0.0.1:8001/events?owner_id=${userId || 1}`),
                         fetch(`http://127.0.0.1:8001/members?owner_id=${userId || 1}`).catch(() => null)
                     ]);
-                    
+
                     if (eventsRes && eventsRes.ok) {
                         const evs = await eventsRes.json();
                         setRealEvents(evs);
@@ -117,8 +137,8 @@ export default function OverviewPage() {
         }
     }, [userId]);
 
-    // Handle interactive player RSVP
-    const handlePlayerRSVP = async (eventId, responseType) => {
+    // Handle interactive player response
+    const handlePlayerResponse = async (eventId, responseType) => {
         try {
             const res = await fetch(`http://127.0.0.1:8001/events/${eventId}/respond`, {
                 method: "POST",
@@ -131,24 +151,15 @@ export default function OverviewPage() {
                 })
             });
             if (res.ok) {
-                setRsvps(prev => ({ ...prev, [eventId]: responseType }));
-                alert(`Your RSVP status has been successfully set to: ${responseType.toUpperCase()}`);
+                setResponses(prev => ({ ...prev, [eventId]: responseType }));
+                alert(`Your response status has been successfully set to: ${responseType.toUpperCase()}`);
             } else {
-                alert("Failed to submit RSVP. Check if session limit was reached.");
+                alert("Failed to submit your response. Check if session limit was reached.");
             }
         } catch (e) {
-            console.error("RSVP Error:", e);
-            alert("Connection error while sending RSVP.");
+            console.error("Event response error:", e);
+            alert("Connection error while sending your response.");
         }
-    };
-
-    // Handle referee scorecard submission
-    const handleRefereeSubmit = (e) => {
-        e.preventDefault();
-        setRefReportSubmitted(true);
-        setTimeout(() => {
-            alert("Match report and scorecard officially logged in the system!");
-        }, 100);
     };
 
     // Render 1: Club Admin Dashboard
@@ -166,7 +177,7 @@ export default function OverviewPage() {
                         Create New Event
                     </Link>
                     <Link href="/dashboard/fundraising/new" className={styles.actionButton}>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12"/><path d="M6 8h12"/><path d="m6 13 8.5 8"/><path d="M6 13h3"/><path d="M9 13c6.667 0 6.667-10 0-10"/></svg>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12" /><path d="M6 8h12" /><path d="m6 13 8.5 8" /><path d="M6 13h3" /><path d="M9 13c6.667 0 6.667-10 0-10" /></svg>
                         Create New Campaign
                     </Link>
                     <Link href="/dashboard/courses" className={styles.actionButton}>
@@ -183,7 +194,7 @@ export default function OverviewPage() {
                 <div className={styles.pageHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>Club Overview</h1>
-                        <p className={styles.pageSubtitle}>A snapshot of your club's activity and performance</p>
+                        <p className={styles.pageSubtitle}>A snapshot of {clubName}&apos;s activity and performance</p>
                     </div>
                     <div className={styles.dateBadge}>
                         {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -196,35 +207,35 @@ export default function OverviewPage() {
                         loading={loading} color="blue" label="Total Members"
                         value={adminData?.total_members ?? 0} sub="Across all groups"
                         href="/dashboard/members"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="violet" label="Total Groups"
                         value={adminData?.total_groups ?? 0} sub="Active groups"
                         href="/dashboard"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="indigo" label="Total Courses"
                         value={adminData?.total_courses ?? 0} sub="Active programs"
                         href="/dashboard/courses"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="amber" label="Pending Payments"
-                        value={`₹${(adminData?.pending_payments ?? 0).toLocaleString()}`} sub="Awaiting collection"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12"/><path d="M6 8h12"/><path d="m6 13 8.5 8"/><path d="M6 13h3"/><path d="M9 13c6.667 0 6.667-10 0-10"/></svg>}
+                        value={`\u20B9${(adminData?.pending_payments ?? 0).toLocaleString()}`} sub="Awaiting collection"
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12" /><path d="M6 8h12" /><path d="m6 13 8.5 8" /><path d="M6 13h3" /><path d="M9 13c6.667 0 6.667-10 0-10" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="emerald" label="Upcoming Events"
                         value={adminData?.upcoming_events_count ?? 0} sub="Scheduled ahead"
                         href="/dashboard"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="rose" label="Fundraising"
-                        value={`₹${(adminData?.fundraising_total ?? 0).toLocaleString()}`} sub="Total raised"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
+                        value={`\u20B9${(adminData?.fundraising_total ?? 0).toLocaleString()}`} sub="Total raised"
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>}
                     />
                 </div>
             </div>
@@ -270,28 +281,24 @@ export default function OverviewPage() {
                         loading={loading} color="blue" label="Squad Players"
                         value={coachData?.squad_players_count ?? 0} sub="Assigned to your group"
                         href="/dashboard/members"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="violet" label="Upcoming Events"
-                        value={coachData?.upcoming_events_count ?? 0} sub="Matches & practices"
+                        value={coachData?.upcoming_events_count ?? 0} sub="Events & practices"
                         href="/dashboard/events"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="emerald" label="Attendance Rating"
                         value={coachData?.attendance_rating ?? "94.2%"} sub="Team presence average"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>}
                     />
                 </div>
 
                 {/* Content Panels */}
                 <div className={styles.panels}>
                     <div className={styles.panel}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Active Squad Roster</h3>
-                            <Link href="/dashboard/members" className={styles.panelLink}>Manage</Link>
-                        </div>
                         <ul className={styles.memberList}>
                             {(myPlayers.length > 0 ? myPlayers.slice(0, 4) : [
                                 { first_name: "Amit", last_name: "Sharma", email: "amit@cricket.com" },
@@ -322,9 +329,7 @@ export default function OverviewPage() {
                                 { name: "Weekly Fitness & Stamina Session", venue: "Club Grounds", category: "Fitness", start_time: "2026-05-20T17:00" },
                                 { name: "Tactical Defense Drilling", venue: "Main Field", category: "Match", start_time: "2026-05-22T08:30" }
                             ]).map((ev, idx) => {
-                                const evDate = new Date(ev.start_time || ev.start_date || ev.date || "2026-05-20");
-                                const month = evDate.toLocaleDateString("en-US", { month: "short" });
-                                const day = evDate.getDate();
+                                const { month, day } = getEventDateParts(ev);
 
                                 return (
                                     <li key={idx} className={styles.eventRow}>
@@ -336,7 +341,7 @@ export default function OverviewPage() {
                                             <span className={styles.eventName}>{ev.name || ev.title}</span>
                                             <div className={styles.eventMeta}>
                                                 <span className={styles.eventType}>{ev.category || ev.type || "Practice"}</span>
-                                                <span>📍 {ev.venue || ev.location}</span>
+                                                <span>Location: {ev.venue || ev.location}</span>
                                             </div>
                                         </div>
                                     </li>
@@ -350,17 +355,65 @@ export default function OverviewPage() {
                             <h3 className={styles.panelTitle}>Quick Group Announcement</h3>
                         </div>
                         <form onSubmit={(e) => { e.preventDefault(); alert("Broadcast announcement successfully dispatched!"); e.target.reset(); }} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                            <textarea 
-                                placeholder="Type notice here... (e.g., Please bring extra sports shoes for tomorrow's mud session)" 
+                            <textarea
+                                placeholder="Type notice here... (e.g., Please bring extra sports shoes for tomorrow's mud session)"
                                 required
                                 style={{ padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1", resize: "none", height: "85px", fontSize: "13px", outline: "none" }}
                             />
                             <button type="submit" style={{ padding: "8px", background: "#8b5cf6", color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                                📣 Dispatch Announcement
+                                Dispatch Announcement
                             </button>
                         </form>
                     </div>
+
+                    {renderActiveCampaignsPanel()}
                 </div>
+            </div>
+        );
+    };
+
+    const renderActiveCampaignsPanel = () => {
+        const activeCamps = campaigns.filter(c => c.status === "active");
+        if (activeCamps.length === 0) return null;
+
+        return (
+            <div className={styles.panel}>
+                <div className={styles.panelHeader}>
+                    <h3 className={styles.panelTitle}>Active Club Fundraising</h3>
+                    <Link href="/dashboard/fundraising" className={styles.panelLink}>Support Us</Link>
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+                    {activeCamps.slice(0, 2).map((c) => {
+                        const progress = Math.min(100, Math.round(((c.raised || 0) / (c.goal || 1)) * 100));
+                        return (
+                            <li key={c.id} style={{ padding: "12px", border: "1px solid #f1f5f9", borderRadius: "10px", background: "#f8fafc" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "6px" }}>
+                                    <div style={{ fontWeight: "700", fontSize: "13px", color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "200px" }}>{c.title}</div>
+                                    <span style={{ fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "8px", background: "#eff6ff", color: "#2563eb" }}>
+                                        {progress}%
+                                    </span>
+                                </div>
+                                <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "8px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                                    {c.description || "Support our club sports campaigns!"}
+                                </div>
+                                <div style={{ height: "6px", background: "#e2e8f0", borderRadius: "99px", overflow: "hidden", marginBottom: "10px" }}>
+                                    <div style={{ height: "100%", width: `${progress}%`, background: "linear-gradient(90deg, #3b82f6, #10b981)", borderRadius: "99px" }} />
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ fontSize: "12px", fontWeight: "600", color: "#0f172a" }}>
+                                        Rs. {Number(c.raised || 0).toLocaleString()} <span style={{ color: "#94a3b8", fontWeight: "normal" }}>/ Rs. {Number(c.goal || 0).toLocaleString()}</span>
+                                    </span>
+                                    <Link
+                                        href={`/dashboard/fundraising/donate/${c.id}`}
+                                        style={{ padding: "4px 10px", background: "#2563eb", color: "white", textDecoration: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold" }}
+                                    >
+                                        Donate
+                                    </Link>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
         );
     };
@@ -380,7 +433,7 @@ export default function OverviewPage() {
                         Training Batches
                     </Link>
                     <Link href="/dashboard/fundraising" className={styles.actionButton} style={{ background: "#ef4444", boxShadow: "0 4px 12px rgba(239, 68, 68, 0.25)" }}>
-                        ₹ Support Club Dues
+                        {"\u20B9"} Support Club Dues
                     </Link>
                 </div>
 
@@ -388,7 +441,7 @@ export default function OverviewPage() {
                 <div className={styles.pageHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>Athlete Space</h1>
-                        <p className={styles.pageSubtitle}>Welcome back, {userName}! Let's push our athletic goals today.</p>
+                        <p className={styles.pageSubtitle}>Welcome back, {userName}! Let&apos;s push our athletic goals today.</p>
                     </div>
                     <div className={styles.dateBadge}>
                         {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -401,18 +454,18 @@ export default function OverviewPage() {
                         loading={loading} color="indigo" label="Upcoming Games"
                         value={realEvents.length || 3} sub="Fixtures this week"
                         href="/dashboard/events"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="emerald" label="My Presence Rate"
                         value="96.8%" sub="Perfect attendance score"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="amber" label="Registered Classes"
                         value="2 Batches" sub="Elite Skill Development"
                         href="/dashboard/courses"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /></svg>}
                     />
                 </div>
 
@@ -421,17 +474,15 @@ export default function OverviewPage() {
                     <div className={styles.panel} style={{ gridColumn: "span 2" }}>
                         <div className={styles.panelHeader}>
                             <h3 className={styles.panelTitle}>Respond to Invited Matches & Practices</h3>
-                            <span style={{ fontSize: "12px", color: "#64748b" }}>RSVP here to secure your team day spot</span>
+                            <span style={{ fontSize: "12px", color: "#64748b" }}>Respond here to secure your team day spot</span>
                         </div>
                         <ul className={styles.eventList} style={{ gap: "20px" }}>
                             {(realEvents.length > 0 ? realEvents.slice(0, 2) : [
                                 { id: 1, name: "Weekend Cup - Semifinals vs Warriors", venue: "East Arena Pitch 2", start_time: "2026-05-23T09:00", category: "Match" },
                                 { id: 2, name: "Intense Drills with Coach", venue: "Indoor Courts", start_time: "2026-05-25T18:00", category: "Training" }
                             ]).map((ev) => {
-                                const evDate = new Date(ev.start_time || ev.start_date || "2026-05-20");
-                                const month = evDate.toLocaleDateString("en-US", { month: "short" });
-                                const day = evDate.getDate();
-                                const hasResponded = rsvps[ev.id];
+                                const { month, day } = getEventDateParts(ev);
+                                const hasResponded = responses[ev.id];
 
                                 return (
                                     <li key={ev.id} className={styles.eventRow} style={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
@@ -443,19 +494,19 @@ export default function OverviewPage() {
                                             <span className={styles.eventName}>{ev.name || ev.title}</span>
                                             <div className={styles.eventMeta}>
                                                 <span className={styles.eventType}>{ev.category || "Practice"}</span>
-                                                <span>📍 {ev.venue || ev.location}</span>
+                                                <span>Location: {ev.venue || ev.location}</span>
                                             </div>
                                         </div>
                                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                                             {hasResponded ? (
                                                 <span style={{ fontSize: "11px", fontWeight: "bold", background: hasResponded === "accepted" ? "#d1fae5" : hasResponded === "declined" ? "#fee2e2" : "#fef3c7", color: hasResponded === "accepted" ? "#065f46" : hasResponded === "declined" ? "#991b1b" : "#92400e", padding: "6px 12px", borderRadius: "12px" }}>
-                                                    ✓ RSVP: {hasResponded.toUpperCase()}
+                                                    Response: {hasResponded.toUpperCase()}
                                                 </span>
                                             ) : (
                                                 <>
-                                                    <button onClick={() => handlePlayerRSVP(ev.id, "accepted")} style={{ padding: "6px 10px", background: "#10b981", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Accept</button>
-                                                    <button onClick={() => handlePlayerRSVP(ev.id, "maybe")} style={{ padding: "6px 10px", background: "#f59e0b", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Maybe</button>
-                                                    <button onClick={() => handlePlayerRSVP(ev.id, "declined")} style={{ padding: "6px 10px", background: "#ef4444", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Decline</button>
+                                                    <button onClick={() => handlePlayerResponse(ev.id, "accepted")} style={{ padding: "6px 10px", background: "#10b981", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Accept</button>
+                                                    <button onClick={() => handlePlayerResponse(ev.id, "maybe")} style={{ padding: "6px 10px", background: "#f59e0b", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Maybe</button>
+                                                    <button onClick={() => handlePlayerResponse(ev.id, "declined")} style={{ padding: "6px 10px", background: "#ef4444", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Decline</button>
                                                 </>
                                             )}
                                         </div>
@@ -484,6 +535,8 @@ export default function OverviewPage() {
                             ))}
                         </div>
                     </div>
+
+                    {renderActiveCampaignsPanel()}
                 </div>
             </div>
         );
@@ -491,21 +544,29 @@ export default function OverviewPage() {
 
     // Render 4: Parent Dashboard
     const renderParentDashboard = () => {
-        const childNames = ["Vivan Sharma (Cricket U-12)", "Rhea Sharma (Tennis Beginner)"];
         return (
             <div className={styles.page}>
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
                     <Link href="/dashboard/members" className={styles.actionButton}>
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                        Child Squad Details
+                        Members
                     </Link>
-                    <Link href="/dashboard/events" className={styles.actionButton} style={{ background: "#10b981", boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)" }}>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>
-                        Practice Schedules
+                    <Link href="/dashboard/events" className={styles.actionButton}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none">
+                            <rect x="3" y="5" width="18" height="16" rx="2" ry="2"></rect>
+                            <line x1="16" y1="3" x2="16" y2="7"></line>
+                            <line x1="8" y1="3" x2="8" y2="7"></line>
+                            <line x1="3" y1="11" x2="21" y2="11"></line>
+                            <circle cx="8" cy="15" r="1"></circle>
+                            <circle cx="12" cy="15" r="1"></circle>
+                            <circle cx="16" cy="15" r="1"></circle>
+                        </svg>
+                        Events
                     </Link>
-                    <Link href="/dashboard/fundraising" className={styles.actionButton} style={{ background: "#ef4444", boxShadow: "0 4px 12px rgba(239, 68, 68, 0.25)" }}>
-                        ₹ Active Donations
+                    <Link href="/dashboard/fundraising" className={styles.actionButton}>
+                        <span className={styles.actionSymbol}>{"\u20B9"}</span>
+                        Donate
                     </Link>
                 </div>
 
@@ -513,7 +574,7 @@ export default function OverviewPage() {
                 <div className={styles.pageHeader}>
                     <div>
                         <h1 className={styles.pageTitle}>Guardian Portal</h1>
-                        <p className={styles.pageSubtitle}>Welcome back, parent {userName}! Manage emergency details, kids' calendars, and fees.</p>
+                        <p className={styles.pageSubtitle}>Welcome back, parent {userName}! Manage emergency details, kids&apos; events, and fees.</p>
                     </div>
                     <div className={styles.dateBadge}>
                         {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -525,106 +586,27 @@ export default function OverviewPage() {
                     <StatCard
                         loading={loading} color="blue" label="Children Registered"
                         value="2 Active Kids" sub="Coaching & Squad teams"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="violet" label="Upcoming Events"
-                        value={realEvents.length || 4} sub="Matches scheduled"
+                        value={realEvents.length || 4} sub="Events scheduled"
                         href="/dashboard/events"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="amber" label="Outstanding Dues"
                         value="Rs. 1,500" sub="Awaiting card payment"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12"/><path d="m6 13 8.5 8"/><path d="M6 13h3"/></svg>}
+                        icon={<span className={styles.rupeeIcon}>{"\u20B9"}</span>}
                     />
                 </div>
 
                 {/* Content Panels */}
                 <div className={styles.panels}>
-                    <div className={styles.panel}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Emergency Contacts & Medical Info</h3>
-                        </div>
-                        <div style={{ fontSize: "13px", display: "flex", flexDirection: "column", gap: "10px", color: "#334155" }}>
-                            <div><strong>Emergency Guardian:</strong> {userName} ({localStorage.getItem("userPhone") || "9876543210"})</div>
-                            <div><strong>Second Contact:</strong> Priya Sharma (9811223344)</div>
-                            <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "10px", marginTop: "4px" }}>
-                                <strong>🏥 Child 1 Medical Note:</strong> Asthmatic (inhaler kept in sports kit bag).
-                            </div>
-                            <div>
-                                <strong>🏥 Child 2 Medical Note:</strong> Allergic to peanuts (Epipen in backpack).
-                            </div>
-                            <button onClick={() => alert("Emergency profiles successfully updated!")} style={{ padding: "8px", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "12px", cursor: "pointer", marginTop: "8px" }}>
-                                Update Contact Details
-                            </button>
-                        </div>
-                    </div>
 
-                    <div className={styles.panel}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Upcoming Fixtures for {childNames[selectedChildIndex].split(" ")[0]}</h3>
-                            <select 
-                                value={selectedChildIndex} 
-                                onChange={(e) => setSelectedChildIndex(Number(e.target.value))}
-                                style={{ padding: "4px 8px", fontSize: "11px", borderRadius: "6px", border: "1px solid #cbd5e1", outline: "none" }}
-                            >
-                                <option value={0}>Vivan</option>
-                                <option value={1}>Rhea</option>
-                            </select>
-                        </div>
-                        <ul className={styles.eventList}>
-                            {(realEvents.length > 0 ? realEvents.slice(0, 3) : [
-                                { name: "U-12 Friendly Cricket Match", venue: "School Turf", start_time: "2026-05-20T16:00", category: "Match" },
-                                { name: "Basics Stamina drill", venue: "Main Field", start_time: "2026-05-23T08:00", category: "Practice" }
-                            ]).map((ev, idx) => {
-                                const evDate = new Date(ev.start_time || ev.start_date || "2026-05-20");
-                                const month = evDate.toLocaleDateString("en-US", { month: "short" });
-                                const day = evDate.getDate();
 
-                                return (
-                                    <li key={idx} className={styles.eventRow}>
-                                        <div className={styles.eventDateBox}>
-                                            <span className={styles.eventMonth}>{month}</span>
-                                            <span className={styles.eventDay}>{day}</span>
-                                        </div>
-                                        <div className={styles.eventInfo}>
-                                            <span className={styles.eventName}>{ev.name || ev.title}</span>
-                                            <div className={styles.eventMeta}>
-                                                <span className={styles.eventType}>{ev.category || "Event"}</span>
-                                                <span>📍 {ev.venue || ev.location}</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
 
-                    <div className={styles.panel}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Outstanding Batches & Uniform Fees</h3>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", padding: "8px 10px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                                <div>
-                                    <strong>Junior Cricket Batch Fee</strong>
-                                    <div style={{ fontSize: "11px", color: "#64748b" }}>Due by 25th May</div>
-                                </div>
-                                <span style={{ fontWeight: "bold", color: "#ef4444" }}>Rs. 1,000</span>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", padding: "8px 10px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                                <div>
-                                    <strong>New Club Jersey (Vivan)</strong>
-                                    <div style={{ fontSize: "11px", color: "#64748b" }}>Order pending payment</div>
-                                </div>
-                                <span style={{ fontWeight: "bold", color: "#ef4444" }}>Rs. 500</span>
-                            </div>
-                            <button onClick={() => alert("Redirecting to secured payments gateway...")} style={{ padding: "10px", background: "#10b981", color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", boxShadow: "0 4px 10px rgba(16, 185, 129, 0.25)" }}>
-                                💳 Pay Outstanding Dues (Rs. 1,500)
-                            </button>
-                        </div>
-                    </div>
+                    {renderActiveCampaignsPanel()}
                 </div>
             </div>
         );
@@ -632,20 +614,43 @@ export default function OverviewPage() {
 
     // Render 5: Referee Dashboard
     const renderRefereeDashboard = () => {
+        const officialButtonStyle = {
+            background: "#2563eb",
+            border: "none",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
+            width: "250px",
+            padding: "11px 18px",
+        };
+        const fundraisingTotal = campaigns.reduce((sum, campaign) => sum + Number(campaign.raised || 0), 0);
+
         return (
             <div className={styles.page}>
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
-                    <Link href="/dashboard/events" className={styles.actionButton} style={{ background: "#4f46e5" }}>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>
-                        Officiating Calendar
+                    <Link href="/dashboard/events" className={styles.actionButton} style={officialButtonStyle}>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="4" width="18" height="17" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                            <circle cx="8" cy="15" r="1" fill="currentColor" stroke="none" />
+                            <circle cx="12" cy="15" r="1" fill="currentColor" stroke="none" />
+                            <circle cx="16" cy="15" r="1" fill="currentColor" stroke="none" />
+                        </svg>
+                        Events
                     </Link>
-                    <Link href="/dashboard/courses" className={styles.actionButton}>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path></svg>
-                        Training Batches
+                    <Link href="/dashboard/courses" className={styles.actionButton} style={officialButtonStyle}>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+                            <path d="M8 6h8" />
+                            <path d="M8 10h7" />
+                        </svg>
+                        Courses
                     </Link>
-                    <button onClick={() => alert("Availability marked: 100% active!")} className={styles.actionButton} style={{ background: "#10b981", border: "none", boxShadow: "0 4px 12px rgba(16, 185, 129, 0.25)" }}>
-                        ✓ Toggle Availability (Active)
+                    <button onClick={() => alert("Availability marked: 100% active!")} className={styles.actionButton} style={officialButtonStyle}>
+                        Toggle Availability (Active)
                     </button>
                 </div>
 
@@ -663,96 +668,28 @@ export default function OverviewPage() {
                 {/* Stats */}
                 <div className={styles.statsGrid}>
                     <StatCard
-                        loading={loading} color="indigo" label="Assigned Matches"
-                        value="3 Matches" sub="Officiating this week"
+                        loading={loading} color="indigo" label="Events"
+                        value={realEvents.length || 0} sub="Officiating this week"
                         href="/dashboard/events"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg>}
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /></svg>}
                     />
                     <StatCard
-                        loading={loading} color="emerald" label="Completed Reports"
-                        value="12 Game Scorecards" sub="Logged successfully"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg>}
+                        loading={loading} color="emerald" label="Members"
+                        value={realMembers.length || 0} sub="Current roster"
+                        href="/dashboard/members"
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /></svg>}
                     />
                     <StatCard
-                        loading={loading} color="rose" label="Warnings Handed"
-                        value="14 Cards" sub="8 Yellow / 6 Red cards"
-                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="3" width="14" height="18" rx="2" ry="2"/></svg>}
+                        loading={loading} color="rose" label="Fundraising"
+                        value={`\u20B9${fundraisingTotal.toLocaleString("en-IN")}`} sub="Total raised"
+                        href="/dashboard/fundraising"
+                        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>}
                     />
                 </div>
 
                 {/* Content Panels */}
                 <div className={styles.panels}>
-                    <div className={styles.panel} style={{ gridColumn: "span 2" }}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Post-Match Scorecard Entry</h3>
-                            <span style={{ fontSize: "11px", color: "#64748b" }}>Enter final score details for your assigned fixture</span>
-                        </div>
-                        {refReportSubmitted ? (
-                            <div style={{ textAlign: "center", padding: "30px 20px", background: "#ecfdf5", border: "1px solid #10b981", borderRadius: "12px", color: "#065f46" }}>
-                                <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" fill="none" style={{ marginBottom: "8px" }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                <h4 style={{ margin: "0 0 4px 0" }}>Report Filed Successfully!</h4>
-                                <p style={{ margin: 0, fontSize: "12.5px" }}>The official match result has been computed and sent to league standings database.</p>
-                                <button onClick={() => setRefReportSubmitted(false)} style={{ marginTop: "14px", padding: "6px 12px", background: "#10b981", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", cursor: "pointer", fontWeight: "bold" }}>Submit Another Scorecard</button>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleRefereeSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                                    <div style={{ flex: 1 }}>
-                                        <label style={{ fontSize: "12px", fontWeight: "bold", color: "#475569" }}>Active Match Fixture *</label>
-                                        <select required style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1", marginTop: "4px", outline: "none", fontSize: "13px" }}>
-                                            <option>Mukijo Royals vs. City Warriors (U-17 league)</option>
-                                            <option>Mukijo Masters vs. United Stars (Friendly match)</option>
-                                        </select>
-                                    </div>
-                                    <div style={{ width: "100px" }}>
-                                        <label style={{ fontSize: "12px", fontWeight: "bold", color: "#475569" }}>Home Team Score</label>
-                                        <input type="number" min="0" value={refScoreHome} onChange={(e) => setRefScoreHome(e.target.value)} required style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1", marginTop: "4px", textCenter: "center", outline: "none" }} />
-                                    </div>
-                                    <div style={{ width: "100px" }}>
-                                        <label style={{ fontSize: "12px", fontWeight: "bold", color: "#475569" }}>Away Team Score</label>
-                                        <input type="number" min="0" value={refScoreAway} onChange={(e) => setRefScoreAway(e.target.value)} required style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1", marginTop: "4px", textCenter: "center", outline: "none" }} />
-                                    </div>
-                                </div>
-                                <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                                    <div style={{ flex: 1 }}>
-                                        <label style={{ fontSize: "12px", fontWeight: "bold", color: "#475569" }}>Sanctions Handed</label>
-                                        <input type="text" placeholder="e.g. 2 Yellow (Rohan #4, Amit #7)" style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1", marginTop: "4px", outline: "none", fontSize: "13px" }} />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <label style={{ fontSize: "12px", fontWeight: "bold", color: "#475569" }}>Incident Notes (Optional)</label>
-                                        <input type="text" placeholder="e.g. Match delayed by 10 mins due to rain" style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1", marginTop: "4px", outline: "none", fontSize: "13px" }} />
-                                    </div>
-                                </div>
-                                <button type="submit" style={{ padding: "10px", background: "#4f46e5", color: "white", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "13px", cursor: "pointer", boxShadow: "0 4px 10px rgba(79, 70, 229, 0.2)" }}>
-                                    ✓ Submit Match Scorecard
-                                </button>
-                            </form>
-                        )}
-                    </div>
-
-                    <div className={styles.panel}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Official Guidelines & Handbooks</h3>
-                        </div>
-                        <ul className={styles.memberList}>
-                            <li className={styles.memberRow} style={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "10px" }}>
-                                <div className={styles.memberAvatar} style={{ background: "#cbd5e1", color: "#475569" }}>📕</div>
-                                <div className={styles.memberInfo}>
-                                    <span className={styles.memberName}>FIFA Rulebook 2026.pdf</span>
-                                    <span className={styles.memberEmail}>Official Football Code</span>
-                                </div>
-                                <span onClick={() => alert("Downloading FIFA Rulebook...")} style={{ fontSize: "11px", fontWeight: "600", cursor: "pointer", color: "#4f46e5" }}>Download</span>
-                            </li>
-                            <li className={styles.memberRow}>
-                                <div className={styles.memberAvatar} style={{ background: "#cbd5e1", color: "#475569" }}>📕</div>
-                                <div className={styles.memberInfo}>
-                                    <span className={styles.memberName}>Mukijo Code of Conduct.pdf</span>
-                                    <span className={styles.memberEmail}>Fair Play Manual</span>
-                                </div>
-                                <span onClick={() => alert("Downloading Mukijo Code of Conduct...")} style={{ fontSize: "11px", fontWeight: "600", cursor: "pointer", color: "#4f46e5" }}>Download</span>
-                            </li>
-                        </ul>
-                    </div>
+                    {renderActiveCampaignsPanel()}
                 </div>
             </div>
         );

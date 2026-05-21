@@ -240,7 +240,7 @@ export default function EventsPage() {
                     <div className="empty-icon">📅</div>
                     <h3>No {activeTab} events found</h3>
                     <p>{isMember ? "There are currently no events scheduled for your roster in this category." : "There are no events currently in this category. You can schedule a new match, training, or meeting immediately."}</p>
-                    {!isMember && (
+                    {!isMember && activeTab === "upcoming" && (
                         <Link href="/dashboard/events/new" className="primary-btn" style={{ textDecoration: "none", marginTop: "20px" }}>
                             Create Event
                         </Link>

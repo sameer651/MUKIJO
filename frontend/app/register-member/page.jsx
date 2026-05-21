@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import styles from "../styles/signup.module.css";
 import CustomRoleRegistration from "../../components/register/CustomRoleRegistration";
 import SuccessScreen from "../../components/register/SuccessScreen";
@@ -21,9 +22,9 @@ export default function RegisterMemberPage() {
                     <SuccessScreen role={selectedRole} />
                 ) : selectedRole === null ? (
                     <div className={styles.stepContainer} style={{ display: "flex", flexDirection: "column" }}>
-                        <a href="/" className={styles.prevButton} style={{ display: "inline-block", alignSelf: "flex-start", marginBottom: "16px", textDecoration: "none", width: "fit-content" }}>
+                        <Link href="/" className={styles.prevButton} style={{ display: "inline-block", alignSelf: "flex-start", marginBottom: "16px", textDecoration: "none", width: "fit-content" }}>
                             ← Back to Home
-                        </a>
+                        </Link>
                         <h2 className={styles.stepTitle}>Choose Who You Are</h2>
                         <p className={styles.stepSubtitle}>Select your onboarding role to join a club</p>
                         

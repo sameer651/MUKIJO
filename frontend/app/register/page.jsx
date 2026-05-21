@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import styles from "../styles/signup.module.css";
 import Step1 from "../../components/register/Step1";
 import Step2 from "../../components/register/Step2";
@@ -116,9 +117,9 @@ export default function SignupPage() {
                     <SuccessScreen role="admin" />
                 ) : currentStep === 1 ? (
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                        <a href="/" className={styles.prevButton} style={{ display: "inline-block", alignSelf: "flex-start", marginBottom: "16px", textDecoration: "none", width: "fit-content" }}>
+                        <Link href="/" className={styles.prevButton} style={{ display: "inline-block", alignSelf: "flex-start", marginBottom: "16px", textDecoration: "none", width: "fit-content" }}>
                             ← Back to Home
-                        </a>
+                        </Link>
                         <Step1
                             formData={formData}
                             onChange={handleChange}

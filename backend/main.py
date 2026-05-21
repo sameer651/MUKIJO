@@ -53,12 +53,17 @@ RAZORPAY_API_BASE = "https://api.razorpay.com/v1"
 RAZORPAY_CURRENCY = os.getenv("RAZORPAY_CURRENCY", "INR")
 
 def get_razorpay_credentials():
-    key_id = os.getenv("RAZORPAY_KEY_ID")
-    key_secret = os.getenv("RAZORPAY_KEY_SECRET")
+    key_id = (os.getenv("RAZORPAY_KEY_ID") or "").strip().strip('"').strip("'")
+    key_secret = (os.getenv("RAZORPAY_KEY_SECRET") or "").strip().strip('"').strip("'")
     if not key_id or not key_secret:
         raise HTTPException(
             status_code=503,
             detail="Razorpay is not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to the backend environment."
+        )
+    if not key_id.startswith(("rzp_test_", "rzp_live_")):
+        raise HTTPException(
+            status_code=503,
+            detail="Razorpay key id is invalid. It should start with rzp_test_ or rzp_live_."
         )
     return key_id, key_secret
 
@@ -86,6 +91,11 @@ def call_razorpay_api(method: str, path: str, payload: dict | None = None):
             message = body.get("error", {}).get("description") or message
         except Exception:
             pass
+        if "authentication failed" in str(message).lower():
+            raise HTTPException(
+                status_code=502,
+                detail="Razorpay authentication failed. Check that RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are copied from the same Razorpay account and same mode, either both test or both live, then restart the backend."
+            )
         raise HTTPException(status_code=502, detail=f"Razorpay error: {message}")
     except urllib.error.URLError as exc:
         raise HTTPException(status_code=502, detail=f"Could not reach Razorpay: {exc.reason}")
@@ -206,23 +216,24 @@ def serialize_event(event: models.Event):
         "end_time": event.end_time,
         "location": event.location,
         "description": event.description,
-        
+
         "cover_image": event.cover_image,
         "registration_deadline": event.registration_deadline,
         "max_participants": event.max_participants,
-        
+        "fee": event.fee or 0,
+
         "auto_reminder": event.auto_reminder or False,
         "attendance_tracking": event.attendance_tracking or False,
         "is_public": event.is_public if event.is_public is not None else True,
         "allow_guest": event.allow_guest or False,
         "allow_waiting_list": event.allow_waiting_list or False,
-        
+
         "rules_pdf": event.rules_pdf,
         "schedule_file": event.schedule_file,
         "permission_forms": event.permission_forms,
         "match_fixtures": event.match_fixtures,
         "event_posters": event.event_posters,
-        
+
         "group_name": event.group.group_name if event.group else "Club-Wide"
     }
 
@@ -261,31 +272,31 @@ def create_group(group: schemas.GroupCreate, db: Session = Depends(get_db)):
 
 @app.post("/groups/import")
 async def import_groups_and_members(
-    owner_id: int = Form(...), 
-    file: UploadFile = File(...), 
+    owner_id: int = Form(...),
+    file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
     if not file.filename.endswith('.xlsx') and not file.filename.endswith('.xls'):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file.")
-    
+
     try:
         import pandas as pd
         import io
         contents = await file.read()
         df = pd.read_excel(io.BytesIO(contents))
         df = df.where(pd.notnull(df), None)
-        
+
         records = df.to_dict(orient="records")
-        
+
         new_groups = []
         new_members = []
         group_map = {} # Mapping group_name -> Group object
-        
+
         for record in records:
             g_name = str(record.get("group_name", "")).strip()
             if not g_name or not record.get("activity") or not record.get("age_group"):
                 continue # Skip invalid rows
-                
+
             # If we haven't created this group yet, create it
             if g_name not in group_map:
                 new_group = models.Group(
@@ -300,13 +311,13 @@ async def import_groups_and_members(
                 group_map[g_name] = new_group
                 db.add(new_group)
                 db.flush() # Flush to get the ID for members
-                
+
             target_group = group_map[g_name]
-            
+
             # Now process the member in this row
             first_name = record.get("first_name")
             email = record.get("email")
-            
+
             if first_name and email:
                 new_member = models.Member(
                     group_id=target_group.id,
@@ -318,15 +329,15 @@ async def import_groups_and_members(
                 )
                 new_members.append(new_member)
                 db.add(new_member)
-                
+
         db.commit()
-            
+
         return {
-            "message": f"Successfully imported {len(new_groups)} groups and {len(new_members)} members.", 
+            "message": f"Successfully imported {len(new_groups)} groups and {len(new_members)} members.",
             "groups_count": len(new_groups),
             "members_count": len(new_members)
         }
-        
+
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=f"Error processing file: {str(e)}")
@@ -342,10 +353,10 @@ def get_group(group_id: str, owner_id: int, db: Session = Depends(get_db)):
     group = None
     if group_id.isdigit():
         group = db.query(models.Group).filter(
-            models.Group.id == int(group_id), 
+            models.Group.id == int(group_id),
             models.Group.owner_id == owner_id
         ).first()
-    
+
     # If not found by ID, try fetching by group_name
     if not group:
         group = db.query(models.Group).filter(
@@ -360,13 +371,13 @@ def get_group(group_id: str, owner_id: int, db: Session = Depends(get_db)):
 @app.delete("/groups/{group_id}")
 def delete_group(group_id: int, owner_id: int, db: Session = Depends(get_db)):
     group = db.query(models.Group).filter(
-        models.Group.id == group_id, 
+        models.Group.id == group_id,
         models.Group.owner_id == owner_id
     ).first()
-    
+
     if not group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
-    
+
     db.delete(group)
     db.commit()
     return {"message": "Group deleted successfully"}
@@ -375,13 +386,13 @@ def delete_group(group_id: int, owner_id: int, db: Session = Depends(get_db)):
 def add_member(group_id: int, owner_id: int, member: schemas.MemberCreate, db: Session = Depends(get_db)):
     # Verify the user owns this group
     db_group = db.query(models.Group).filter(
-        models.Group.id == group_id, 
+        models.Group.id == group_id,
         models.Group.owner_id == owner_id
     ).first()
-    
+
     if not db_group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
-    
+
     new_member = models.Member(
         group_id=group_id,
         first_name=member.first_name,
@@ -390,7 +401,7 @@ def add_member(group_id: int, owner_id: int, member: schemas.MemberCreate, db: S
         phone=member.phone,
         role=member.role
     )
-    
+
     db.add(new_member)
     db.commit()
     db.refresh(new_member)
@@ -399,35 +410,35 @@ def add_member(group_id: int, owner_id: int, member: schemas.MemberCreate, db: S
 @app.post("/groups/{group_id}/members/import")
 async def import_members(
     group_id: int,
-    owner_id: int = Form(...), 
-    file: UploadFile = File(...), 
+    owner_id: int = Form(...),
+    file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
     db_group = db.query(models.Group).filter(
-        models.Group.id == group_id, 
+        models.Group.id == group_id,
         models.Group.owner_id == owner_id
     ).first()
-    
+
     if not db_group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
 
     if not file.filename.endswith('.xlsx') and not file.filename.endswith('.xls'):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload an Excel file.")
-    
+
     try:
         import pandas as pd
         import io
         contents = await file.read()
         df = pd.read_excel(io.BytesIO(contents))
-        
+
         df = df.where(pd.notnull(df), None)
-        
+
         records = df.to_dict(orient="records")
         new_members = []
         for record in records:
             if not record.get("first_name") or not record.get("last_name") or not record.get("email"):
                 continue
-                
+
             new_member = models.Member(
                 group_id=group_id,
                 first_name=str(record.get("first_name")),
@@ -437,13 +448,13 @@ async def import_members(
                 role=str(record.get("role")) if record.get("role") else "Member"
             )
             new_members.append(new_member)
-            
+
         if new_members:
             db.add_all(new_members)
             db.commit()
-            
+
         return {"message": f"Successfully imported {len(new_members)} members.", "count": len(new_members)}
-        
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error processing file: {str(e)}")
 
@@ -453,19 +464,19 @@ def get_group_members(group_id: str, owner_id: int, db: Session = Depends(get_db
     group = None
     if group_id.isdigit():
         group = db.query(models.Group).filter(
-            models.Group.id == int(group_id), 
+            models.Group.id == int(group_id),
             models.Group.owner_id == owner_id
         ).first()
-    
+
     if not group:
         group = db.query(models.Group).filter(
             models.Group.group_name == group_id,
             models.Group.owner_id == owner_id
         ).first()
-    
+
     if not group:
         raise HTTPException(status_code=404, detail="Access denied or group not found")
-        
+
     members = db.query(models.Member).filter(models.Member.group_id == group.id).all()
     return members
 
@@ -476,7 +487,7 @@ def get_all_members(owner_id: int, db: Session = Depends(get_db)):
                 .join(models.Group, models.Member.group_id == models.Group.id)\
                 .filter(models.Group.owner_id == owner_id)\
                 .all()
-    
+
     result = []
     for member, group_name in members_and_groups:
         result.append({
@@ -489,7 +500,7 @@ def get_all_members(owner_id: int, db: Session = Depends(get_db)):
             "role": member.role,
             "group_name": group_name
         })
-        
+
     return result
 
 @app.get("/courses/summary")
@@ -658,9 +669,7 @@ def create_course_registration(
     if status not in COURSE_REGISTRATION_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid registration status")
 
-    payment_status = registration.payment_status or "unpaid"
-    if payment_status not in COURSE_PAYMENT_STATUSES:
-        raise HTTPException(status_code=400, detail="Invalid payment status")
+    payment_status = "unpaid"
 
     participant_name = (registration.participant_name or "").strip()
     participant_email = registration.participant_email
@@ -727,8 +736,8 @@ def update_course_registration(
     update_data = registration_update.dict(exclude_unset=True)
     if "status" in update_data and update_data["status"] not in COURSE_REGISTRATION_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid registration status")
-    if "payment_status" in update_data and update_data["payment_status"] not in COURSE_PAYMENT_STATUSES:
-        raise HTTPException(status_code=400, detail="Invalid payment status")
+    if "payment_status" in update_data:
+        raise HTTPException(status_code=400, detail="Course payment status is updated automatically after online payment")
 
     for key, value in update_data.items():
         setattr(registration, key, value)
@@ -864,6 +873,20 @@ def verify_razorpay_payment(verification: schemas.RazorpayVerifyRequest, db: Ses
     payment.status = "paid"
     payment.payment_method = "Razorpay"
     payment.paid_at = date.today().isoformat()
+
+    # If this payment was created for a course registration, update that registration's payment status too.
+    if payment.description and "course_registration_id:" in payment.description:
+        try:
+            parts = dict(part.split(":", 1) for part in payment.description.split("|") if ":" in part)
+            registration_id = int(parts.get("course_registration_id", "0"))
+            registration = db.query(models.CourseRegistration).filter(
+                models.CourseRegistration.id == registration_id,
+                models.CourseRegistration.owner_id == verification.owner_id
+            ).first()
+            if registration and registration.payment_status != "paid":
+                registration.payment_status = "paid"
+        except Exception:
+            pass
 
     db.commit()
     db.refresh(payment)
@@ -1001,13 +1024,15 @@ def delete_payment(payment_id: int, owner_id: int, db: Session = Depends(get_db)
 @app.post("/groups/{group_id}/events", response_model=schemas.EventResponse)
 def create_event(group_id: int, owner_id: int, event: schemas.EventCreate, db: Session = Depends(get_db)):
     db_group = db.query(models.Group).filter(
-        models.Group.id == group_id, 
+        models.Group.id == group_id,
         models.Group.owner_id == owner_id
     ).first()
-    
+
     if not db_group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
-    
+    if event.fee is not None and event.fee < 0:
+        raise HTTPException(status_code=400, detail="Event fee cannot be negative")
+
     new_event = models.Event(
         group_id=group_id,
         owner_id=owner_id,
@@ -1022,6 +1047,7 @@ def create_event(group_id: int, owner_id: int, event: schemas.EventCreate, db: S
         cover_image=event.cover_image,
         registration_deadline=event.registration_deadline,
         max_participants=event.max_participants,
+        fee=event.fee or 0,
         auto_reminder=event.auto_reminder or False,
         attendance_tracking=event.attendance_tracking or False,
         is_public=event.is_public if event.is_public is not None else True,
@@ -1033,7 +1059,7 @@ def create_event(group_id: int, owner_id: int, event: schemas.EventCreate, db: S
         match_fixtures=event.match_fixtures,
         event_posters=event.event_posters
     )
-    
+
     db.add(new_event)
     db.commit()
     db.refresh(new_event)
@@ -1045,32 +1071,32 @@ def get_group_events(group_id: str, owner_id: int, db: Session = Depends(get_db)
     group = None
     if group_id.isdigit():
         group = db.query(models.Group).filter(
-            models.Group.id == int(group_id), 
+            models.Group.id == int(group_id),
             models.Group.owner_id == owner_id
         ).first()
-    
+
     if not group:
         group = db.query(models.Group).filter(
             models.Group.group_name == group_id,
             models.Group.owner_id == owner_id
         ).first()
-        
+
     if not group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
-        
+
     events = db.query(models.Event).filter(models.Event.group_id == group.id).all()
     return [serialize_event(e) for e in events]
 
 @app.get("/events")
 def get_all_events(owner_id: int, db: Session = Depends(get_db)):
     events = db.query(models.Event).filter(models.Event.owner_id == owner_id).all()
-    
+
     # Fallback: find all groups owned by the user and look up their events
     if not events:
         groups = db.query(models.Group).filter(models.Group.owner_id == owner_id).all()
         group_ids = [g.id for g in groups]
         events = db.query(models.Event).filter(models.Event.group_id.in_(group_ids)).all() if group_ids else []
-        
+
     return [serialize_event(e) for e in events]
 
 @app.get("/events/{event_id}")
@@ -1078,13 +1104,13 @@ def get_event(event_id: int, owner_id: int, db: Session = Depends(get_db)):
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     # Verify ownership
     if event.owner_id != owner_id:
         group = db.query(models.Group).filter(models.Group.id == event.group_id, models.Group.owner_id == owner_id).first()
         if not group:
             raise HTTPException(status_code=403, detail="Access denied to event")
-            
+
     return serialize_event(event)
 
 @app.put("/events/{event_id}", response_model=schemas.EventResponse)
@@ -1092,17 +1118,20 @@ def update_event(event_id: int, owner_id: int, event_update: schemas.EventUpdate
     db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not db_event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     # Verify ownership
     if db_event.owner_id != owner_id:
         group = db.query(models.Group).filter(models.Group.id == db_event.group_id, models.Group.owner_id == owner_id).first()
         if not group:
             raise HTTPException(status_code=403, detail="Access denied")
-    
+
     update_data = event_update.dict(exclude_unset=True)
+    if "fee" in update_data and update_data["fee"] is not None and update_data["fee"] < 0:
+        raise HTTPException(status_code=400, detail="Event fee cannot be negative")
+
     for key, value in update_data.items():
         setattr(db_event, key, value)
-        
+
     db.commit()
     db.refresh(db_event)
     return serialize_event(db_event)
@@ -1112,13 +1141,13 @@ def delete_event(event_id: int, owner_id: int, db: Session = Depends(get_db)):
     db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not db_event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     # Verify ownership
     if db_event.owner_id != owner_id:
         group = db.query(models.Group).filter(models.Group.id == db_event.group_id, models.Group.owner_id == owner_id).first()
         if not group:
             raise HTTPException(status_code=403, detail="Access denied")
-    
+
     db.delete(db_event)
     db.commit()
     return {"message": "Event deleted successfully"}
@@ -1135,7 +1164,7 @@ def invite_to_event(event_id: int, req: EventInviteRequest, db: Session = Depend
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     members = []
     if req.invite_type == "all_members":
         groups = db.query(models.Group).filter(models.Group.owner_id == event.owner_id).all()
@@ -1180,7 +1209,7 @@ def invite_to_event(event_id: int, req: EventInviteRequest, db: Session = Depend
             )
             db.add(invite)
             invited_count += 1
-            
+
     db.commit()
     return {"message": f"Successfully invited {invited_count} participants.", "count": invited_count}
 
@@ -1193,25 +1222,25 @@ def respond_to_event(event_id: int, req: EventResponseRequest, db: Session = Dep
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     if req.status not in ["accepted", "declined", "maybe"]:
         raise HTTPException(status_code=400, detail="Invalid response status")
-        
+
     member = db.query(models.Member).filter(models.Member.email == req.member_email).first()
-    
+
     registration = None
     if member:
         registration = db.query(models.EventRegistration).filter(
             models.EventRegistration.event_id == event_id,
             models.EventRegistration.member_id == member.id
         ).first()
-        
+
     if not registration:
         registration = db.query(models.EventRegistration).filter(
             models.EventRegistration.event_id == event_id,
             models.EventRegistration.participant_email == req.member_email
         ).first()
-        
+
     if not registration:
         if event.allow_guest or member:
             registration = models.EventRegistration(
@@ -1254,17 +1283,17 @@ def register_guest_to_event(event_id: int, req: GuestRegisterRequest, db: Sessio
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     if not event.allow_guest:
         raise HTTPException(status_code=403, detail="Guest registration is disabled for this event.")
-        
+
     exists = db.query(models.EventRegistration).filter(
         models.EventRegistration.event_id == event_id,
         models.EventRegistration.participant_email == req.email
     ).first()
     if exists:
         raise HTTPException(status_code=400, detail="This email is already registered.")
-        
+
     status = "accepted"
     if event.max_participants:
         accepted_count = db.query(models.EventRegistration).filter(
@@ -1276,7 +1305,7 @@ def register_guest_to_event(event_id: int, req: GuestRegisterRequest, db: Sessio
                 status = "waitlisted"
             else:
                 raise HTTPException(status_code=400, detail="Event is full.")
-                
+
     reg = models.EventRegistration(
         event_id=event_id,
         participant_name=req.name,
@@ -1302,10 +1331,10 @@ def mark_attendance(event_id: int, req: AttendanceMarkRequest, db: Session = Dep
     ).first()
     if not reg:
         raise HTTPException(status_code=404, detail="Registration not found")
-        
+
     if req.attendance not in ["present", "absent", "late", "not_marked"]:
         raise HTTPException(status_code=400, detail="Invalid attendance value")
-        
+
     reg.attendance = req.attendance
     db.commit()
     return {"message": "Attendance marked successfully", "attendance": reg.attendance}
@@ -1313,7 +1342,7 @@ def mark_attendance(event_id: int, req: AttendanceMarkRequest, db: Session = Dep
 @app.get("/events/{event_id}/participants")
 def get_event_participants(event_id: int, db: Session = Depends(get_db)):
     registrations = db.query(models.EventRegistration).filter(models.EventRegistration.event_id == event_id).all()
-    
+
     result = []
     for r in registrations:
         result.append({
@@ -1339,16 +1368,16 @@ def message_participants(event_id: int, req: MessageParticipantsRequest, db: Ses
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     query = db.query(models.EventRegistration).filter(models.EventRegistration.event_id == event_id)
     if req.recipient_group == "confirmed":
         query = query.filter(models.EventRegistration.status == "accepted")
     elif req.recipient_group == "non_attendees":
         query = query.filter(models.EventRegistration.status.in_(["declined", "pending"]))
-        
+
     recipients = query.all()
     recipient_emails = [r.participant_email for r in recipients if r.participant_email]
-    
+
     print(f"SMTP Message to {len(recipient_emails)}: {req.message}")
     return {"message": f"Successfully sent message to {len(recipient_emails)} recipients.", "count": len(recipient_emails)}
 
@@ -1357,12 +1386,12 @@ def send_reminder(event_id: int, db: Session = Depends(get_db)):
     event = db.query(models.Event).filter(models.Event.id == event_id).first()
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-        
+
     recipients = db.query(models.EventRegistration).filter(
         models.EventRegistration.event_id == event_id,
         models.EventRegistration.status.in_(["accepted", "pending"])
     ).all()
-    
+
     recipient_emails = [r.participant_email for r in recipients if r.participant_email]
     print(f"Automatic Reminder Sent to {len(recipient_emails)} for event '{event.name}'")
     return {"message": f"Event reminder successfully sent to {len(recipient_emails)} participants.", "count": len(recipient_emails)}
@@ -1442,12 +1471,12 @@ def get_coach_dashboard(owner_id: int, coach_email: str, db: Session = Depends(g
     """Retrieve coach-specific metrics: squad players, upcoming events, and attendance rating."""
     groups = db.query(models.Group).filter(models.Group.owner_id == owner_id).all()
     group_ids = [g.id for g in groups]
-    
+
     coach = db.query(models.Member).filter(
         models.Member.group_id.in_(group_ids),
         func.lower(models.Member.email) == coach_email.lower()
     ).first() if group_ids else None
-    
+
     if not coach:
         return {
             "squad_players_count": 0,
@@ -1456,30 +1485,30 @@ def get_coach_dashboard(owner_id: int, coach_email: str, db: Session = Depends(g
             "squad_players": [],
             "upcoming_events": []
         }
-        
+
     group_id = coach.group_id
-    
+
     # Squad players are members of the same group who are not coaches
     squad_players = db.query(models.Member).filter(
         models.Member.group_id == group_id,
         func.lower(models.Member.role) != "coach"
     ).all()
     squad_players_count = len(squad_players)
-    
+
     # Events for the group
     events = db.query(models.Event).filter(models.Event.group_id == group_id).all()
     today_str = date.today().isoformat()
     upcoming_events = [e for e in events if e.date and str(e.date) >= today_str]
     upcoming_events_count = len(upcoming_events)
-    
+
     upcoming_events_sorted = sorted(upcoming_events, key=lambda x: str(x.date))
-    
+
     # Calculate attendance rating
     event_ids = [e.id for e in events]
     registrations = db.query(models.EventRegistration).filter(
         models.EventRegistration.event_id.in_(event_ids)
     ).all() if event_ids else []
-    
+
     marked_count = 0
     present_count = 0
     for r in registrations:
@@ -1487,12 +1516,12 @@ def get_coach_dashboard(owner_id: int, coach_email: str, db: Session = Depends(g
             marked_count += 1
             if r.attendance in ["present", "late"]:
                 present_count += 1
-                
+
     if marked_count > 0:
         attendance_rating = f"{(present_count / marked_count) * 100:.1f}%"
     else:
         attendance_rating = "94.2%"
-        
+
     return {
         "squad_players_count": squad_players_count,
         "upcoming_events_count": upcoming_events_count,
@@ -1573,12 +1602,62 @@ def record_donation(campaign_id: int, donation: schemas.DonationCreate, db: Sess
     campaign = db.query(models.FundraisingCampaign).filter(models.FundraisingCampaign.id == campaign_id).first()
     if not campaign:
         raise HTTPException(status_code=404, detail="Campaign not found")
-    
+
     campaign.raised += donation.amount
     campaign.donors_count += 1
     db.commit()
     db.refresh(campaign)
     return campaign
+
+@app.post("/fundraising/{campaign_id}/initiate-donation")
+def initiate_donation(campaign_id: int, donation: schemas.DonationCreate, db: Session = Depends(get_db)):
+    campaign = db.query(models.FundraisingCampaign).filter(models.FundraisingCampaign.id == campaign_id).first()
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+
+    temp_payment = models.Payment(
+        owner_id=campaign.owner_id,
+        title=f"Donation to: {campaign.title}",
+        description=f"campaign_id:{campaign_id}|donor_name:{donation.donor_name}|donor_email:{donation.donor_email or ''}",
+        category="Donation",
+        amount=donation.amount,
+        status="pending"
+    )
+    db.add(temp_payment)
+    db.commit()
+    db.refresh(temp_payment)
+    return {"payment_id": temp_payment.id, "owner_id": campaign.owner_id}
+
+class CompleteDonationRequest(BaseModel):
+    payment_id: int
+    owner_id: int
+
+@app.post("/fundraising/{campaign_id}/complete-donation")
+def complete_donation(campaign_id: int, req: CompleteDonationRequest, db: Session = Depends(get_db)):
+    campaign = db.query(models.FundraisingCampaign).filter(models.FundraisingCampaign.id == campaign_id).first()
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+
+    payment = db.query(models.Payment).filter(
+        models.Payment.id == req.payment_id,
+        models.Payment.owner_id == req.owner_id
+    ).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Donation payment record not found")
+
+    if payment.status != "paid":
+        raise HTTPException(status_code=400, detail="Donation payment has not been successfully completed yet")
+
+    if payment.description and "completed_donation:true" in payment.description:
+        return {"message": "Donation already completed and recorded", "campaign": campaign}
+
+    campaign.raised += payment.amount
+    campaign.donors_count += 1
+    payment.description = f"{payment.description}|completed_donation:true"
+    db.commit()
+    db.refresh(campaign)
+    return {"message": "Donation recorded successfully!", "campaign": campaign}
+
 
 @app.post("/register", response_model=schemas.UserResponse)
 def register_user(user: schemas.UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -1586,7 +1665,7 @@ def register_user(user: schemas.UserCreate, background_tasks: BackgroundTasks, d
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
     # Generate verification token
     v_token = uuid.uuid4().hex
 
@@ -1606,11 +1685,11 @@ def register_user(user: schemas.UserCreate, background_tasks: BackgroundTasks, d
         is_verified=True, # Automatically verify users
         verification_token=None
     )
-    
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    
+
     # Removed background task for sending email
     # background_tasks.add_task(send_verification_email, new_user.email, v_token)
 
@@ -1621,11 +1700,11 @@ def verify_user(token: str, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.verification_token == token).first()
     if not user:
         raise HTTPException(status_code=400, detail="Invalid verification token")
-    
+
     user.is_verified = True
     user.verification_token = None # Clear token after verification
     db.commit()
-    
+
     # Redirect to frontend dashboard or login with a success parameter
     return RedirectResponse(url=f"{FRONTEND_URL}/dashboard?verified=true")
 
@@ -1633,13 +1712,13 @@ def verify_user(token: str, db: Session = Depends(get_db)):
 def login_user(user_data: schemas.UserLogin, db: Session = Depends(get_db)):
     # Verify user credentials
     user = db.query(models.User).filter(models.User.email == user_data.email).first()
-    
+
     if not user:
         raise HTTPException(status_code=400, detail="Invalid email or password")
-    
+
     if user.password != user_data.password:
         raise HTTPException(status_code=400, detail="Invalid email or password")
-    
+
     return {"message": "Login successful", "userName": user.first_name, "userId": user.id, "clubName": user.club_name}
 
 # --- CUSTOM SIGNUP FORMS & REGISTRATIONS ENDPOINTS ---
@@ -1714,11 +1793,11 @@ def get_clubs(db: Session = Depends(get_db)):
 @app.get("/signup-forms")
 def get_signup_forms(owner_id: int, db: Session = Depends(get_db)):
     forms = db.query(models.SignupForm).filter(models.SignupForm.owner_id == owner_id).all()
-    
+
     # Ensure all 4 standard roles have some configuration returned (fall back to default if not saved)
     roles = ["Coach", "Parent", "Player", "Referee"]
     result = []
-    
+
     for role in roles:
         # Check if saved
         saved_form = next((f for f in forms if f.role.lower() == role.lower()), None)
@@ -1743,7 +1822,7 @@ def get_signup_forms(owner_id: int, db: Session = Depends(get_db)):
                 "fields": fields_json,
                 "is_customized": False
             })
-            
+
     return result
 
 @app.get("/signup-forms/{role}")
@@ -1752,7 +1831,7 @@ def get_signup_form_by_role(role: str, owner_id: int, db: Session = Depends(get_
         models.SignupForm.owner_id == owner_id,
         func.lower(models.SignupForm.role) == role.lower()
     ).first()
-    
+
     if saved_form:
         return {
             "id": saved_form.id,
@@ -1763,7 +1842,7 @@ def get_signup_form_by_role(role: str, owner_id: int, db: Session = Depends(get_
             "fields": saved_form.fields,
             "is_customized": True
         }
-    
+
     # Return default
     title, desc, fields_json = get_default_fields(role)
     return {
@@ -1783,7 +1862,7 @@ def upsert_signup_form(form: schemas.SignupFormCreate, db: Session = Depends(get
         models.SignupForm.owner_id == form.owner_id,
         func.lower(models.SignupForm.role) == form.role.lower()
     ).first()
-    
+
     if existing:
         existing.title = form.title
         existing.description = form.description
@@ -1825,7 +1904,7 @@ def get_signup_submissions(owner_id: int, db: Session = Depends(get_db)):
     submissions = db.query(models.SignupSubmission).filter(
         models.SignupSubmission.owner_id == owner_id
     ).order_by(models.SignupSubmission.created_at.desc()).all()
-    
+
     result = []
     for s in submissions:
         result.append({
@@ -1843,10 +1922,10 @@ def delete_signup_submission(submission_id: int, owner_id: int, db: Session = De
         models.SignupSubmission.id == submission_id,
         models.SignupSubmission.owner_id == owner_id
     ).first()
-    
+
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
-        
+
     db.delete(submission)
     db.commit()
     return {"message": "Application rejected/deleted successfully"}
@@ -1860,7 +1939,7 @@ def approve_signup_submission(submission_id: int, owner_id: int, group_id: int, 
     ).first()
     if not submission:
         raise HTTPException(status_code=404, detail="Submission not found")
-    
+
     # 2. Verify group belongs to owner
     group = db.query(models.Group).filter(
         models.Group.id == group_id,
@@ -1868,21 +1947,21 @@ def approve_signup_submission(submission_id: int, owner_id: int, group_id: int, 
     ).first()
     if not group:
         raise HTTPException(status_code=404, detail="Group not found or access denied")
-    
+
     # 3. Parse submitted data
     import json
     try:
         data = json.loads(submission.submitted_data)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid submission data format")
-    
+
     # 4. Extract first_name, last_name, email, phone, password
     first_name = data.get("first_name") or data.get("firstName") or "Applicant"
     last_name = data.get("last_name") or data.get("lastName") or f"#{submission.id}"
     email = data.get("email") or ""
     phone = data.get("phone") or ""
     password = data.get("password") or ""
-    
+
     # 5. Create Member
     new_member = models.Member(
         group_id=group_id,
@@ -1894,11 +1973,11 @@ def approve_signup_submission(submission_id: int, owner_id: int, group_id: int, 
         role=submission.role # Coach, Parent, Player, Referee
     )
     db.add(new_member)
-    
+
     # 6. Delete submission
     db.delete(submission)
     db.commit()
-    
+
     return {"message": "Applicant approved and successfully added to group as member!"}
 
 from pydantic import BaseModel
@@ -1912,7 +1991,7 @@ def login_member(req: MemberLoginRequest, db: Session = Depends(get_db)):
     member = db.query(models.Member).filter(models.Member.email == req.email).first()
     if not member:
         raise HTTPException(status_code=404, detail="Member email not registered with any club.")
-    
+
     # Password verification
     if member.password:
         if member.password != req.password:
@@ -1921,16 +2000,16 @@ def login_member(req: MemberLoginRequest, db: Session = Depends(get_db)):
         # Fallback: if no password was created, allow logging in with their phone number as a default password
         if member.phone and member.phone != req.password:
             raise HTTPException(status_code=401, detail="Incorrect password. Please use your registered phone number if you have not set a password.")
-    
+
     # Try to find group and the group's owner ID
     group = db.query(models.Group).filter(models.Group.id == member.group_id).first()
     if not group:
         raise HTTPException(status_code=400, detail="Member has not been assigned to a club group yet.")
-        
+
     owner = db.query(models.User).filter(models.User.id == group.owner_id).first()
     if not owner:
         raise HTTPException(status_code=400, detail="Associated club owner not found.")
-        
+
     return {
         "userName": f"{member.first_name} {member.last_name}",
         "userId": owner.id,

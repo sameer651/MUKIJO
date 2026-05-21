@@ -70,6 +70,16 @@
     transform: translateY(-1px);
 }
 
+.course-buy-btn {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.course-buy-btn:hover {
+    background: #1d4ed8;
+}
+
 .courses-primary-btn:disabled {
     background: #94a3b8;
     cursor: not-allowed;
@@ -203,7 +213,7 @@
 
 .courses-layout {
     display: grid;
-    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.35fr);
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 22px;
     align-items: start;
 }
@@ -396,16 +406,26 @@
     font-size: 12px;
 }
 
+.registration-row .mini-pill {
+    display: inline-flex;
+    margin-top: 0;
+}
+
 .mini-pill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
-    min-height: 32px;
-    padding: 0 10px;
+    min-width: 72px;
+    min-height: 30px;
+    padding: 0 14px;
     border-radius: 999px;
     color: #92400e;
     background: #fef3c7;
     font-size: 12px;
+    cursor: default;
+    line-height: 1;
+    text-align: center;
 }
 
 .mini-pill.paid {

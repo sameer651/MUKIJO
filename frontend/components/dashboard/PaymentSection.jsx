@@ -37,7 +37,7 @@ const statusMeta = {
 };
 
 function formatMoney(value) {
-    return `Rs. ${Number(value || 0).toLocaleString("en-IN")}`;
+    return `\u20B9${Number(value || 0).toLocaleString("en-IN")}`;
 }
 
 function formatDate(value) {
