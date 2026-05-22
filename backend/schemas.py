@@ -20,6 +20,15 @@ class MemberResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class MemberUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None
+
+
 class EventCreate(BaseModel):
     name: str
     type: str
@@ -218,6 +227,7 @@ class DonationCreate(BaseModel):
     amount: int
     donor_name: Optional[str] = "Anonymous"
     donor_email: Optional[str] = None
+    group_id: Optional[int] = None
 
 class PaymentCreate(BaseModel):
     title: str

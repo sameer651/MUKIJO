@@ -30,6 +30,7 @@ const statusLabels = {
     full: "Full",
     closed: "Closed",
     completed: "Completed",
+    unregistered: "Unregistered",
     registered: "Registered",
     waitlisted: "Waitlisted",
     cancelled: "Cancelled",
@@ -77,6 +78,8 @@ export default function CourseDetailPage() {
         if (!userEmail) return null;
         return registrations.find(r => r.participant_email?.toLowerCase() === userEmail.toLowerCase());
     }, [registrations, userEmail]);
+
+    const isRegistrationPaid = myRegistration?.payment_status === "paid";
 
     const loadData = useCallback(async () => {
         if (!userId) {
@@ -422,19 +425,31 @@ export default function CourseDetailPage() {
                         <div className="course-detail-actions">
                             {isMember ? (
                                 myRegistration ? (
-                                    <span style={{ 
-                                        display: "inline-flex", 
-                                        alignItems: "center", 
-                                        gap: "6px", 
-                                        background: "#dcfce7", 
-                                        color: "#16a34a", 
-                                        fontWeight: "700", 
-                                        padding: "10px 20px", 
-                                        borderRadius: "12px", 
-                                        fontSize: "14px" 
-                                    }}>
-                                        <Check size={16} /> Registered
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                        <span style={{ 
+                                            display: "inline-flex", 
+                                            alignItems: "center", 
+                                            gap: "6px", 
+                                            background: isRegistrationPaid ? "#dcfce7" : "#fef3c7", 
+                                            color: isRegistrationPaid ? "#16a34a" : "#d97706", 
+                                            fontWeight: "700", 
+                                            padding: "10px 20px", 
+                                            borderRadius: "12px", 
+                                            fontSize: "14px" 
+                                        }}>
+                                            {isRegistrationPaid ? <Check size={16} /> : <X size={16} />} {isRegistrationPaid ? "Registered" : "Unregistered"}
+                                        </span>
+                                        {!isRegistrationPaid && Number(course.fee || 0) > 0 && (
+                                            <button
+                                                className="courses-primary-btn course-buy-btn"
+                                                disabled={payingRegistrationId === myRegistration.id}
+                                                onClick={() => payCourseFee(myRegistration)}
+                                            >
+                                                <CreditCard size={16} />
+                                                {payingRegistrationId === myRegistration.id ? "Opening Razorpay..." : "Buy Course"}
+                                            </button>
+                                        )}
+                                    </div>
                                 ) : course.status === "full" ? (
                                     <span style={{ 
                                         display: "inline-flex", 
@@ -473,15 +488,9 @@ export default function CourseDetailPage() {
                                     </button>
                                 )
                             ) : (
-                                <>
-                                    <button className="courses-primary-btn" onClick={() => setShowRegisterModal(true)}>
-                                        <UserPlus size={16} />
-                                        Register
-                                    </button>
-                                    <button className="courses-icon-btn danger" onClick={deleteCourse}>
-                                        <Trash2 size={17} />
-                                    </button>
-                                </>
+                                <button className="courses-icon-btn danger" onClick={deleteCourse}>
+                                    <Trash2 size={17} />
+                                </button>
                             )}
                         </div>
                     </div>
@@ -504,10 +513,19 @@ export default function CourseDetailPage() {
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", background: "white", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
                                         <div>
                                             <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase" }}>Registration Status</span>
-                                            <strong style={{ display: "block", fontSize: "14px", color: "#16a34a", marginTop: "3px" }}>Registered & Confirmed</strong>
+                                            <strong style={{ display: "block", fontSize: "14px", color: isRegistrationPaid ? "#16a34a" : "#d97706", marginTop: "3px" }}>
+                                                {isRegistrationPaid ? "Registered & Confirmed" : "Unregistered"}
+                                            </strong>
                                         </div>
-                                        <span style={{ fontSize: "12px", fontWeight: "700", padding: "6px 14px", background: "#dcfce7", color: "#16a34a", borderRadius: "20px" }}>
-                                            ACTIVE
+                                        <span style={{ 
+                                            fontSize: "12px", 
+                                            fontWeight: "700", 
+                                            padding: "6px 14px", 
+                                            background: isRegistrationPaid ? "#dcfce7" : "#fef3c7", 
+                                            color: isRegistrationPaid ? "#16a34a" : "#d97706", 
+                                            borderRadius: "20px" 
+                                        }}>
+                                            {isRegistrationPaid ? "ACTIVE" : "UNREGISTERED"}
                                         </span>
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", background: "white", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
@@ -534,41 +552,10 @@ export default function CourseDetailPage() {
                                         </div>
                                     )}
 
-                                    {myRegistration.payment_status !== "paid" && Number(course.fee || 0) > 0 && (
-                                        <button
-                                            className="courses-primary-btn course-buy-btn"
-                                            disabled={payingRegistrationId === myRegistration.id}
-                                            onClick={() => payCourseFee(myRegistration)}
-                                            style={{ marginTop: "16px" }}
-                                        >
-                                            <CreditCard size={16} />
-                                            {payingRegistrationId === myRegistration.id ? "Opening Razorpay..." : "Buy Course"}
-                                        </button>
-                                    )}
                                 </div>
                             ) : (
                                 <div style={{ textAlign: "center", padding: "30px 10px" }}>
-                                    <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#64748b" }}>You are not enrolled in this course yet. Use the button below to buy this course and complete enrollment.</p>
-                                    {Number(course.fee || 0) > 0 ? (
-                                        <button
-                                            className="courses-primary-btn course-buy-btn"
-                                            onClick={buyCourse}
-                                            disabled={saving || isBuying}
-                                            style={{ marginTop: "16px" }}
-                                        >
-                                            <CreditCard size={16} />
-                                            {isBuying ? "Opening Razorpay..." : "Buy Course"}
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="courses-primary-btn"
-                                            onClick={handleSelfRegister}
-                                            disabled={saving}
-                                            style={{ marginTop: "16px" }}
-                                        >
-                                            Confirm Registration
-                                        </button>
-                                    )}
+                                    <p style={{ margin: "0", fontSize: "13px", color: "#64748b" }}>You are not enrolled in this course yet. Use the button at the top of the page to enroll.</p>
                                 </div>
                             )}
                         </div>

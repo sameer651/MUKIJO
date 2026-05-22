@@ -137,3 +137,27 @@
     opacity: 0.7;
     cursor: not-allowed;
 }
+
+@media (max-width: 640px) {
+    .donation-page {
+        align-items: stretch;
+        padding: 0;
+    }
+
+    .donation-header {
+        margin-bottom: 20px;
+    }
+
+    .donation-form-card {
+        padding: 22px;
+        border-radius: 14px;
+    }
+
+    .summary-row {
+        gap: 12px;
+    }
+
+    .donate-submit-btn {
+        min-height: 48px;
+    }
+}

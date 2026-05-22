@@ -70,7 +70,7 @@ function LoginMemberContent() {
             <div className={styles.loginCard}>
                 <div className={styles.header}>
                     <span className={styles.logo}>Mukijo</span>
-                    <h1 className={styles.title}>Member Sign In</h1>
+                    <h1 className={styles.title}>Login</h1>
                     <p className={styles.subtitle}>Enter your registered email address to sign in</p>
                 </div>
 
@@ -126,7 +126,7 @@ function LoginMemberContent() {
                     </div>
 
                     <button type="submit" className={styles.loginButton} style={{ backgroundColor: "#2563eb" }}>
-                        Sign in as Member
+                        Login
                     </button>
                 </form>
 

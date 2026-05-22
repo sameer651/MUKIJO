@@ -17,7 +17,7 @@ export default function EventDetailPage() {
     const [loading, setLoading] = useState(true);
 
     // Tabs in management
-    const [activeMgmtTab, setActiveMgmtTab] = useState("rsvp"); // rsvp, attendance, communication, reports
+    const [activeMgmtTab, setActiveMgmtTab] = useState("responses"); // responses, attendance, communication, reports
 
     // Response list subtab
     const [responseSubTab, setResponseSubTab] = useState("all"); // all, accepted, pending, declined, maybe, waitlisted
@@ -426,8 +426,6 @@ export default function EventDetailPage() {
         ? event.cover_image
         : coverPresets[event.type] || "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)";
 
-    const hasAttachments = event.rules_pdf || event.schedule_file || event.permission_forms || event.match_fixtures || event.event_posters;
-
     // Find the logged-in member's response status
     const memberReg = registrations.find(r => r.participant_email?.toLowerCase() === userEmail?.toLowerCase());
     const memberResponseStatus = memberReg ? memberReg.status : "pending";
@@ -528,63 +526,7 @@ export default function EventDetailPage() {
                         </div>
                     </div>
 
-                    {/* DOWNLOAD ATTACHMENTS SECTION */}
-                    <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid #f1f5f9" }}>
-                        <strong style={{ display: "block", color: "#0f172a", marginBottom: "12px", fontSize: "14px" }}>Event Attachments</strong>
-                        {hasAttachments ? (
-                            <div className="attachment-links-grid">
-                                {event.rules_pdf && (
-                                    <a href={event.rules_pdf} download className="attachment-link-card">
-                                        <div className="attachment-info">
-                                            <span className="attachment-icon">📕</span>
-                                            <span className="attachment-name">Rules PDF</span>
-                                        </div>
-                                        <span className="attachment-download-icon">⬇</span>
-                                    </a>
-                                )}
-                                {event.schedule_file && (
-                                    <a href={event.schedule_file} download className="attachment-link-card">
-                                        <div className="attachment-info">
-                                            <span className="attachment-icon">📅</span>
-                                            <span className="attachment-name">Schedule</span>
-                                        </div>
-                                        <span className="attachment-download-icon">⬇</span>
-                                    </a>
-                                )}
-                                {event.permission_forms && (
-                                    <a href={event.permission_forms} download className="attachment-link-card">
-                                        <div className="attachment-info">
-                                            <span className="attachment-icon">📝</span>
-                                            <span className="attachment-name">Permission Form</span>
-                                        </div>
-                                        <span className="attachment-download-icon">⬇</span>
-                                    </a>
-                                )}
-                                {event.match_fixtures && (
-                                    <a href={event.match_fixtures} download className="attachment-link-card">
-                                        <div className="attachment-info">
-                                            <span className="attachment-icon">🏆</span>
-                                            <span className="attachment-name">Match Fixtures</span>
-                                        </div>
-                                        <span className="attachment-download-icon">⬇</span>
-                                    </a>
-                                )}
-                                {event.event_posters && (
-                                    <a href={event.event_posters} download className="attachment-link-card">
-                                        <div className="attachment-info">
-                                            <span className="attachment-icon">🎨</span>
-                                            <span className="attachment-name">Event Poster</span>
-                                        </div>
-                                        <span className="attachment-download-icon">⬇</span>
-                                    </a>
-                                )}
-                            </div>
-                        ) : (
-                            <p style={{ fontSize: "12px", color: "#94a3b8", fontStyle: "italic", margin: "0" }}>
-                                No attachments uploaded.
-                            </p>
-                        )}
-                    </div>
+
 
                 </div>
 
@@ -747,7 +689,7 @@ export default function EventDetailPage() {
                                 </div>
                             )}
 
-                            {/* Who is attending / Team Roster Feed */}
+                            {/* Who is attending / Team Member Feed */}
                             <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "20px", padding: "28px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                                     <h3 style={{ margin: "0", fontSize: "16px", fontWeight: "800", color: "#1e293b" }}>Attending Teammates ({countAccepted})</h3>
@@ -784,8 +726,8 @@ export default function EventDetailPage() {
                             {/* Management Navigation Tabs */}
                             <div className="tabs-container" style={{ marginBottom: "20px" }}>
                                 <button
-                                    onClick={() => setActiveMgmtTab("rsvp")}
-                                    className={`tab-btn ${activeMgmtTab === "rsvp" ? "active" : ""}`}
+                                    onClick={() => setActiveMgmtTab("responses")}
+                                    className={`tab-btn ${activeMgmtTab === "responses" ? "active" : ""}`}
                                 >
                                     Invitations & Responses
                                 </button>
@@ -810,8 +752,8 @@ export default function EventDetailPage() {
                             </div>
 
                             {/* TAB CONTENT: INVITATIONS & RESPONSES */}
-                            {activeMgmtTab === "rsvp" && (
-                                <div className="rsvp-section">
+                            {activeMgmtTab === "responses" && (
+                                <div className="response-section">
 
                                     {/* Invitation Box */}
                                     <div className="invite-card">
@@ -882,22 +824,22 @@ export default function EventDetailPage() {
                                     {/* Live Response Monitoring & Filters */}
                                     <div>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                                            <h3 style={{ margin: "0", fontSize: "16px", color: "#1e293b" }}>Response Roster</h3>
+                                            <h3 style={{ margin: "0", fontSize: "16px", color: "#1e293b" }}>Response List</h3>
                                             <span style={{ fontSize: "12px", color: "#64748b", fontWeight: "600" }}>Total Invited: {countAll}</span>
                                         </div>
 
-                                        <div className="rsvp-status-tabs" style={{ flexWrap: "wrap", width: "100%" }}>
-                                            <button onClick={() => setResponseSubTab("all")} className={`rsvp-tab-btn ${responseSubTab === "all" ? "active" : ""}`}>All ({countAll})</button>
-                                            <button onClick={() => setResponseSubTab("accepted")} className={`rsvp-tab-btn ${responseSubTab === "accepted" ? "active" : ""}`}>Accepted ({countAccepted})</button>
-                                            <button onClick={() => setResponseSubTab("pending")} className={`rsvp-tab-btn ${responseSubTab === "pending" ? "active" : ""}`}>Pending ({countPending})</button>
-                                            <button onClick={() => setResponseSubTab("declined")} className={`rsvp-tab-btn ${responseSubTab === "declined" ? "active" : ""}`}>Declined ({countDeclined})</button>
-                                            <button onClick={() => setResponseSubTab("maybe")} className={`rsvp-tab-btn ${responseSubTab === "maybe" ? "active" : ""}`}>Maybe ({countMaybe})</button>
-                                            {event.allow_waiting_list && <button onClick={() => setResponseSubTab("waitlisted")} className={`rsvp-tab-btn ${responseSubTab === "waitlisted" ? "active" : ""}`}>Waitlist ({countWaitlist})</button>}
+                                        <div className="response-status-tabs" style={{ flexWrap: "wrap", width: "100%" }}>
+                                            <button onClick={() => setResponseSubTab("all")} className={`response-tab-btn ${responseSubTab === "all" ? "active" : ""}`}>All ({countAll})</button>
+                                            <button onClick={() => setResponseSubTab("accepted")} className={`response-tab-btn ${responseSubTab === "accepted" ? "active" : ""}`}>Accepted ({countAccepted})</button>
+                                            <button onClick={() => setResponseSubTab("pending")} className={`response-tab-btn ${responseSubTab === "pending" ? "active" : ""}`}>Pending ({countPending})</button>
+                                            <button onClick={() => setResponseSubTab("declined")} className={`response-tab-btn ${responseSubTab === "declined" ? "active" : ""}`}>Declined ({countDeclined})</button>
+                                            <button onClick={() => setResponseSubTab("maybe")} className={`response-tab-btn ${responseSubTab === "maybe" ? "active" : ""}`}>Maybe ({countMaybe})</button>
+                                            {event.allow_waiting_list && <button onClick={() => setResponseSubTab("waitlisted")} className={`response-tab-btn ${responseSubTab === "waitlisted" ? "active" : ""}`}>Waitlist ({countWaitlist})</button>}
                                         </div>
 
                                         {/* Table */}
                                         <div style={{ overflowX: "auto" }}>
-                                            <table className="roster-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                                            <table className="members-table" style={{ width: "100%", borderCollapse: "collapse" }}>
                                                 <thead>
                                                     <tr style={{ background: "#f8fafc", textAlign: "left" }}>
                                                         <th style={{ padding: "12px", borderBottom: "1px solid #e2e8f0", fontSize: "12px", fontWeight: "700", color: "#475569" }}>Participant Name</th>
@@ -968,12 +910,12 @@ export default function EventDetailPage() {
 
                             {/* TAB CONTENT: ATTENDANCE SHEETS */}
                             {activeMgmtTab === "attendance" && (
-                                <div className="rsvp-section">
+                                <div className="response-section">
                                     <h3 style={{ margin: "0 0 4px 0", fontSize: "16px", color: "#1e293b" }}>Event Attendance Sheet</h3>
                                     <p style={{ margin: "0 0 20px 0", fontSize: "12px", color: "#64748b" }}>Mark and track participant status (Present, Absent, Late) on event day</p>
 
                                     <div style={{ overflowX: "auto" }}>
-                                        <table className="roster-table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                                        <table className="members-table" style={{ width: "100%", borderCollapse: "collapse" }}>
                                             <thead>
                                                 <tr style={{ background: "#f8fafc", textAlign: "left" }}>
                                                     <th style={{ padding: "12px", borderBottom: "1px solid #e2e8f0", fontSize: "12px", fontWeight: "700", color: "#475569" }}>Participant</th>
@@ -1020,7 +962,7 @@ export default function EventDetailPage() {
 
                             {/* TAB CONTENT: COMMUNICATIONS */}
                             {activeMgmtTab === "communication" && (
-                                <div className="rsvp-section">
+                                <div className="response-section">
                                     <h3 style={{ margin: "0 0 4px 0", fontSize: "16px", color: "#1e293b" }}>Event Broadcaster & Reminders</h3>
                                     <p style={{ margin: "0 0 20px 0", fontSize: "12px", color: "#64748b" }}>Send alerts, rule notifications, or reminders directly to participant inbox</p>
 
@@ -1085,7 +1027,7 @@ export default function EventDetailPage() {
 
                             {/* TAB CONTENT: REPORTS & ANALYTICS */}
                             {activeMgmtTab === "reports" && (
-                                <div className="rsvp-section">
+                                <div className="response-section">
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                                         <div>
                                             <h3 style={{ margin: "0", fontSize: "16px", color: "#1e293b" }}>Analytics & Participation Reports</h3>

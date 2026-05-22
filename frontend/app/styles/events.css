@@ -498,15 +498,15 @@ input:checked + .slider:before {
     margin: 0 0 16px 0;
 }
 
-/* Attendees/RSVP Table */
-.rsvp-section {
+/* Attendees/Response Table */
+.response-section {
     background: white;
     border-radius: 20px;
     border: 1px solid #e2e8f0;
     padding: 24px;
 }
 
-.rsvp-status-tabs {
+.response-status-tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
@@ -516,7 +516,7 @@ input:checked + .slider:before {
     width: fit-content;
 }
 
-.rsvp-tab-btn {
+.response-tab-btn {
     background: none;
     border: none;
     padding: 8px 16px;
@@ -528,7 +528,7 @@ input:checked + .slider:before {
     transition: all 0.2s;
 }
 
-.rsvp-tab-btn.active {
+.response-tab-btn.active {
     background: white;
     color: #0f172a;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -764,8 +764,8 @@ input:checked + .slider:before {
     font-weight: 700;
 }
 
-/* Roster Table Styling */
-.roster-table {
+/* Members Table Styling */
+.members-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
@@ -776,7 +776,7 @@ input:checked + .slider:before {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-.roster-table th {
+.members-table th {
     background: #f8fafc;
     padding: 14px 16px;
     font-size: 12px;
@@ -787,7 +787,7 @@ input:checked + .slider:before {
     letter-spacing: 0.05em;
 }
 
-.roster-table td {
+.members-table td {
     padding: 14px 16px;
     font-size: 14px;
     color: #334155;
@@ -795,17 +795,17 @@ input:checked + .slider:before {
     background: #ffffff;
 }
 
-.roster-table tr:last-child td {
+.members-table tr:last-child td {
     border-bottom: none;
 }
 
-.roster-table tr:hover td {
+.members-table tr:hover td {
     background: #f8fafc;
 }
 
 /* Offline Guest form input styling */
-.rsvp-section input[type="text"],
-.rsvp-section input[type="email"] {
+.response-section input[type="text"],
+.response-section input[type="email"] {
     padding: 10px 16px;
     font-size: 13px;
     border: 1px solid #cbd5e1;
@@ -817,8 +817,149 @@ input:checked + .slider:before {
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
-.rsvp-section input[type="text"]:focus,
-.rsvp-section input[type="email"]:focus {
+.response-section input[type="text"]:focus,
+.response-section input[type="email"]:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+@media (max-width: 768px) {
+    .events-container {
+        padding: 0;
+        max-width: none;
+    }
+
+    .events-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .events-header h1 {
+        font-size: 26px;
+    }
+
+    .events-header p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .primary-btn {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .events-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .tabs-container {
+        gap: 22px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-bottom: 20px;
+    }
+
+    .tab-btn {
+        min-height: 44px;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .event-card {
+        border-radius: 14px;
+    }
+
+    .event-card:hover {
+        transform: none;
+    }
+
+    .event-cover-container {
+        height: 132px;
+    }
+
+    .event-card-body {
+        padding: 18px;
+    }
+
+    .event-card-actions {
+        flex-direction: column;
+    }
+
+    .manage-btn,
+    .delete-btn {
+        min-height: 44px;
+    }
+
+    .form-card,
+    .response-section,
+    .event-info-sidebar,
+    .invite-card,
+    .analytics-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .form-grid,
+    .form-grid-3,
+    .event-mgmt-grid,
+    .invite-grid,
+    .analytics-grid,
+    .cover-presets-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .switch-container,
+    .attachment-link-card {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .response-status-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .response-tab-btn {
+        min-height: 38px;
+        white-space: nowrap;
+    }
+
+    .members-table {
+        display: block;
+        min-width: 720px;
+    }
+
+    .response-section:has(.members-table) {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .events-header h1 {
+        font-size: 24px;
+    }
+
+    .event-card-meta {
+        font-size: 13px;
+    }
+
+    .empty-state,
+    .loading-state {
+        padding: 34px 18px !important;
+    }
 }

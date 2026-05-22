@@ -6,7 +6,7 @@ const ACTION_BOXES = [
   {
     href: "/login",
     title: "Login as Club Admin",
-    description: "Sign in to manage your club, rosters, events, and finances.",
+    description: "Sign in to manage your club, members, events, and finances.",
     variant: "admin-login",
   },
   {

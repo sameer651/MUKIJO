@@ -3,45 +3,23 @@
 import { useEffect, useState } from "react";
 import styles from "../../app/styles/signup.module.css";
 
-export default function CustomRoleRegistration({ role, onBack, onComplete }) {
-    const [clubs, setClubs] = useState([]);
-    const [selectedClub, setSelectedClub] = useState(null);
+export default function CustomRoleRegistration({ role, selectedClub, onBack, onComplete, backLabel = "<- Back" }) {
     const [formConfig, setFormConfig] = useState(null);
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [submitError, setSubmitError] = useState("");
 
-    // Fetch all clubs initially
-    useEffect(() => {
-        const fetchClubs = async () => {
-            try {
-                const res = await fetch("http://127.0.0.1:8001/clubs");
-                if (res.ok) {
-                    const data = await res.json();
-                    setClubs(data);
-                    if (data && data.length > 0) {
-                        setSelectedClub(data[0]);
-                    } else {
-                        setSelectedClub({ id: 1, club_name: "Mukijo Club" });
-                    }
-                } else {
-                    setSelectedClub({ id: 1, club_name: "Mukijo Club" });
-                }
-            } catch (err) {
-                console.error("Error fetching clubs:", err);
-                setSelectedClub({ id: 1, club_name: "Mukijo Club" });
-            }
-        };
-        fetchClubs();
-    }, []);
-
     // Fetch form configuration once club is selected
     useEffect(() => {
-        if (!selectedClub) return;
+        if (!selectedClub) {
+            setFormConfig(null);
+            return;
+        }
 
         const fetchFormConfig = async () => {
             setLoading(true);
+            setFormConfig(null);
             try {
                 const res = await fetch(`http://127.0.0.1:8001/signup-forms/${role.toLowerCase()}?owner_id=${selectedClub.id}`);
                 if (res.ok) {
@@ -157,7 +135,7 @@ export default function CustomRoleRegistration({ role, onBack, onComplete }) {
         <div className={styles.stepContainer}>
             <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: "16px" }}>
                 <button type="button" className={styles.prevButton} onClick={onBack}>
-                    ← Back to Roles
+                    {backLabel}
                 </button>
             </div>
 
@@ -168,46 +146,12 @@ export default function CustomRoleRegistration({ role, onBack, onComplete }) {
             )}
 
             <h2 className={styles.stepTitle}>{formConfig?.title || `${role} Signup`}</h2>
-            <p className={styles.stepSubtitle}>{formConfig?.description || "Apply to join our organisation by filling in your details below."}</p>
+            <p className={styles.stepSubtitle}>
+                {selectedClub?.club_name ? `Joining ${selectedClub.club_name}. ` : ""}
+                {formConfig?.description || "Apply to join our organisation by filling in your details below."}
+            </p>
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                
-                {/* Embedded Select Club / Academy Dropdown */}
-                <div className={styles.fieldGroup}>
-                    <label className={styles.label}>
-                        Select Sports Club / Academy <span style={{ color: "#ef4444" }}>*</span>
-                    </label>
-                    <select
-                        className={styles.select}
-                        value={selectedClub?.id || ""}
-                        onChange={(e) => {
-                            const clubId = Number(e.target.value);
-                            const found = clubs.find(c => c.id === clubId);
-                            if (found) {
-                                setSelectedClub(found);
-                            }
-                        }}
-                        required
-                        style={{
-                            width: "100%",
-                            padding: "10px 12px",
-                            border: "1px solid #cbd5e1",
-                            borderRadius: "8px",
-                            fontSize: "14px",
-                            outline: "none",
-                            background: "#ffffff",
-                            color: "#0f172a",
-                            fontWeight: 600
-                        }}
-                    >
-                        {clubs.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.club_name} ({c.sport || "All Sports"})
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
                 {/* Customized Club Onboarding Fields */}
                 {formConfig?.fields.map((field) => {
                     const isEmailField = field.name.toLowerCase() === "email";

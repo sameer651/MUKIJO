@@ -685,3 +685,85 @@
     justify-content: flex-end;
     gap: 12px;
 }
+
+@media (max-width: 768px) {
+    .signup-forms-container {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .signup-forms-container > div:first-child {
+        align-items: stretch !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .tabs-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        flex: 1 0 auto;
+        min-height: 42px;
+        white-space: nowrap;
+    }
+
+    .builder-layout,
+    .cards-grid,
+    .field-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .editor-card,
+    .preview-card,
+    .applications-container,
+    .form-role-card {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .fields-list {
+        max-height: none;
+    }
+
+    .field-row {
+        gap: 12px;
+    }
+
+    .app-table-wrapper {
+        border-radius: 12px;
+    }
+
+    .app-table {
+        min-width: 760px;
+    }
+
+    .app-action-btn {
+        min-height: 38px;
+        margin-bottom: 6px;
+    }
+
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal-content {
+        max-width: none;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .details-row,
+    .modal-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .details-value {
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+}

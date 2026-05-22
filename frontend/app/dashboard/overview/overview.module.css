@@ -67,8 +67,73 @@
 }
 
 @media (max-width: 640px) {
+    .page {
+        padding-bottom: 24px;
+    }
+
+    .pageHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding-top: 4px;
+        margin-bottom: 22px;
+    }
+
+    .pageTitle {
+        font-size: 24px;
+    }
+
+    .dateBadge {
+        width: 100%;
+        text-align: center;
+    }
+
+    .actionBar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .actionButton {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
     .statsGrid {
         grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .statCard {
+        min-height: 118px;
+        padding: 22px 18px;
+        gap: 16px;
+        border-radius: 14px;
+    }
+
+    .statCard:hover,
+    .statCardLink:hover {
+        transform: none;
+    }
+
+    .statIcon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    .statIcon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .statValue {
+        font-size: 32px;
     }
 }
 
@@ -211,6 +276,21 @@
 @media (max-width: 720px) {
     .panels {
         grid-template-columns: 1fr;
+    }
+
+    .panel {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .panelHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .fundraisingAmount {
+        font-size: 32px;
     }
 }
 
@@ -536,4 +616,70 @@
     font-size: 30px;
     font-weight: 800;
     line-height: 1;
+}
+
+@media (max-width: 640px) {
+    .page {
+        padding-bottom: 24px;
+    }
+
+    .pageHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding-top: 4px;
+        margin-bottom: 22px;
+    }
+
+    .pageTitle {
+        font-size: 24px;
+    }
+
+    .dateBadge {
+        width: 100%;
+        text-align: center;
+    }
+
+    .actionBar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .actionButton {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .statCard {
+        min-height: 118px;
+        padding: 22px 18px;
+        gap: 16px;
+        border-radius: 14px;
+    }
+
+    .statCard:hover,
+    .statCardLink:hover,
+    .actionButton:hover {
+        transform: none;
+    }
+
+    .statIcon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    .statIcon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .statValue {
+        font-size: 32px;
+    }
 }

@@ -108,7 +108,7 @@ export default function OverviewPage() {
                         setCoachData(d);
                     }
                 } else {
-                    // Fetch real events and members for member-based rosters & schedules
+                    // Fetch real events and members for member-based schedules
                     const [eventsRes, membersRes] = await Promise.all([
                         fetch(`http://127.0.0.1:8001/events?owner_id=${userId || 1}`),
                         fetch(`http://127.0.0.1:8001/members?owner_id=${userId || 1}`).catch(() => null)
@@ -256,7 +256,7 @@ export default function OverviewPage() {
                     </Link>
                     <Link href="/dashboard/members" className={styles.actionButton}>
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                        Manage Player Roster
+                        Manage Player Members
                     </Link>
                     <Link href="/dashboard/courses" className={styles.actionButton}>
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"></path></svg>
@@ -675,7 +675,7 @@ export default function OverviewPage() {
                     />
                     <StatCard
                         loading={loading} color="emerald" label="Members"
-                        value={realMembers.length || 0} sub="Current roster"
+                        value={realMembers.length || 0} sub="Current members"
                         href="/dashboard/members"
                         icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /></svg>}
                     />

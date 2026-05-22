@@ -195,7 +195,71 @@
 }
 
 @media (max-width: 768px) {
+    .fr-container {
+        padding-bottom: 24px;
+    }
+
+    .fr-header {
+        align-items: stretch;
+        flex-direction: column;
+        padding-top: 4px;
+        margin-bottom: 22px;
+    }
+
+    .fr-title {
+        font-size: 24px;
+    }
+
+    .fr-header-actions {
+        align-items: stretch !important;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .fr-filter-tabs {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .fr-filter-tabs button {
+        min-height: 40px;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        justify-content: center;
+        min-height: 44px;
+        width: 100%;
+    }
+
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .stats-card {
+        padding: 22px;
+        border-radius: 12px;
+    }
+
+    .campaign-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .campaign-card {
+        border-radius: 14px;
+    }
+
+    .campaign-card:hover {
+        transform: none;
+    }
+
+    .btn-donate,
+    .btn-delete {
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
     }
 }

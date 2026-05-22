@@ -44,10 +44,24 @@ export default function DonationFormPage() {
         amount: "",
         donor_name: "",
         donor_email: "",
+        group_id: "",
     });
+    const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const userName = localStorage.getItem("userName") || "";
+            const userEmail = localStorage.getItem("userEmail") || "";
+            setForm(p => ({
+                ...p,
+                donor_name: p.donor_name || userName,
+                donor_email: p.donor_email || userEmail
+            }));
+        }
+    }, []);
 
     useEffect(() => {
         const fetchCampaign = async () => {
@@ -62,8 +76,20 @@ export default function DonationFormPage() {
                 console.error(err);
             }
         };
+        const fetchGroups = async () => {
+            try {
+                const res = await fetch(`http://127.0.0.1:8001/groups?owner_id=${userId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setGroups(data);
+                }
+            } catch (err) {
+                console.error("Error fetching groups:", err);
+            }
+        };
         if (userId) {
             fetchCampaign();
+            fetchGroups();
         }
     }, [id, userId]);
 
@@ -86,7 +112,8 @@ export default function DonationFormPage() {
                 body: JSON.stringify({
                     amount: parseInt(form.amount),
                     donor_name: form.donor_name || "Anonymous",
-                    donor_email: form.donor_email || ""
+                    donor_email: form.donor_email || "",
+                    group_id: form.group_id ? parseInt(form.group_id) : null
                 })
             });
 
@@ -229,6 +256,16 @@ export default function DonationFormPage() {
                     <div>
                         <label className="form-label">Email Address (Optional)</label>
                         <input className="form-input" name="donor_email" type="email" value={form.donor_email} onChange={handleChange} placeholder="john@example.com" />
+                    </div>
+
+                    <div>
+                        <label className="form-label">Select Group</label>
+                        <select className="form-input" name="group_id" value={form.group_id} onChange={handleChange} style={{ width: "100%", background: "#fff", cursor: "pointer", height: "46px", appearance: "auto" }}>
+                            <option value="">No Group / General Club</option>
+                            {groups.map(g => (
+                                <option key={g.id} value={g.id}>{g.group_name} ({g.activity})</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="progress-summary">

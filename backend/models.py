@@ -214,7 +214,7 @@ class CourseRegistration(Base):
     participant_name = Column(String, nullable=False)
     participant_email = Column(String, nullable=True)
     participant_phone = Column(String, nullable=True)
-    status = Column(String, default="registered") # registered, waitlisted, cancelled, completed
+    status = Column(String, default="unregistered") # unregistered, registered, waitlisted, cancelled, completed
     payment_status = Column(String, default="unpaid") # unpaid, paid, waived
     notes = Column(Text, nullable=True)
     registered_at = Column(DateTime, default=datetime.utcnow)

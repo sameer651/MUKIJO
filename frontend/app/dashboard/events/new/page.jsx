@@ -29,12 +29,7 @@ export default function NewEventPage() {
     const [allowGuest, setAllowGuest] = useState(false);
     const [allowWaitingList, setAllowWaitingList] = useState(false);
 
-    // Attachments File names (mock)
-    const [rulesPdfName, setRulesPdfName] = useState("");
-    const [scheduleName, setScheduleName] = useState("");
-    const [permissionName, setPermissionName] = useState("");
-    const [fixturesName, setFixturesName] = useState("");
-    const [posterName, setPosterName] = useState("");
+
 
     // Cover image preset state
     const [selectedCover, setSelectedCover] = useState("Match");
@@ -86,13 +81,6 @@ export default function NewEventPage() {
         // Prepare cover image
         const finalCover = customCoverUrl || coverPresets[selectedCover] || coverPresets["Match"];
 
-        // Prepare attachment paths (simulated paths if uploaded)
-        const rules_pdf = rulesPdfName ? `/attachments/${rulesPdfName}` : null;
-        const schedule_file = scheduleName ? `/attachments/${scheduleName}` : null;
-        const permission_forms = permissionName ? `/attachments/${permissionName}` : null;
-        const match_fixtures = fixturesName ? `/attachments/${fixturesName}` : null;
-        const event_posters = posterName ? `/attachments/${posterName}` : null;
-
         const eventData = {
             name,
             type,
@@ -113,11 +101,11 @@ export default function NewEventPage() {
             is_public: isPublic,
             allow_guest: allowGuest,
             allow_waiting_list: allowWaitingList,
-            rules_pdf,
-            schedule_file,
-            permission_forms,
-            match_fixtures,
-            event_posters
+            rules_pdf: null,
+            schedule_file: null,
+            permission_forms: null,
+            match_fixtures: null,
+            event_posters: null
         };
 
         try {
@@ -152,7 +140,7 @@ export default function NewEventPage() {
             <div className="form-card">
                 <div style={{ marginBottom: "30px" }}>
                     <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#0f172a", margin: "0" }}>Schedule New Club Event</h1>
-                    <p style={{ color: "#64748b", margin: "6px 0 0 0" }}>Fill out event information, customize registration settings, and upload rules / schedules</p>
+                    <p style={{ color: "#64748b", margin: "6px 0 0 0" }}>Fill out event information and customize registration settings</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -373,7 +361,7 @@ export default function NewEventPage() {
                         <div className="switch-container">
                             <div className="switch-label">
                                 <span>🌐 Public Event</span>
-                                <p>Make visible outside club roster</p>
+                                <p>Make visible outside club members</p>
                             </div>
                             <label className="switch">
                                 <input 
@@ -416,85 +404,7 @@ export default function NewEventPage() {
                         </div>
                     </div>
 
-                    {/* SECTION 3: UPLOAD ATTACHMENTS */}
-                    <div className="form-section-title">
-                        <span>📎</span> Event Attachments
-                    </div>
-                    <p style={{ fontSize: "13px", color: "#64748b", margin: "-6px 0 20px 0" }}>Attach forms, rules, schedules, fixtures, and banners for players to download.</p>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
-                        
-                        <div className="attachment-upload-box">
-                            <h4 style={{ margin: "0 0 6px 0", fontSize: "14px", color: "#334155" }}>Rules PDF</h4>
-                            <input 
-                                type="file" 
-                                accept=".pdf"
-                                onChange={(e) => setRulesPdfName(e.target.files[0]?.name || "")}
-                                style={{ display: "none" }}
-                                id="rules-file"
-                            />
-                            <label htmlFor="rules-file" style={{ cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
-                                {rulesPdfName ? `✓ ${rulesPdfName}` : "+ Upload Rules PDF"}
-                            </label>
-                        </div>
-
-                        <div className="attachment-upload-box">
-                            <h4 style={{ margin: "0 0 6px 0", fontSize: "14px", color: "#334155" }}>Event Schedule</h4>
-                            <input 
-                                type="file" 
-                                accept=".pdf,.doc,.docx"
-                                onChange={(e) => setScheduleName(e.target.files[0]?.name || "")}
-                                style={{ display: "none" }}
-                                id="sched-file"
-                            />
-                            <label htmlFor="sched-file" style={{ cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
-                                {scheduleName ? `✓ ${scheduleName}` : "+ Upload Schedule"}
-                            </label>
-                        </div>
-
-                        <div className="attachment-upload-box">
-                            <h4 style={{ margin: "0 0 6px 0", fontSize: "14px", color: "#334155" }}>Permission Forms</h4>
-                            <input 
-                                type="file" 
-                                accept=".pdf,.doc,.docx"
-                                onChange={(e) => setPermissionName(e.target.files[0]?.name || "")}
-                                style={{ display: "none" }}
-                                id="perm-file"
-                            />
-                            <label htmlFor="perm-file" style={{ cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
-                                {permissionName ? `✓ ${permissionName}` : "+ Upload Permission Slips"}
-                            </label>
-                        </div>
-
-                        <div className="attachment-upload-box">
-                            <h4 style={{ margin: "0 0 6px 0", fontSize: "14px", color: "#334155" }}>Match Fixtures</h4>
-                            <input 
-                                type="file" 
-                                accept=".pdf,.xlsx,.csv"
-                                onChange={(e) => setFixturesName(e.target.files[0]?.name || "")}
-                                style={{ display: "none" }}
-                                id="fixtures-file"
-                            />
-                            <label htmlFor="fixtures-file" style={{ cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
-                                {fixturesName ? `✓ ${fixturesName}` : "+ Upload Fixtures Sheet"}
-                            </label>
-                        </div>
-
-                        <div className="attachment-upload-box" style={{ gridColumn: "span 1" }}>
-                            <h4 style={{ margin: "0 0 6px 0", fontSize: "14px", color: "#334155" }}>Event Poster / Banner</h4>
-                            <input 
-                                type="file" 
-                                accept="image/*"
-                                onChange={(e) => setPosterName(e.target.files[0]?.name || "")}
-                                style={{ display: "none" }}
-                                id="poster-file"
-                            />
-                            <label htmlFor="poster-file" style={{ cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
-                                {posterName ? `✓ ${posterName}` : "+ Upload Event Poster"}
-                            </label>
-                        </div>
-
-                    </div>
 
                     <div style={{ marginTop: "40px", borderTop: "1px solid #f1f5f9", paddingTop: "24px", display: "flex", justifyContent: "flex-end", gap: "16px" }}>
                         <Link href="/dashboard/events" className="secondary-btn" style={{ padding: "12px 24px", borderRadius: "12px", border: "1px solid #cbd5e1", background: "none", color: "#475569", fontWeight: "600", textDecoration: "none" }}>

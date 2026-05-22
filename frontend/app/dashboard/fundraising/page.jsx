@@ -137,8 +137,8 @@ export default function FundraisingPage() {
                     <h1 className="fr-title">Fundraising</h1>
                     <p className="fr-subtitle">{isMember ? "Support your sports academy campaigns and track total club contributions" : "Manage campaigns and track money raised for your club"}</p>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ display: "flex", gap: "6px", background: "#f1f5f9", padding: "4px", borderRadius: "10px" }}>
+                <div className="fr-header-actions" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="fr-filter-tabs" style={{ display: "flex", gap: "6px", background: "#f1f5f9", padding: "4px", borderRadius: "10px" }}>
                         {["all", "active", "paused", "completed"].map(f => (
                             <button 
                                 key={f} 
@@ -191,7 +191,7 @@ export default function FundraisingPage() {
                     <h3 style={{ margin: "0 0 8px", fontSize: "20px", fontWeight: "700", color: "#0f172a" }}>Loading campaigns...</h3>
                 </div>
             ) : filtered.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "24px" }}>
+                <div className="campaign-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "24px" }}>
                     {filtered.map((c) => (
                         <CampaignCard key={c.id} c={c} onDelete={handleDelete} />
                     ))}

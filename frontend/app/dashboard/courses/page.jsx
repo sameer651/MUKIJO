@@ -39,6 +39,7 @@ const statusLabels = {
     full: "Full",
     closed: "Closed",
     completed: "Completed",
+    unregistered: "Unregistered",
     registered: "Registered",
     waitlisted: "Waitlisted",
     cancelled: "Cancelled",

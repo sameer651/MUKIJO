@@ -111,3 +111,29 @@
 .logout-btn:hover {
     background: #dc2626;
 }
+
+@media (max-width: 640px) {
+    .settings-container {
+        padding: 0;
+    }
+
+    .settings-container h1 {
+        font-size: 24px;
+    }
+
+    .settings-subtitle {
+        margin-bottom: 22px;
+    }
+
+    .settings-card,
+    .settings-danger-card {
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .save-btn,
+    .logout-btn {
+        width: 100%;
+        min-height: 44px;
+    }
+}

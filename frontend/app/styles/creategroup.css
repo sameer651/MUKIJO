@@ -276,11 +276,37 @@
 
 /* Responsive */
 @media (max-width: 480px) {
-    .form-card {
-        padding: 25px;
+    .create-group-page {
+        min-height: auto;
+        padding: 18px 0 0;
+        background: transparent;
     }
+
+    .form-card {
+        padding: 22px;
+        border-radius: 14px;
+    }
+
     .progress-stepper {
         padding: 0 10px;
+        margin-bottom: 24px;
+    }
+
+    .step-header h1 {
+        font-size: 24px;
+    }
+
+    .step-header p {
+        font-size: 14px;
+    }
+
+    .choice-card-row,
+    .age-card,
+    .input-group input,
+    .input-group textarea,
+    .next-btn,
+    .submit-btn {
+        min-height: 44px;
     }
 }
 

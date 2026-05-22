@@ -559,12 +559,26 @@
 }
 
 @media (max-width: 720px) {
+    .courses-page {
+        gap: 18px;
+    }
+
     .courses-header,
     .courses-toolbar,
     .course-detail-top,
     .registration-row {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .courses-header h1 {
+        font-size: 26px;
+    }
+
+    .courses-primary-btn,
+    .courses-secondary-btn {
+        width: 100%;
+        min-height: 44px;
     }
 
     .courses-stats,
@@ -579,5 +593,55 @@
 
     .courses-filter {
         overflow-x: auto;
+    }
+
+    .courses-filter button {
+        min-height: 38px;
+        white-space: nowrap;
+    }
+
+    .courses-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .course-card {
+        padding: 16px;
+    }
+
+    .course-card:hover,
+    .course-card.active {
+        transform: none;
+    }
+
+    .course-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-detail {
+        padding: 18px;
+    }
+
+    .course-detail-actions,
+    .registration-actions,
+    .courses-modal-actions {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .courses-modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .courses-modal {
+        max-height: 92vh;
+        padding: 20px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .courses-modal-head {
+        align-items: flex-start;
     }
 }

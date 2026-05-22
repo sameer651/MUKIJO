@@ -940,6 +940,81 @@ def get_payments_summary(owner_id: int, db: Session = Depends(get_db)):
         "overdue_count": len(overdue_items),
     }
 
+@app.get("/payments/member-status")
+def get_payments_member_status(owner_id: int, db: Session = Depends(get_db)):
+    groups = db.query(models.Group).filter(models.Group.owner_id == owner_id).all()
+    group_ids = [g.id for g in groups]
+
+    if not group_ids:
+        return []
+
+    members = db.query(models.Member)\
+        .filter(models.Member.group_id.in_(group_ids))\
+        .order_by(models.Member.first_name.asc(), models.Member.last_name.asc())\
+        .all()
+
+    payments = db.query(models.Payment)\
+        .filter(models.Payment.owner_id == owner_id)\
+        .order_by(models.Payment.id.desc())\
+        .all()
+
+    group_map = {g.id: g for g in groups}
+    payments_by_member = {}
+    payments_by_group = {}
+    club_wide_payments = []
+
+    for payment in payments:
+        if payment.member_id:
+            payments_by_member.setdefault(payment.member_id, []).append(payment)
+        elif payment.group_id:
+            payments_by_group.setdefault(payment.group_id, []).append(payment)
+        else:
+            club_wide_payments.append(payment)
+
+    def display_status(payment):
+        return "paid" if get_effective_payment_status(payment) == "paid" else "unpaid"
+
+    def member_details(member):
+        group_obj = group_map.get(member.group_id)
+        return {
+            "member_id": member.id,
+            "full_name": f"{member.first_name} {member.last_name}".strip(),
+            "email": member.email,
+            "role": member.role or "Member",
+            "sport": group_obj.activity if group_obj else "N/A",
+            "group_name": group_obj.group_name if group_obj else "N/A",
+            "member_group_name": group_obj.group_name if group_obj else "N/A",
+        }
+
+    result = []
+
+    for member in members:
+        applicable_payments = [
+            *payments_by_member.get(member.id, []),
+            *payments_by_group.get(member.group_id, []),
+            *club_wide_payments,
+        ]
+
+        if not applicable_payments:
+            result.append({
+                **member_details(member),
+                "payment_for": "No Assigned Payments",
+                "amount": 0,
+                "status": "unpaid",
+                "payment_id": None,
+            })
+        else:
+            for payment in applicable_payments:
+                result.append({
+                    **member_details(member),
+                    "payment_for": payment.title,
+                    "amount": payment.amount or 0,
+                    "status": display_status(payment),
+                    "raw_status": get_effective_payment_status(payment),
+                    "payment_id": payment.id,
+                })
+    return result
+
 @app.post("/payments", response_model=schemas.PaymentResponse)
 def create_payment(payment: schemas.PaymentCreate, db: Session = Depends(get_db)):
     if payment.amount <= 0:
