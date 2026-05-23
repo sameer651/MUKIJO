@@ -70,7 +70,7 @@ export default function CustomRoleRegistration({ role, selectedClub, onBack, onC
         const newErrors = {};
         if (formConfig && formConfig.fields) {
             formConfig.fields.forEach(field => {
-                if (field.required && !formData[field.name]) {
+                if (field.required && !String(formData[field.name] || "").trim()) {
                     newErrors[field.name] = `${field.label} is required`;
                 }
             });
@@ -78,7 +78,7 @@ export default function CustomRoleRegistration({ role, selectedClub, onBack, onC
 
         // Validate password if email field exists
         const hasEmail = formConfig?.fields?.some(f => f.name.toLowerCase() === "email");
-        if (hasEmail && !formData["password"]) {
+        if (hasEmail && !String(formData["password"] || "").trim()) {
             newErrors["password"] = "Password is required";
         }
 
@@ -94,6 +94,12 @@ export default function CustomRoleRegistration({ role, selectedClub, onBack, onC
 
         setLoading(true);
         try {
+            const submittedData = {
+                ...formData,
+                email: String(formData.email || "").trim().toLowerCase(),
+                password: String(formData.password || "").trim()
+            };
+
             const response = await fetch("http://127.0.0.1:8001/signup-submissions", {
                 method: "POST",
                 headers: {
@@ -102,14 +108,17 @@ export default function CustomRoleRegistration({ role, selectedClub, onBack, onC
                 body: JSON.stringify({
                     owner_id: selectedClub.id,
                     role: role,
-                    submitted_data: JSON.stringify(formData)
+                    submitted_data: JSON.stringify(submittedData)
                 })
             });
 
             if (response.ok) {
+                const data = await response.json().catch(() => ({}));
+                alert(data.message || "Club admin has to approve your application before you can log in.");
                 onComplete();
             } else {
-                setSubmitError("Failed to submit application. Please check details.");
+                const errorData = await response.json().catch(() => ({}));
+                setSubmitError(errorData.detail || "Failed to submit application. Please check details.");
             }
         } catch (err) {
             console.error("Error submitting form application:", err);
@@ -153,7 +162,7 @@ export default function CustomRoleRegistration({ role, selectedClub, onBack, onC
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {/* Customized Club Onboarding Fields */}
-                {formConfig?.fields.map((field) => {
+                {formConfig?.fields.filter(field => !field.name.toLowerCase().includes("password")).map((field) => {
                     const isEmailField = field.name.toLowerCase() === "email";
                     return (
                         <div key={field.name} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

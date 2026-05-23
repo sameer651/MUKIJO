@@ -17,7 +17,7 @@ function LoginMemberContent() {
 
     const [formData, setFormData] = useState({
         email: "",
-        password: "", // can be any password, or we check against their phone number
+        password: "",
     });
 
     const handleChange = (e) => {
@@ -30,34 +30,38 @@ function LoginMemberContent() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
-            const response = await fetch(`http://127.0.0.1:8001/login-member`, {
+            const response = await fetch("http://127.0.0.1:8001/login-member", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    email: formData.email.trim().toLowerCase(),
+                    password: formData.password.trim(),
+                }),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Member login successful:", data);
-                
-                // Store the member info for the dashboard
+
                 localStorage.setItem("userName", data.userName);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("clubName", data.clubName);
                 localStorage.setItem("isMember", "true");
                 localStorage.setItem("memberRole", data.memberRole || "Member");
-                localStorage.setItem("userEmail", formData.email);
+                localStorage.setItem("memberId", data.memberId || "");
+                localStorage.setItem("userEmail", data.userEmail || formData.email);
                 localStorage.setItem("userPhone", data.userPhone || "");
-                
-                // Redirect to dashboard
+                localStorage.setItem("memberGroupName", data.groupName || "");
+                localStorage.setItem("approvalStatus", data.approvalStatus || "accepted");
+
                 window.location.href = "/dashboard";
             } else {
                 const errorData = await response.json().catch(() => ({}));
-                alert(errorData.detail || "Member login failed. Make sure your email matches your registration details.");
+                alert(errorData.detail || "Member login failed. Make sure the club admin has accepted your application.");
             }
         } catch (error) {
             console.error("Member Login Error:", error);
@@ -70,8 +74,8 @@ function LoginMemberContent() {
             <div className={styles.loginCard}>
                 <div className={styles.header}>
                     <span className={styles.logo}>Mukijo</span>
-                    <h1 className={styles.title}>Login</h1>
-                    <p className={styles.subtitle}>Enter your registered email address to sign in</p>
+                    <h1 className={styles.title}>Member Login</h1>
+                    <p className={styles.subtitle}>Use the email and password from your approved registration</p>
                 </div>
 
                 {showSuccess && (
@@ -86,7 +90,7 @@ function LoginMemberContent() {
                         border: "1px solid #c3e6cb"
                     }}>
                         <strong>Application submitted!</strong><br />
-                        Once the admin approves your registration, you can sign in.
+                        Club admin has to approve your application before you can log in.
                     </div>
                 )}
 
@@ -108,15 +112,15 @@ function LoginMemberContent() {
                     </div>
 
                     <div className={styles.inputGroup}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <label htmlFor="password" className={styles.label}>Password / Registered Phone</label>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <label htmlFor="password" className={styles.label}>Password</label>
                         </div>
                         <div className={styles.inputWrapper}>
                             <input
                                 id="password"
                                 name="password"
                                 type="password"
-                                placeholder="••••••••"
+                                placeholder="Enter your password"
                                 className={styles.input}
                                 value={formData.password}
                                 onChange={handleChange}
@@ -136,7 +140,7 @@ function LoginMemberContent() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", textAlign: "center" }}>
                     <Link href="/" className={styles.signupLink} style={{ textDecoration: "none", fontSize: "14px" }}>
-                        ← Back to Home
+                        Back to Home
                     </Link>
                 </div>
 

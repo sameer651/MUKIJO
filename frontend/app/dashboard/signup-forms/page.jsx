@@ -10,6 +10,7 @@ export default function SignupFormsDashboard() {
     const [submissions, setSubmissions] = useState([]);
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [sessionError, setSessionError] = useState("");
 
     // Form Editor State
     const [selectedForm, setSelectedForm] = useState(null);
@@ -29,7 +30,21 @@ export default function SignupFormsDashboard() {
 
     const fetchData = useCallback(async () => {
         setLoading(true);
+        setSessionError("");
         try {
+            const clubsRes = await fetch("http://127.0.0.1:8001/clubs");
+            if (clubsRes.ok) {
+                const clubsData = await clubsRes.json();
+                const currentClub = clubsData.find((club) => String(club.id) === String(userId));
+                if (!currentClub) {
+                    setForms([]);
+                    setSubmissions([]);
+                    setGroups([]);
+                    setSessionError("Your club admin session is not valid. Please log in again as the club admin, then open the onboarding queue.");
+                    return;
+                }
+            }
+
             // Fetch Forms
             const formsRes = await fetch(`http://127.0.0.1:8001/signup-forms?owner_id=${userId}`);
             if (formsRes.ok) {
@@ -168,18 +183,14 @@ export default function SignupFormsDashboard() {
     }
 
     async function handleConfirmApprove() {
-        if (!approveGroupId) {
-            alert("Please select a group to approve this applicant into.");
-            return;
-        }
-
         try {
-            const response = await fetch(`http://127.0.0.1:8001/signup-submissions/${approvingSubmission.id}/approve?owner_id=${userId}&group_id=${approveGroupId}`, {
+            const groupParam = approveGroupId ? `&group_id=${approveGroupId}` : "";
+            const response = await fetch(`http://127.0.0.1:8001/signup-submissions/${approvingSubmission.id}/approve?owner_id=${userId}${groupParam}`, {
                 method: "POST"
             });
 
             if (response.ok) {
-                alert("Applicant approved and added as club member!");
+                alert("Applicant accepted. The member can now log in with the registered email and password.");
                 setApprovingSubmission(null);
                 fetchData();
             } else {
@@ -377,9 +388,9 @@ export default function SignupFormsDashboard() {
         return (
             <div className="applications-container">
                 <div className="applications-filter-row">
-                    <h2>Applicants Registration Stream</h2>
+                    <h2>Onboarding Queue</h2>
                     <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 500 }}>
-                        {submissions.length} Total Application{submissions.length !== 1 ? "s" : ""}
+                        {submissions.length} Pending Application{submissions.length !== 1 ? "s" : ""}
                     </span>
                 </div>
 
@@ -397,6 +408,7 @@ export default function SignupFormsDashboard() {
                                     <th>Applicant Name</th>
                                     <th>Role</th>
                                     <th>Email</th>
+                                    <th>Status</th>
                                     <th>Submitted Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -431,6 +443,11 @@ export default function SignupFormsDashboard() {
                                                 </span>
                                             </td>
                                             <td>{email}</td>
+                                            <td>
+                                                <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 10px", borderRadius: "6px", background: "#fff7ed", color: "#9a3412", fontSize: "12px", fontWeight: 700 }}>
+                                                    Waiting approval
+                                                </span>
+                                            </td>
                                             <td>{dateStr}</td>
                                             <td>
                                                 <button
@@ -445,7 +462,7 @@ export default function SignupFormsDashboard() {
                                                         setApprovingSubmission(sub);
                                                     }}
                                                 >
-                                                    <Check size={12} style={{ marginRight: "4px" }} /> Approve
+                                                    <Check size={12} style={{ marginRight: "4px" }} /> Accept
                                                 </button>
                                                 <button
                                                     className="app-action-btn btn-reject"
@@ -496,11 +513,12 @@ export default function SignupFormsDashboard() {
                                 .replace(/_/g, " ")
                                 .replace(/([A-Z])/g, " $1")
                                 .replace(/^./, (str) => str.toUpperCase());
+                            const displayValue = key.toLowerCase().includes("password") ? "Hidden" : (val?.toString() || "N/A");
                             
                             return (
                                 <div className="details-row" key={key}>
                                     <span className="details-label">{label}</span>
-                                    <span className="details-value">{val?.toString() || "N/A"}</span>
+                                    <span className="details-value">{displayValue}</span>
                                 </div>
                             );
                         })}
@@ -532,22 +550,22 @@ export default function SignupFormsDashboard() {
             <div className="modal-overlay" onClick={() => setApprovingSubmission(null)}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                        <h3 style={{ margin: 0 }}>Approve Applicant</h3>
+                        <h3 style={{ margin: 0 }}>Accept Applicant</h3>
                         <button className="back-btn" onClick={() => setApprovingSubmission(null)}>
                             <X size={16} />
                         </button>
                     </div>
 
                     <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 20px 0", lineHeight: 1.5 }}>
-                        Assign <strong style={{ color: "#0f172a" }}>{name}</strong> ({approvingSubmission.role}) to a specific club group/team. They will be added as an official member in that group.
+                        Accept <strong style={{ color: "#0f172a" }}>{name}</strong> ({approvingSubmission.role}) into the club. After you accept, they can log in with the email and password used during registration.
                     </p>
 
                     <div className="editor-form-group">
-                        <label>Select Team / Group *</label>
+                        <label>Select Team / Group</label>
                         {groups.length === 0 ? (
-                            <div style={{ background: "#fef2f2", color: "#ef4444", padding: "12px", borderRadius: "8px", fontSize: "13px", display: "flex", gap: "8px", alignItems: "center" }}>
+                            <div style={{ background: "#f0fdf4", color: "#166534", padding: "12px", borderRadius: "8px", fontSize: "13px", display: "flex", gap: "8px", alignItems: "center" }}>
                                 <ShieldAlert size={16} />
-                                <span>No groups found! Please create a group in your dashboard first before approving.</span>
+                                <span>No groups found. The app will create an Approved Members group automatically.</span>
                             </div>
                         ) : (
                             <select
@@ -572,9 +590,8 @@ export default function SignupFormsDashboard() {
                             className="save-btn"
                             style={{ background: "#10b981", boxShadow: "0 4px 6px -1px rgba(16, 185, 129, 0.2)" }}
                             onClick={handleConfirmApprove}
-                            disabled={groups.length === 0}
                         >
-                            Approve Candidate
+                            Accept Candidate
                         </button>
                     </div>
                 </div>
@@ -594,6 +611,27 @@ export default function SignupFormsDashboard() {
                         to { transform: rotate(360deg); }
                     }
                 `}</style>
+            </div>
+        );
+    }
+
+    if (sessionError) {
+        return (
+            <div className="signup-forms-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+                <div style={{ maxWidth: "520px", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", padding: "22px", borderRadius: "8px", textAlign: "center" }}>
+                    <ShieldAlert size={28} style={{ marginBottom: "10px" }} />
+                    <h2 style={{ margin: "0 0 8px", color: "#7c2d12", fontSize: "20px" }}>Admin Login Needed</h2>
+                    <p style={{ margin: "0 0 18px", fontSize: "14px", lineHeight: 1.5 }}>{sessionError}</p>
+                    <button
+                        className="save-btn"
+                        onClick={() => {
+                            localStorage.clear();
+                            window.location.href = "/login";
+                        }}
+                    >
+                        Go to Admin Login
+                    </button>
+                </div>
             </div>
         );
     }

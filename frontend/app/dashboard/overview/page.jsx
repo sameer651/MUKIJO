@@ -52,6 +52,8 @@ export default function OverviewPage() {
     const [memberRole, setMemberRole] = useState("Member");
     const [userName, setUserName] = useState("User");
     const [clubName, setClubName] = useState("My Club");
+    const [memberGroupName, setMemberGroupName] = useState("");
+    const [approvalStatus, setApprovalStatus] = useState("");
 
     const [adminData, setAdminData] = useState(null);
     const [coachData, setCoachData] = useState(null);
@@ -72,11 +74,15 @@ export default function OverviewPage() {
         const storedUserName = localStorage.getItem("userName") || "User";
         const storedClubName = localStorage.getItem("clubName") || "My Club";
         const storedEmail = localStorage.getItem("userEmail") || "";
+        const storedGroupName = localStorage.getItem("memberGroupName") || "";
+        const storedApprovalStatus = localStorage.getItem("approvalStatus") || "";
 
         setIsMember(storedIsMember);
         setMemberRole(storedRole);
         setUserName(storedUserName);
         setClubName(storedClubName);
+        setMemberGroupName(storedGroupName);
+        setApprovalStatus(storedApprovalStatus);
 
         const fetchData = async () => {
             setLoading(true);
@@ -161,6 +167,20 @@ export default function OverviewPage() {
             alert("Connection error while sending your response.");
         }
     };
+
+    const renderMemberApprovalBanner = () => (
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "center", padding: "12px 16px", borderRadius: "8px", border: "1px solid #bbf7d0", background: "#f0fdf4", color: "#166534", marginBottom: "16px", flexWrap: "wrap" }}>
+            <div>
+                <strong style={{ display: "block", fontSize: "14px" }}>Application accepted by club admin</strong>
+                <span style={{ fontSize: "13px" }}>
+                    Your member dashboard is active{memberGroupName ? ` for ${memberGroupName}` : ""}.
+                </span>
+            </div>
+            <span style={{ padding: "4px 10px", borderRadius: "999px", background: "#dcfce7", color: "#166534", fontSize: "12px", fontWeight: 800, textTransform: "uppercase" }}>
+                {approvalStatus || "accepted"}
+            </span>
+        </div>
+    );
 
     // Render 1: Club Admin Dashboard
     const renderAdminDashboard = () => {
@@ -248,6 +268,7 @@ export default function OverviewPage() {
         const myEvents = coachData?.upcoming_events || [];
         return (
             <div className={styles.page}>
+                {renderMemberApprovalBanner()}
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
                     <Link href="/dashboard/events/new" className={styles.actionButton}>
@@ -422,6 +443,7 @@ export default function OverviewPage() {
     const renderPlayerDashboard = () => {
         return (
             <div className={styles.page}>
+                {renderMemberApprovalBanner()}
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
                     <Link href="/dashboard/events" className={styles.actionButton} style={{ background: "#8b5cf6", boxShadow: "0 4px 12px rgba(139, 92, 246, 0.25)" }}>
@@ -546,6 +568,7 @@ export default function OverviewPage() {
     const renderParentDashboard = () => {
         return (
             <div className={styles.page}>
+                {renderMemberApprovalBanner()}
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
                     <Link href="/dashboard/members" className={styles.actionButton}>
@@ -626,6 +649,7 @@ export default function OverviewPage() {
 
         return (
             <div className={styles.page}>
+                {renderMemberApprovalBanner()}
                 {/* Quick Actions */}
                 <div className={styles.actionBar}>
                     <Link href="/dashboard/events" className={styles.actionButton} style={officialButtonStyle}>
