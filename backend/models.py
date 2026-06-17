@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -14,6 +14,8 @@ class Group(Base):
     sub_group = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id")) # Link group to a specific user
+    privacy_type = Column(String, default="public") # public, private
+    avatar = Column(String, nullable=True)
 
     members = relationship("Member", back_populates="group")
 
@@ -121,6 +123,10 @@ class User(Base):
     course_registrations = relationship("CourseRegistration", back_populates="owner")
     signup_forms = relationship("SignupForm", back_populates="owner", cascade="all, delete-orphan")
     signup_submissions = relationship("SignupSubmission", back_populates="owner", cascade="all, delete-orphan")
+    venues = relationship("Venue", back_populates="owner")
+    bookings = relationship("Booking", back_populates="user")
+    activities = relationship("Activity", back_populates="owner")
+    rsvps = relationship("ActivityRSVP", back_populates="user")
 
 class FundraisingCampaign(Base):
     __tablename__ = "fundraising_campaigns"
@@ -245,3 +251,84 @@ class SignupSubmission(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     owner = relationship("User", back_populates="signup_submissions")
+
+class Venue(Base):
+    __tablename__ = "venues"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)
+    location = Column(String, nullable=False)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    sports_supported = Column(Text, nullable=True) # JSON Array of sports
+    amenities = Column(Text, nullable=True) # JSON Array of amenities
+    rating = Column(Float, default=5.0)
+
+    owner = relationship("User", back_populates="venues")
+    slots = relationship("Slot", back_populates="venue", cascade="all, delete-orphan")
+
+class Slot(Base):
+    __tablename__ = "slots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    venue_id = Column(Integer, ForeignKey("venues.id"), nullable=False)
+    sport = Column(String, nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+    base_price = Column(Integer, nullable=False)
+    current_price = Column(Integer, nullable=False)
+    is_blocked = Column(Boolean, default=False)
+
+    venue = relationship("Venue", back_populates="slots")
+    bookings = relationship("Booking", back_populates="slot", cascade="all, delete-orphan")
+
+class Booking(Base):
+    __tablename__ = "bookings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    slot_id = Column(Integer, ForeignKey("slots.id"), nullable=False)
+    booking_date = Column(DateTime, default=datetime.utcnow)
+    status = Column(String, default="reserved") # reserved, cancelled, completed
+    amount_paid = Column(Integer, default=0)
+    payment_status = Column(String, default="pending") # pending, paid, refunded
+
+    user = relationship("User", back_populates="bookings")
+    slot = relationship("Slot", back_populates="bookings")
+
+class Activity(Base):
+    __tablename__ = "activities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    venue_id = Column(Integer, ForeignKey("venues.id"), nullable=True)
+    slot_id = Column(Integer, ForeignKey("slots.id"), nullable=True)
+    sport = Column(String, nullable=False)
+    date = Column(String, nullable=False)
+    time = Column(String, nullable=False)
+    location = Column(String, nullable=True)
+    max_players = Column(Integer, nullable=False)
+    min_players = Column(Integer, default=2)
+    skill_level = Column(String, default="All") # Beginner, Intermediate, Advanced, All
+    status = Column(String, default="open") # open, confirmed, cancelled, completed
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", back_populates="activities")
+    venue = relationship("Venue")
+    slot = relationship("Slot")
+    rsvps = relationship("ActivityRSVP", back_populates="activity", cascade="all, delete-orphan")
+
+class ActivityRSVP(Base):
+    __tablename__ = "activity_rsvps"
+
+    id = Column(Integer, primary_key=True, index=True)
+    activity_id = Column(Integer, ForeignKey("activities.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    status = Column(String, default="confirmed") # confirmed, tentative, waitlisted
+    joined_at = Column(DateTime, default=datetime.utcnow)
+
+    activity = relationship("Activity", back_populates="rsvps")
+    user = relationship("User", back_populates="rsvps")
+

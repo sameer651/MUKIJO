@@ -1,5 +1,5 @@
   # Backend API for Mukijo Club Management
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form, Header
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
@@ -1025,8 +1025,10 @@ def get_payments_summary(owner_id: int, db: Session = Depends(get_db)):
     }
 
 @app.get("/payments/member-status")
-def get_payments_member_status(owner_id: int, db: Session = Depends(get_db)):
+def get_payments_member_status(owner_id: int, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
     """Retrieve payment status details for all club members and their assigned payments."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to view payment records.")
     groups = db.query(models.Group).filter(models.Group.owner_id == owner_id).all()
     group_ids = [g.id for g in groups]
 
@@ -1101,8 +1103,10 @@ def get_payments_member_status(owner_id: int, db: Session = Depends(get_db)):
     return result
 
 @app.post("/payments", response_model=schemas.PaymentResponse)
-def create_payment(payment: schemas.PaymentCreate, db: Session = Depends(get_db)):
+def create_payment(payment: schemas.PaymentCreate, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
     """Create a new payment request for a specific group, member, or club-wide."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to create payments.")
     if payment.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be greater than zero")
 
@@ -1132,8 +1136,10 @@ def create_payment(payment: schemas.PaymentCreate, db: Session = Depends(get_db)
     return serialize_payment(new_payment)
 
 @app.put("/payments/{payment_id}", response_model=schemas.PaymentResponse)
-def update_payment(payment_id: int, owner_id: int, payment_update: schemas.PaymentUpdate, db: Session = Depends(get_db)):
+def update_payment(payment_id: int, owner_id: int, payment_update: schemas.PaymentUpdate, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
     """Update details of an existing payment request, including its amount or status."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to update payments.")
     payment = db.query(models.Payment).filter(
         models.Payment.id == payment_id,
         models.Payment.owner_id == owner_id
@@ -1170,8 +1176,10 @@ def update_payment(payment_id: int, owner_id: int, payment_update: schemas.Payme
     return serialize_payment(payment)
 
 @app.delete("/payments/{payment_id}")
-def delete_payment(payment_id: int, owner_id: int, db: Session = Depends(get_db)):
+def delete_payment(payment_id: int, owner_id: int, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
     """Delete an existing payment request."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to delete payments.")
     payment = db.query(models.Payment).filter(
         models.Payment.id == payment_id,
         models.Payment.owner_id == owner_id
@@ -2298,5 +2306,320 @@ def login_member(req: MemberLoginRequest, db: Session = Depends(get_db)):
         "groupName": group.group_name,
         "approvalStatus": "accepted"
     }
+
+@app.post("/venues", response_model=schemas.VenueResponse)
+def create_venue(venue: schemas.VenueCreate, db: Session = Depends(get_db)):
+    """Add a new sports venue into the discoverable registry."""
+    new_venue = models.Venue(
+        owner_id=venue.owner_id,
+        name=venue.name,
+        location=venue.location,
+        latitude=venue.latitude,
+        longitude=venue.longitude,
+        sports_supported=venue.sports_supported,
+        amenities=venue.amenities,
+        rating=venue.rating or 5.0
+    )
+    db.add(new_venue)
+    db.commit()
+    db.refresh(new_venue)
+    return new_venue
+
+@app.get("/venues", response_model=List[schemas.VenueResponse])
+def get_venues(sport: Optional[str] = None, location: Optional[str] = None, db: Session = Depends(get_db)):
+    """Search and discover nearby venues filtered by location and sport."""
+    query = db.query(models.Venue)
+    if sport and sport != "all":
+        query = query.filter(models.Venue.sports_supported.like(f"%{sport}%"))
+    if location:
+        query = query.filter(models.Venue.location.like(f"%{location}%"))
+    return query.all()
+
+@app.post("/venues/{venue_id}/slots", response_model=List[schemas.SlotResponse])
+def create_venue_slots(venue_id: int, slots: List[schemas.SlotCreate], db: Session = Depends(get_db)):
+    """Batch insert sports slot inventories for a venue."""
+    created_slots = []
+    for slot in slots:
+        new_slot = models.Slot(
+            venue_id=venue_id,
+            sport=slot.sport,
+            start_time=slot.start_time,
+            end_time=slot.end_time,
+            base_price=slot.base_price,
+            current_price=slot.current_price,
+            is_blocked=slot.is_blocked
+        )
+        db.add(new_slot)
+        created_slots.append(new_slot)
+    db.commit()
+    for slot in created_slots:
+        db.refresh(slot)
+    return created_slots
+
+@app.get("/venues/{venue_id}/slots", response_model=List[schemas.SlotResponse])
+def get_venue_slots(venue_id: int, date_str: Optional[str] = None, db: Session = Depends(get_db)):
+    """Fetch availability schedules/slots for a specific venue, filtered by YYYY-MM-DD."""
+    if not date_str:
+        from datetime import date
+        date_str = date.today().isoformat()
+        
+    try:
+        target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Expected YYYY-MM-DD.")
+        
+    venue = db.query(models.Venue).filter(models.Venue.id == venue_id).first()
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+
+    existing_slots_count = db.query(models.Slot).filter(
+        models.Slot.venue_id == venue_id,
+        func.date(models.Slot.start_time) == target_date
+    ).count()
+
+    if existing_slots_count == 0:
+        sports = ["badminton"]
+        if venue.sports_supported:
+            try:
+                parsed = json.loads(venue.sports_supported)
+                if isinstance(parsed, list) and len(parsed) > 0:
+                    sports = parsed
+            except Exception:
+                if "," in venue.sports_supported:
+                    sports = [s.strip() for s in venue.sports_supported.split(",") if s.strip()]
+                elif venue.sports_supported.strip():
+                    sports = [venue.sports_supported.strip()]
+                    
+        default_times = [
+            ("07:00", "08:00", 1200),
+            ("09:00", "10:00", 1000),
+            ("17:00", "18:00", 1500),
+            ("19:00", "20:00", 1800)
+        ]
+        
+        for i, (start_t, end_t, price) in enumerate(default_times):
+            sport = sports[i % len(sports)]
+            start_dt = datetime.combine(target_date, datetime.strptime(start_t, "%H:%M").time())
+            end_dt = datetime.combine(target_date, datetime.strptime(end_t, "%H:%M").time())
+            
+            new_slot = models.Slot(
+                venue_id=venue_id,
+                sport=sport,
+                start_time=start_dt,
+                end_time=end_dt,
+                base_price=price,
+                current_price=price,
+                is_blocked=False
+            )
+            db.add(new_slot)
+        db.commit()
+
+    slots = db.query(models.Slot).filter(
+        models.Slot.venue_id == venue_id,
+        func.date(models.Slot.start_time) == target_date
+    ).all()
+    
+    slot_ids = [s.id for s in slots]
+    if slot_ids:
+        active_bookings = db.query(models.Booking).filter(
+            models.Booking.slot_id.in_(slot_ids),
+            models.Booking.status == "reserved"
+        ).all()
+        booked_slot_ids = {b.slot_id for b in active_bookings}
+        for slot in slots:
+            if slot.id in booked_slot_ids:
+                slot.is_blocked = True
+                
+    return slots
+
+@app.post("/bookings", response_model=schemas.BookingResponse)
+def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
+    """Place a venue slot reservation with concurrency protection to prevent double bookings."""
+    # Write lock the target slot row
+    slot = db.query(models.Slot).filter(models.Slot.id == booking.slot_id).with_for_update().first()
+    
+    if not slot:
+        raise HTTPException(status_code=404, detail="Slot not found.")
+    
+    if slot.is_blocked:
+        raise HTTPException(status_code=400, detail="Slot is blocked and unavailable.")
+
+    # Check for existing active booking
+    existing_booking = db.query(models.Booking).filter(
+        models.Booking.slot_id == booking.slot_id,
+        models.Booking.status == "reserved"
+    ).first()
+    
+    if existing_booking:
+        raise HTTPException(status_code=409, detail="Slot is already booked.")
+
+    # Proceed to create reservation
+    new_booking = models.Booking(
+        user_id=booking.user_id,
+        slot_id=booking.slot_id,
+        amount_paid=booking.amount_paid or slot.current_price,
+        payment_status=booking.payment_status or "pending",
+        status="reserved"
+    )
+    db.add(new_booking)
+    db.commit()
+    db.refresh(new_booking)
+    return new_booking
+
+@app.post("/activities", response_model=schemas.ActivityResponse)
+def create_activity(activity: schemas.ActivityCreate, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
+    """Create a new sports activity and auto-rsvp the creator as confirmed."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to create games.")
+    new_act = models.Activity(
+        owner_id=activity.owner_id,
+        venue_id=activity.venue_id,
+        slot_id=activity.slot_id,
+        sport=activity.sport,
+        date=activity.date,
+        time=activity.time,
+        location=activity.location,
+        max_players=activity.max_players,
+        min_players=activity.min_players or 2,
+        skill_level=activity.skill_level or "All",
+        description=activity.description,
+        status="open"
+    )
+    db.add(new_act)
+    db.commit()
+    db.refresh(new_act)
+
+    # Auto join creator
+    creator_rsvp = models.ActivityRSVP(
+        activity_id=new_act.id,
+        user_id=activity.owner_id,
+        status="confirmed"
+    )
+    db.add(creator_rsvp)
+    db.commit()
+    db.refresh(new_act)
+    return new_act
+
+@app.get("/activities", response_model=List[schemas.ActivityResponse])
+def get_activities(sport: Optional[str] = None, location: Optional[str] = None, db: Session = Depends(get_db)):
+    """Discover sports activities filtered by sport and location."""
+    query = db.query(models.Activity)
+    if sport and sport != "all":
+        query = query.filter(models.Activity.sport == sport)
+    if location:
+        query = query.filter(models.Activity.location.like(f"%{location}%"))
+    return query.all()
+
+@app.post("/activities/{activity_id}/rsvp", response_model=schemas.ActivityRSVPResponse)
+def rsvp_activity(activity_id: int, rsvp_data: schemas.ActivityRSVPCreate, db: Session = Depends(get_db)):
+    """Join a sports game activity. Places user in waitlist if player limits are exceeded."""
+    # Lock the activity row to ensure synchronization
+    activity = db.query(models.Activity).filter(models.Activity.id == activity_id).with_for_update().first()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found.")
+
+    # Check if user already RSVP'd
+    existing = db.query(models.ActivityRSVP).filter(
+        models.ActivityRSVP.activity_id == activity_id,
+        models.ActivityRSVP.user_id == rsvp_data.user_id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="User already registered for this activity.")
+
+    # Calculate confirmed players count
+    confirmed_count = db.query(models.ActivityRSVP).filter(
+        models.ActivityRSVP.activity_id == activity_id,
+        models.ActivityRSVP.status == "confirmed"
+    ).count()
+
+    status = "confirmed"
+    if confirmed_count >= activity.max_players:
+        status = "waitlisted"
+
+    new_rsvp = models.ActivityRSVP(
+        activity_id=activity_id,
+        user_id=rsvp_data.user_id,
+        status=status
+    )
+    db.add(new_rsvp)
+    db.commit()
+    db.refresh(new_rsvp)
+    return new_rsvp
+
+@app.post("/activities/{activity_id}/cancel-rsvp")
+def cancel_rsvp(activity_id: int, user_id: int, db: Session = Depends(get_db)):
+    """Cancel a player's RSVP. Auto-promotes the next waitlisted player if a confirmed player leaves."""
+    # Lock target activity
+    activity = db.query(models.Activity).filter(models.Activity.id == activity_id).with_for_update().first()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found.")
+
+    rsvp = db.query(models.ActivityRSVP).filter(
+        models.ActivityRSVP.activity_id == activity_id,
+        models.ActivityRSVP.user_id == user_id
+    ).first()
+
+    if not rsvp:
+        raise HTTPException(status_code=404, detail="RSVP registration not found.")
+
+    old_status = rsvp.status
+    db.delete(rsvp)
+    db.commit()
+
+    # If a confirmed player left, promote the oldest waitlisted player
+    if old_status == "confirmed":
+        next_waitlisted = db.query(models.ActivityRSVP).filter(
+            models.ActivityRSVP.activity_id == activity_id,
+            models.ActivityRSVP.status == "waitlisted"
+        ).order_by(models.ActivityRSVP.joined_at.asc()).first()
+
+        if next_waitlisted:
+            next_waitlisted.status = "confirmed"
+            db.commit()
+
+    return {"detail": "RSVP cancelled successfully."}
+
+@app.put("/activities/{activity_id}", response_model=schemas.ActivityResponse)
+def update_activity(activity_id: int, activity_update: schemas.ActivityUpdate, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
+    """Reschedule or update details of a sports activity. Restricted to club admins only."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to reschedule games.")
+        
+    activity = db.query(models.Activity).filter(models.Activity.id == activity_id).first()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found.")
+        
+    update_data = activity_update.dict(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(activity, key, value)
+        
+    db.commit()
+    db.refresh(activity)
+    return activity
+
+@app.post("/activities/{activity_id}/cancel")
+def cancel_activity(activity_id: int, db: Session = Depends(get_db), x_is_member: Optional[str] = Header(None)):
+    """Cancel a sports activity. Restricted to club admins only."""
+    if x_is_member == "true":
+        raise HTTPException(status_code=403, detail="Members are not allowed to cancel games.")
+        
+    activity = db.query(models.Activity).filter(models.Activity.id == activity_id).first()
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found.")
+        
+    activity.status = "cancelled"
+    
+    # If there is a slot_id, unblock/cancel the booking so venue is free
+    if activity.slot_id:
+        booking = db.query(models.Booking).filter(
+            models.Booking.slot_id == activity.slot_id,
+            models.Booking.status == "reserved"
+        ).first()
+        if booking:
+            booking.status = "cancelled"
+            
+    db.commit()
+    return {"message": "Activity cancelled successfully.", "status": "cancelled"}
 
 

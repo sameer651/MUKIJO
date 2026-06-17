@@ -425,3 +425,127 @@ class SignupSubmissionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class VenueCreate(BaseModel):
+    owner_id: int
+    name: str
+    location: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    sports_supported: Optional[str] = None
+    amenities: Optional[str] = None
+    rating: Optional[float] = 5.0
+
+class VenueResponse(BaseModel):
+    id: int
+    owner_id: int
+    name: str
+    location: str
+    latitude: Optional[float]
+    longitude: Optional[float]
+    sports_supported: Optional[str]
+    amenities: Optional[str]
+    rating: float
+
+    class Config:
+        from_attributes = True
+
+class SlotCreate(BaseModel):
+    venue_id: int
+    sport: str
+    start_time: datetime
+    end_time: datetime
+    base_price: int
+    current_price: int
+    is_blocked: Optional[bool] = False
+
+class SlotResponse(BaseModel):
+    id: int
+    venue_id: int
+    sport: str
+    start_time: datetime
+    end_time: datetime
+    base_price: int
+    current_price: int
+    is_blocked: bool
+
+    class Config:
+        from_attributes = True
+
+class BookingCreate(BaseModel):
+    user_id: int
+    slot_id: int
+    amount_paid: Optional[int] = 0
+    payment_status: Optional[str] = "pending"
+
+class BookingResponse(BaseModel):
+    id: int
+    user_id: int
+    slot_id: int
+    booking_date: datetime
+    status: str
+    amount_paid: int
+    payment_status: str
+
+    class Config:
+        from_attributes = True
+
+class ActivityRSVPResponse(BaseModel):
+    id: int
+    activity_id: int
+    user_id: int
+    status: str
+    joined_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ActivityRSVPCreate(BaseModel):
+    user_id: int
+    status: Optional[str] = "confirmed"
+
+class ActivityCreate(BaseModel):
+    owner_id: int
+    venue_id: Optional[int] = None
+    slot_id: Optional[int] = None
+    sport: str
+    date: str
+    time: str
+    location: Optional[str] = None
+    max_players: int
+    min_players: Optional[int] = 2
+    skill_level: Optional[str] = "All"
+    description: Optional[str] = None
+class ActivityUpdate(BaseModel):
+    sport: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
+    location: Optional[str] = None
+    venue_id: Optional[int] = None
+    slot_id: Optional[int] = None
+    max_players: Optional[int] = None
+    min_players: Optional[int] = None
+    skill_level: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+
+class ActivityResponse(BaseModel):
+    id: int
+    owner_id: int
+    venue_id: Optional[int]
+    slot_id: Optional[int]
+    sport: str
+    date: str
+    time: str
+    location: Optional[str]
+    max_players: int
+    min_players: int
+    skill_level: str
+    status: str
+    description: Optional[str]
+    created_at: datetime
+    rsvps: List[ActivityRSVPResponse] = []
+
+    class Config:
+        from_attributes = True
+
+

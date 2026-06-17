@@ -1,16 +1,31 @@
 .create-group-page {
     min-height: 100vh;
-    background: #f8fafc;
+    background: #08080f;
+    position: relative;
+    overflow: hidden;
     padding: 60px 20px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+}
+
+.create-group-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(191, 254, 0, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .create-group-container {
     width: 100%;
     max-width: 600px;
+    position: relative;
+    z-index: 1;
 }
 
 /* Progress Stepper */
@@ -26,42 +41,51 @@
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    background: #e2e8f0;
-    color: #64748b;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(148, 163, 184, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     font-size: 14px;
-    transition: 0.3s;
-    border: 2px solid transparent;
+    transition: all 0.3s ease;
 }
 
 .step-dot.active {
-    background: #2563eb;
-    color: white;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    background: rgba(191, 254, 0, 0.12);
+    border-color: rgba(191, 254, 0, 0.45);
+    color: #bffe00;
+    box-shadow: 0 0 16px rgba(191, 254, 0, 0.2);
 }
 
 .step-line {
     flex: 1;
     height: 3px;
-    background: #e2e8f0;
+    background: rgba(255, 255, 255, 0.07);
     margin: 0 10px;
     border-radius: 2px;
 }
 
 .step-line.active {
-    background: #2563eb;
+    background: #bffe00;
 }
 
 /* Form Card */
 .form-card {
-    background: white;
+    background: rgba(15, 15, 26, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 40px;
     border-radius: 24px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #f1f5f9;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    border-color: rgba(191, 254, 0, 0.2);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(191, 254, 0, 0.04);
 }
 
 .step-header {
@@ -71,33 +95,35 @@
 
 .step-header h1 {
     font-size: 28px;
-    color: #0f172a;
+    color: #f1f5f9;
     font-weight: 800;
     margin-bottom: 8px;
 }
 
 .step-header p {
-    color: #64748b;
+    color: rgba(148, 163, 184, 0.6);
     font-size: 16px;
 }
 
 .back-btn {
-    background: none;
-    border: none;
-    color: #64748b;
+    background: transparent;
+    border: 1.5px solid rgba(0, 240, 255, 0.3);
+    color: #00f0ff;
     font-weight: 600;
     cursor: pointer;
-    padding: 0;
+    padding: 8px 16px;
     margin-bottom: 15px;
-    display: block;
-    transition: 0.2s;
+    display: inline-block;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .back-btn:hover {
-    color: #2563eb;
+    background: rgba(0, 240, 255, 0.08);
+    border-color: rgba(0, 240, 255, 0.5);
 }
 
-/* Activity List (One-per-line style) */
+/* Activity List */
 .activity-list {
     display: flex;
     flex-direction: column;
@@ -112,7 +138,7 @@
     width: 6px;
 }
 .activity-list::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: rgba(191, 254, 0, 0.2);
     border-radius: 10px;
 }
 
@@ -120,8 +146,8 @@
     display: flex;
     align-items: center;
     padding: 16px 20px;
-    background: #ffffff;
-    border: 2px solid #f1f5f9;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     cursor: pointer;
     transition: 0.2s all ease;
@@ -138,23 +164,24 @@
 
 .choice-card-row .label {
     font-weight: 600;
-    color: #334155;
+    color: #f1f5f9;
     font-size: 16px;
 }
 
 .choice-card-row:hover {
-    border-color: #2563eb;
-    background: #eff6ff;
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.04);
     transform: translateX(4px);
 }
 
 .choice-card-row.selected {
-    background: #2563eb;
-    border-color: #2563eb;
+    background: linear-gradient(135deg, #bffe00, #00f0ff);
+    border-color: #bffe00;
 }
 
 .choice-card-row.selected .label {
-    color: white;
+    color: #050508;
+    font-weight: 700;
 }
 
 /* Age Grid */
@@ -167,25 +194,26 @@
 
 .age-card {
     padding: 18px 24px;
-    background: #ffffff;
-    border: 2px solid #f1f5f9;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     font-weight: 600;
-    color: #334155;
+    color: #f1f5f9;
     text-align: left;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 .age-card:hover {
-    border-color: #2563eb;
-    background: #f8fafc;
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.04);
 }
 
 .age-card.selected {
-    background: #1e293b;
-    border-color: #1e293b;
-    color: white;
+    background: linear-gradient(135deg, #bffe00, #00f0ff);
+    border-color: #bffe00;
+    color: #050508;
+    font-weight: 700;
 }
 
 /* Inputs */
@@ -201,7 +229,7 @@
     display: block;
     font-size: 14px;
     font-weight: 600;
-    color: #475569;
+    color: rgba(148, 163, 184, 0.7);
     margin-bottom: 8px;
 }
 
@@ -209,20 +237,20 @@
 .input-group textarea {
     width: 100%;
     padding: 14px 18px;
-    border: 2px solid #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
     font-size: 16px;
-    color: #1e293b;
-    background: #f8fafc;
-    transition: 0.2s;
+    color: #f1f5f9;
+    transition: all 0.2s ease;
     outline: none;
 }
 
 .input-group input:focus, 
 .input-group textarea:focus {
-    border-color: #2563eb;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+    border-color: #bffe00;
+    background: rgba(191, 254, 0, 0.04);
+    box-shadow: 0 0 0 4px rgba(191, 254, 0, 0.08);
 }
 
 .input-group textarea {
@@ -236,32 +264,37 @@
     padding: 16px;
     border-radius: 14px;
     border: none;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 16px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);
 }
 
 .next-btn {
-    background: #2563eb;
-    color: white;
+    background: linear-gradient(135deg, #bffe00, #00f0ff);
+    color: #050508;
+    box-shadow: 0 4px 16px rgba(191, 254, 0, 0.2);
 }
 
 .next-btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    background: linear-gradient(135deg, #d2ff33, #00d8e6);
+    transform: translateY(-2px) skewX(-6deg);
+    box-shadow: 0 8px 24px rgba(191, 254, 0, 0.35);
 }
 
 .submit-btn {
-    background: #10b981;
-    color: white;
+    background: linear-gradient(135deg, #bffe00, #00f0ff);
+    color: #050508;
+    box-shadow: 0 4px 16px rgba(191, 254, 0, 0.2);
 }
 
 .submit-btn:hover {
-    background: #059669;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, #d2ff33, #00d8e6);
+    transform: translateY(-2px) skewX(-6deg);
+    box-shadow: 0 8px 24px rgba(191, 254, 0, 0.35);
 }
 
 /* Animations */
@@ -282,9 +315,14 @@
         background: transparent;
     }
 
+    .create-group-page::before {
+        display: none;
+    }
+
     .form-card {
         padding: 22px;
         border-radius: 14px;
+        background: #0f0f1a;
     }
 
     .progress-stepper {
@@ -310,8 +348,6 @@
     }
 }
 
-
-
 /* Success Message Styles */
 .success-message {
     text-align: center;
@@ -327,12 +363,12 @@
 
 .success-message h1 {
     font-size: 32px;
-    color: #10b981;
+    color: #bffe00;
     margin-bottom: 12px;
 }
 
 .success-message p {
-    color: #64748b;
+    color: rgba(148, 163, 184, 0.6);
     font-size: 18px;
 }
 

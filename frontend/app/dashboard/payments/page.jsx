@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import api from "../../../lib/api";
 import "../../styles/payments-page.css";
 
@@ -13,14 +14,27 @@ function displayStatus(status) {
 }
 
 export default function PaymentsPage() {
+    const router = useRouter();
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [checking, setChecking] = useState(true);
 
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
     useEffect(() => {
+        const isMember = typeof window !== "undefined" ? localStorage.getItem("isMember") === "true" : false;
+        if (isMember) {
+            router.replace("/dashboard/overview");
+        } else {
+            setChecking(false);
+        }
+    }, [router]);
+
+    useEffect(() => {
+        if (checking) return;
+
         const fetchPayments = async () => {
             setLoading(true);
             setError("");
@@ -29,6 +43,7 @@ export default function PaymentsPage() {
                 const [paymentsResponse, membersResponse] = await Promise.all([
                     api.get("/payments/member-status", {
                         params: { owner_id: userId || 1 },
+                        headers: { "X-Is-Member": "false" }
                     }),
                     api.get("/members", {
                         params: { owner_id: userId || 1 },
@@ -53,7 +68,7 @@ export default function PaymentsPage() {
         };
 
         fetchPayments();
-    }, [userId]);
+    }, [userId, checking]);
 
     const filteredPayments = useMemo(() => {
         const query = searchQuery.toLowerCase().trim();
@@ -73,6 +88,17 @@ export default function PaymentsPage() {
             return searchableText.includes(query);
         });
     }, [payments, searchQuery]);
+
+    if (checking) {
+        return (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+                <div style={{ textAlign: "center", color: "#64748b" }}>
+                    <div style={{ width: "40px", height: "40px", border: "4px solid #cbd5e1", borderTopColor: "#2563eb", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 16px" }}></div>
+                    <p style={{ fontWeight: 600 }}>Verifying credentials & role view...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="payments-container">

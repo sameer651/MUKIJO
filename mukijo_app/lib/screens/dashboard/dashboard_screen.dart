@@ -238,12 +238,13 @@ class DashboardScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFE5F7ED), Color(0xFFFFFFFF)],
+          colors: [Color(0xFF1E1E28), Color(0xFF12121A)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: AppTheme.softShadow,
+        border: Border.all(color: AppTheme.borderColor),
       ),
       child: Wrap(
         spacing: 20,
@@ -256,6 +257,7 @@ class DashboardScreen extends ConsumerWidget {
           _CategoryItem(icon: Icons.payment, label: 'Payments', color: AppTheme.error, onTap: () => context.push('/payments')),
           _CategoryItem(icon: Icons.people, label: 'Members', color: Colors.purple, badge: overview.totalMembers.toString(), onTap: () => context.push('/members')),
           _CategoryItem(icon: Icons.volunteer_activism, label: 'Funds', color: Colors.teal, onTap: () => context.push('/fundraising')),
+          _CategoryItem(icon: Icons.location_on_outlined, label: 'Venues', color: AppTheme.secondary, onTap: () => context.push('/venues')),
         ],
       ),
     );

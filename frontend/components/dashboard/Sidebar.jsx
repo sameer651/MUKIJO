@@ -89,21 +89,42 @@ export default function Sidebar() {
                 <span>Fundraising</span>
             </Link>
 
-            <Link href="/dashboard/payments" className={`menu-item ${pathname.startsWith('/dashboard/payments') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
-                <span className="icon">
-                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none">
-                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                        <line x1="1" y1="10" x2="23" y2="10"></line>
-                    </svg>
-                </span>
-                <span>Payments</span>
-            </Link>
+            {!isMember && (
+                <Link href="/dashboard/payments" className={`menu-item ${pathname.startsWith('/dashboard/payments') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
+                    <span className="icon">
+                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                    </span>
+                    <span>Payments</span>
+                </Link>
+            )}
 
             <Link href="/dashboard/events" className={`menu-item ${pathname.startsWith('/dashboard/events') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
                 <span className="icon">
                     <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 </span>
                 <span>Events</span>
+            </Link>
+
+            <Link href="/dashboard/venues" className={`menu-item ${pathname.startsWith('/dashboard/venues') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
+                <span className="icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </span>
+                <span>Venues</span>
+            </Link>
+
+            <Link href="/dashboard/activities" className={`menu-item ${pathname.startsWith('/dashboard/activities') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
+                <span className="icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14h-2v-2h2zm0-4h-2V7h2z"></path>
+                    </svg>
+                </span>
+                <span>Games Hub</span>
             </Link>
 
             {!isMember && (

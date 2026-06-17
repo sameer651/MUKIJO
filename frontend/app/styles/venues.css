@@ -1,0 +1,456 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MUKIJO VENUES — PREMIUM SPORTY DARK DESIGN
+   ═══════════════════════════════════════════════════════════════════ */
+
+.venues-container {
+    padding: 8px 0 48px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    animation: vnFadeIn 0.45s ease;
+}
+
+@keyframes vnFadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Header ──────────────────────────────────────── */
+.venues-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.venues-header h1 {
+    font-size: 30px;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    margin: 0 0 5px 0;
+}
+
+.venues-header p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 15px;
+}
+
+/* ─── Toolbar / Search ────────────────────────────── */
+.venues-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 16px 24px;
+    border-radius: var(--radius-xl);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 280px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    width: 100%;
+    font-size: 14px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.sport-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sport-filter-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    font-style: italic;
+    transition: all 0.25s ease;
+    transform: skewX(-6deg);
+}
+
+.sport-filter-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+.sport-filter-btn.active {
+    background: var(--brand);
+    color: #050508;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(191, 254, 0, 0.25);
+}
+
+/* ─── Venues Grid ────────────────────────────────── */
+.venues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.venue-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: var(--shadow-md);
+}
+
+.venue-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand), var(--violet));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.venue-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(191, 254, 0, 0.25);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(191, 254, 0, 0.08);
+}
+
+.venue-card:hover::before {
+    opacity: 1;
+}
+
+.venue-cover {
+    height: 140px;
+    background: linear-gradient(135deg, var(--bg-surface-2), var(--bg-surface-3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border);
+    color: rgba(191, 254, 0, 0.2);
+}
+
+.venue-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.venue-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.venue-location {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.venue-sports {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.sport-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    background: rgba(0, 240, 255, 0.08);
+    color: var(--violet);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: var(--radius-sm);
+}
+
+.venue-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: auto;
+}
+
+.venue-rating {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fbbf24;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.book-now-text {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brand);
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+/* ─── Detail / Slots Grid Layout ────────────────── */
+.venue-details-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+.venue-info-sidebar {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+}
+
+.venue-info-sidebar h2 {
+    font-size: 20px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0 0 16px;
+}
+
+.venue-info-sidebar p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.amenity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.amenity-item svg {
+    color: var(--brand);
+}
+
+/* ─── Slots Panel ───────────────────────────────── */
+.slots-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+}
+
+.slots-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+
+.slots-header h3 {
+    font-size: 18px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.slots-date-picker {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    color-scheme: dark;
+}
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.slot-item {
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.slot-item:hover {
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.slot-item.selected {
+    background: var(--brand-light);
+    border-color: var(--brand);
+    box-shadow: 0 0 16px rgba(191, 254, 0, 0.12);
+}
+
+.slot-time {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-style: italic;
+}
+
+.slot-sport {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.slot-price {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--brand);
+}
+
+.slot-item.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.01);
+    border-color: var(--border);
+}
+
+.slot-item.blocked:hover {
+    transform: none;
+}
+
+/* ─── Confirm Booking Button ────────────────────── */
+.confirm-booking-box {
+    margin-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+}
+
+.confirm-booking-btn {
+    background: linear-gradient(135deg, var(--brand), var(--violet));
+    color: #050508;
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(191, 254, 0, 0.25);
+    transition: all 0.2s ease;
+    transform: skewX(-6deg);
+}
+
+.confirm-booking-btn:hover {
+    transform: translateY(-2px) skewX(-6deg);
+    box-shadow: 0 8px 24px rgba(191, 254, 0, 0.4);
+    background: linear-gradient(135deg, var(--brand-hover), #00d8e6);
+}
+
+.confirm-booking-btn:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.2);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: skewX(-6deg);
+}
+
+/* ─── Empty State ───────────────────────────────── */
+.empty-slots-box {
+    grid-column: 1 / -1;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-secondary);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.empty-slots-box svg {
+    color: rgba(191, 254, 0, 0.25);
+    margin-bottom: 12px;
+}
+
+/* ─── Responsive ────────────────────────────────── */
+@media (max-width: 900px) {
+    .venue-details-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -106,7 +106,7 @@ class _AddCampaignScreenState extends ConsumerState<AddCampaignScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            SizedBox(width: double.infinity, child: ElevatedButton(onPressed: _loading ? null : _submit, child: _loading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Launch Campaign'))),
+            SizedBox(width: double.infinity, child: ElevatedButton(onPressed: _loading ? null : _submit, child: _loading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppTheme.primary, strokeWidth: 2)) : const Text('Launch Campaign'))),
           ]),
         ),
       ),

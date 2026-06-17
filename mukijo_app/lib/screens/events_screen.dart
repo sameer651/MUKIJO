@@ -15,7 +15,7 @@ class EventsScreen extends ConsumerWidget {
     final eventsAsync = ref.watch(eventsProvider);
 
     return Scaffold(
-      backgroundColor:n   AppTheme.bgLight,
+      backgroundColor: AppTheme.bgLight,
       appBar: AppBar(
         title: const Text('Club Events'),
         actions: [

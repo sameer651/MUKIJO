@@ -127,7 +127,7 @@ class _AddGroupScreenState extends ConsumerState<AddGroupScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _submit,
                   child: _loading
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppTheme.primary, strokeWidth: 2))
                       : const Text('Create Group'),
                 ),
               ),

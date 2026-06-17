@@ -1,178 +1,186 @@
-/* overview.module.css */
+/* ═══════════════════════════════════════════════════════════════════
+   MUKIJO OVERVIEW MODULE — PREMIUM DARK DESIGN
+   ═══════════════════════════════════════════════════════════════════ */
 
+/* ─── Page ───────────────────────────────────────── */
 .page {
     padding-bottom: 48px;
-    font-family: 'Inter', -apple-system, sans-serif;
-    animation: fadeIn 0.4s ease;
+    font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+    animation: fadeInPage 0.45s ease;
     width: 100%;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Header ─────────────────────────────────────── */
+/* ─── Page Header ────────────────────────────────── */
 .pageHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 32px;
-    padding-top: 32px;
+    padding-top: 8px;
 }
 
 .pageTitle {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 4px;
-    letter-spacing: -0.4px;
+    color: #f1f5f9;
+    margin: 0 0 5px;
+    letter-spacing: -0.5px;
 }
 
 .pageSubtitle {
     font-size: 14px;
-    color: #64748b;
+    color: rgba(148, 163, 184, 0.7);
     margin: 0;
+    font-weight: 400;
 }
 
 .dateBadge {
-    font-size: 13px;
-    font-weight: 500;
-    color: #64748b;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(148, 163, 184, 0.6);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 8px;
     padding: 8px 14px;
+    white-space: nowrap;
 }
 
-/* ─── Stat Cards ─────────────────────────────────── */
+/* ─── Action Bar ─────────────────────────────────── */
+.actionBar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    padding-top: 0;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 160px;
+    min-height: 42px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-decoration: none;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+
+.actionButton:hover {
+    background: rgba(99, 102, 241, 0.22);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #c7d2fe;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+}
+
+.actionButton svg { stroke-width: 2.2; flex-shrink: 0; }
+
+.actionSymbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.rupeeIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; height: 100%;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* ─── Stat Cards Grid ────────────────────────────── */
 .statsGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-bottom: 40px;
+    gap: 16px;
+    margin-bottom: 32px;
 }
 
 @media (max-width: 1200px) {
-    .statsGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .statsGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 640px) {
-    .page {
-        padding-bottom: 24px;
-    }
-
-    .pageHeader {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-        padding-top: 4px;
-        margin-bottom: 22px;
-    }
-
-    .pageTitle {
-        font-size: 24px;
-    }
-
-    .dateBadge {
-        width: 100%;
-        text-align: center;
-    }
-
-    .actionBar {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        padding-top: 4px;
-        margin-bottom: 24px;
-    }
-
-    .actionButton {
-        width: 100%;
-        min-height: 48px;
-        padding: 10px 12px;
-        font-size: 13px;
-    }
-
-    .statsGrid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-        margin-bottom: 24px;
-    }
-
-    .statCard {
-        min-height: 118px;
-        padding: 22px 18px;
-        gap: 16px;
-        border-radius: 14px;
-    }
-
-    .statCard:hover,
-    .statCardLink:hover {
-        transform: none;
-    }
-
-    .statIcon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-    }
-
-    .statIcon svg {
-        width: 24px;
-        height: 24px;
-    }
-
-    .statValue {
-        font-size: 32px;
-    }
-}
-
+/* ─── Individual Stat Card ────────────────────────── */
 .statCard {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 36px 32px;
+    background: rgba(15, 15, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+    padding: 24px 22px;
     display: flex;
     align-items: flex-start;
-    gap: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    gap: 18px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     cursor: default;
     position: relative;
     overflow: hidden;
-    min-height: 140px;
+    min-height: 120px;
+    backdrop-filter: blur(10px);
+}
+
+/* Top accent line on hover */
+.statCard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 18px 18px 0 0;
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
 
 .statCard:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Clickable card variant */
+.statCard:hover::before { opacity: 1; }
+
+/* Color themes for accent line */
+.blue::before { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+.violet::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.emerald::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.rose::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+.indigo::before { background: linear-gradient(90deg, #4f46e5, #818cf8); }
+
+/* Clickable card */
 .statCardLink {
     text-decoration: none;
     cursor: pointer;
 }
 
 .statCardLink:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
-    border-color: #cbd5e1;
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }
 
 .statArrow {
     margin-left: auto;
-    color: #cbd5e1;
+    color: rgba(148, 163, 184, 0.3);
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -180,59 +188,38 @@
 }
 
 .statCardLink:hover .statArrow {
-    color: #94a3b8;
-    transform: translateX(3px);
+    color: rgba(148, 163, 184, 0.7);
+    transform: translateX(4px);
 }
 
-/* Icon colour variants — cards stay neutral, icons stay vivid */
-.blue .statIcon {
-    background: #eff6ff;
-    color: #3b82f6;
-}
-
-.violet .statIcon {
-    background: #f5f3ff;
-    color: #8b5cf6;
-}
-
-.amber .statIcon {
-    background: #fffbeb;
-    color: #f59e0b;
-}
-
-.emerald .statIcon {
-    background: #ecfdf5;
-    color: #10b981;
-}
-
-.rose .statIcon {
-    background: #fef2f2;
-    color: #ef4444;
-}
-
-.indigo .statIcon {
-    background: #e0e7ff;
-    color: #4f46e5;
-}
-
+/* ─── Icon Colors ─────────────────────────────────── */
 .statIcon {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+    width: 52px; height: 52px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: transform 0.25s ease;
 }
 
+.statCard:hover .statIcon { transform: scale(1.08) rotate(-4deg); }
+
 .statIcon svg {
-    width: 32px;
-    height: 32px;
+    width: 26px; height: 26px;
     stroke: currentColor;
     stroke-width: 2;
     fill: none;
 }
 
+.blue .statIcon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; box-shadow: 0 0 20px rgba(59,130,246,0.15); }
+.violet .statIcon { background: rgba(139, 92, 246, 0.15); color: #a78bfa; box-shadow: 0 0 20px rgba(139,92,246,0.15); }
+.amber .statIcon { background: rgba(245, 158, 11, 0.15); color: #fbbf24; box-shadow: 0 0 20px rgba(245,158,11,0.15); }
+.emerald .statIcon { background: rgba(16, 185, 129, 0.15); color: #34d399; box-shadow: 0 0 20px rgba(16,185,129,0.15); }
+.rose .statIcon { background: rgba(244, 63, 94, 0.15); color: #fb7185; box-shadow: 0 0 20px rgba(244,63,94,0.15); }
+.indigo .statIcon { background: rgba(99, 102, 241, 0.15); color: #818cf8; box-shadow: 0 0 20px rgba(99,102,241,0.15); }
+
+/* ─── Stat Body ──────────────────────────────────── */
 .statBody {
     display: flex;
     flex-direction: column;
@@ -240,115 +227,97 @@
 }
 
 .statValue {
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 800;
-    color: #0f172a;
+    color: #f1f5f9;
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -0.8px;
 }
 
 .statLabel {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
-    color: #374151;
+    color: rgba(148, 163, 184, 0.8);
     margin-top: 6px;
 }
 
 .statSub {
-    font-size: 13px;
-    color: #94a3b8;
+    font-size: 12px;
+    color: rgba(148, 163, 184, 0.45);
     margin-top: 2px;
 }
 
-/* ─── Bottom panels ──────────────────────────────── */
+/* ─── Panels Grid ────────────────────────────────── */
 .panels {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
+    gap: 16px;
 }
 
 @media (max-width: 1100px) {
-    .panels {
-        grid-template-columns: 1fr 1fr;
-    }
+    .panels { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 720px) {
-    .panels {
-        grid-template-columns: 1fr;
-    }
-
-    .panel {
-        padding: 18px;
-        border-radius: 12px;
-    }
-
-    .panelHeader {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .fundraisingAmount {
-        font-size: 32px;
-    }
-}
-
+/* ─── Individual Panel ───────────────────────────── */
 .panel {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: rgba(15, 15, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    padding: 22px;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.25s ease;
 }
+
+.panel:hover { border-color: rgba(255,255,255,0.12); }
 
 .panelHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     padding-bottom: 14px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .panelTitle {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    color: #0f172a;
+    color: #e2e8f0;
 }
 
 .panelLink {
-    font-size: 13px;
-    color: #3b82f6;
-    font-weight: 500;
+    font-size: 12px;
+    color: #818cf8;
+    font-weight: 600;
     text-decoration: none;
     transition: color 0.2s;
+    opacity: 0.8;
 }
 
-.panelLink:hover {
-    color: #1d4ed8;
-    text-decoration: underline;
-}
+.panelLink:hover { color: #a5b4fc; opacity: 1; text-decoration: underline; }
 
-/* ─── Member list ────────────────────────────────── */
+/* ─── Member List ────────────────────────────────── */
 .memberList {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 0; margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .memberRow {
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 8px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
 }
 
+.memberRow:hover { background: rgba(255,255,255,0.03); }
+
 .memberAvatar {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     color: #fff;
     font-size: 13px;
@@ -357,6 +326,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(99,102,241,0.25);
 }
 
 .memberInfo {
@@ -367,53 +337,59 @@
 }
 
 .memberName {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #0f172a;
+    color: #e2e8f0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .memberEmail {
-    font-size: 12px;
-    color: #94a3b8;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.5);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .groupBadge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 9px;
-    background: #eff6ff;
-    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
     border-radius: 20px;
+    border: 1px solid rgba(99,102,241,0.2);
     white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
-
-/* ─── Event list ─────────────────────────────────── */
+/* ─── Event List ─────────────────────────────────── */
 .eventList {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 0; margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
 }
 
 .eventRow {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
 }
 
+.eventRow:hover { background: rgba(255,255,255,0.03); }
+
 .eventDateBox {
-    width: 44px;
-    height: 48px;
-    background: #eff6ff;
+    width: 44px; height: 48px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99,102,241,0.2);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -423,17 +399,17 @@
 }
 
 .eventMonth {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    color: #3b82f6;
+    color: #818cf8;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }
 
 .eventDay {
     font-size: 20px;
     font-weight: 800;
-    color: #1d4ed8;
+    color: #a5b4fc;
     line-height: 1;
 }
 
@@ -445,53 +421,54 @@
 }
 
 .eventName {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #0f172a;
+    color: #e2e8f0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .eventMeta {
-    font-size: 12px;
-    color: #64748b;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.5);
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
 }
 
 .eventType {
-    background: #f1f5f9;
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 4px;
     padding: 1px 6px;
     font-weight: 600;
-    color: #475569;
+    color: rgba(148, 163, 184, 0.7);
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
-
-/* ─── Fundraising panel ──────────────────────────── */
+/* ─── Fundraising Panel ──────────────────────────── */
 .fundraisingCard {
     text-align: center;
     padding: 8px 0;
 }
 
 .fundraisingAmount {
-    font-size: 40px;
+    font-size: 36px;
     font-weight: 800;
-    color: #0f172a;
+    color: #f1f5f9;
     letter-spacing: -1px;
 }
 
 .fundraisingLabel {
-    font-size: 13px;
-    color: #94a3b8;
+    font-size: 12px;
+    color: rgba(148, 163, 184, 0.5);
     font-weight: 500;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .fundraisingBar {
     height: 8px;
-    background: #f1f5f9;
+    background: rgba(255,255,255,0.06);
     border-radius: 99px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -499,187 +476,107 @@
 
 .fundraisingFill {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);
     border-radius: 99px;
     transition: width 0.8s ease;
+    box-shadow: 0 0 8px rgba(99,102,241,0.4);
 }
 
 .fundraisingMeta {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    color: #94a3b8;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.4);
     font-weight: 500;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .fundraisingNote {
-    font-size: 13px;
-    color: #94a3b8;
+    font-size: 12px;
+    color: rgba(148, 163, 184, 0.5);
     line-height: 1.6;
     text-align: center;
     margin: 0;
-    background: #f8fafc;
+    background: rgba(255,255,255,0.03);
     border-radius: 8px;
-    padding: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* ─── Skeleton loading ────────────────────────────── */
+/* ─── Skeleton Loading ───────────────────────────── */
 .skeletonList {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .skeletonRow {
-    height: 40px;
-    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    height: 38px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
     background-size: 200% 100%;
     border-radius: 8px;
-    animation: shimmer 1.4s infinite;
+    animation: shimmer 1.5s infinite;
 }
 
 @keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-
-    100% {
-        background-position: -200% 0;
-    }
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
-.pageHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-}
-
-/* ─── Action Bar ─────────────────────────────────── */
-.actionBar {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 32px;
-    padding-top: 32px;
-    flex-wrap: wrap;
-}
-
-.actionButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 190px;
-    min-height: 46px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-    text-decoration: none;
-}
-
-.actionButton:hover {
-    background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
-}
-
-.actionButton svg {
-    stroke-width: 2.5;
-}
-
-.actionSymbol {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.rupeeIcon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-family: Arial, sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1;
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 720px) {
+    .panels { grid-template-columns: 1fr; }
+    .panel { padding: 18px; border-radius: 14px; }
+    .panelHeader { align-items: flex-start; flex-direction: column; gap: 6px; }
+    .fundraisingAmount { font-size: 30px; }
 }
 
 @media (max-width: 640px) {
-    .page {
-        padding-bottom: 24px;
-    }
+    .page { padding-bottom: 24px; }
 
     .pageHeader {
         align-items: flex-start;
         flex-direction: column;
-        gap: 12px;
-        padding-top: 4px;
-        margin-bottom: 22px;
+        gap: 10px;
+        padding-top: 0;
+        margin-bottom: 20px;
     }
 
-    .pageTitle {
-        font-size: 24px;
-    }
-
-    .dateBadge {
-        width: 100%;
-        text-align: center;
-    }
+    .pageTitle { font-size: 22px; }
+    .dateBadge { width: 100%; text-align: center; }
 
     .actionBar {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        padding-top: 4px;
-        margin-bottom: 24px;
+        gap: 8px;
+        padding-top: 0;
+        margin-bottom: 22px;
     }
 
     .actionButton {
         width: 100%;
-        min-height: 48px;
-        padding: 10px 12px;
-        font-size: 13px;
+        min-height: 44px;
+        padding: 10px 10px;
+        font-size: 12px;
+        min-width: unset;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 22px;
     }
 
     .statCard {
-        min-height: 118px;
-        padding: 22px 18px;
-        gap: 16px;
+        min-height: 100px;
+        padding: 20px 16px;
+        gap: 14px;
         border-radius: 14px;
     }
 
-    .statCard:hover,
-    .statCardLink:hover,
-    .actionButton:hover {
-        transform: none;
-    }
+    .statCard:hover, .statCardLink:hover, .actionButton:hover { transform: none; }
 
-    .statIcon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-    }
-
-    .statIcon svg {
-        width: 24px;
-        height: 24px;
-    }
-
-    .statValue {
-        font-size: 32px;
-    }
+    .statIcon { width: 44px; height: 44px; border-radius: 12px; }
+    .statIcon svg { width: 22px; height: 22px; }
+    .statValue { font-size: 28px; }
 }

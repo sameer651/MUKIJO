@@ -8,6 +8,8 @@ import styles from "../styles/login.module.css";
 function LoginMemberContent() {
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         if (searchParams.get("registered") === "true") {
@@ -15,28 +17,22 @@ function LoginMemberContent() {
         }
     }, [searchParams]);
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    });
+    const [formData, setFormData] = useState({ email: "", password: "" });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setError("");
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
+        setError("");
         try {
             const response = await fetch("http://127.0.0.1:8001/login-member", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: formData.email.trim().toLowerCase(),
                     password: formData.password.trim(),
@@ -45,8 +41,6 @@ function LoginMemberContent() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Member login successful:", data);
-
                 localStorage.setItem("userName", data.userName);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("clubName", data.clubName);
@@ -57,98 +51,105 @@ function LoginMemberContent() {
                 localStorage.setItem("userPhone", data.userPhone || "");
                 localStorage.setItem("memberGroupName", data.groupName || "");
                 localStorage.setItem("approvalStatus", data.approvalStatus || "accepted");
-
                 window.location.href = "/dashboard";
             } else {
                 const errorData = await response.json().catch(() => ({}));
-                alert(errorData.detail || "Member login failed. Make sure the club admin has accepted your application.");
+                setError(errorData.detail || "Login failed. Make sure your application has been approved.");
             }
-        } catch (error) {
-            console.error("Member Login Error:", error);
-            alert("Could not connect to the server. Is the backend running?");
+        } catch (err) {
+            setError("Cannot connect to server. Is the backend running?");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className={styles.pageWrapper}>
-            <div className={styles.loginCard}>
-                <div className={styles.header}>
-                    <span className={styles.logo}>Mukijo</span>
-                    <h1 className={styles.title}>Member Login</h1>
-                    <p className={styles.subtitle}>Use the email and password from your approved registration</p>
-                </div>
-
-                {showSuccess && (
-                    <div style={{
-                        backgroundColor: "#d4edda",
-                        color: "#155724",
-                        padding: "12px",
-                        borderRadius: "8px",
-                        marginBottom: "20px",
-                        fontSize: "14px",
-                        textAlign: "center",
-                        border: "1px solid #c3e6cb"
-                    }}>
-                        <strong>Application submitted!</strong><br />
-                        Club admin has to approve your application before you can log in.
+            {/* ── Form Panel ── */}
+            <div className={styles.formPanel}>
+                <div className={styles.loginCard}>
+                    <div className={styles.header}>
+                        <span className={styles.logo}>Mukijo</span>
+                        <h1 className={styles.title}>Member Login</h1>
+                        <p className={styles.subtitle}>
+                            Sign in with your approved member credentials
+                        </p>
                     </div>
-                )}
 
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="email" className={styles.label}>Email address</label>
-                        <div className={styles.inputWrapper}>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="name@example.com"
-                                className={styles.input}
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
+                    {showSuccess && (
+                        <div style={{
+                            background: "rgba(245, 158, 11, 0.1)",
+                            border: "1px solid rgba(245, 158, 11, 0.3)",
+                            color: "#fcd34d",
+                            padding: "12px 16px",
+                            borderRadius: "10px",
+                            marginBottom: "20px",
+                            fontSize: "13px",
+                            textAlign: "center",
+                        }}>
+                            <strong>Application submitted!</strong><br />
+                            Your club admin must approve your application before you can log in.
                         </div>
-                    </div>
+                    )}
 
-                    <div className={styles.inputGroup}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <form className={styles.form} onSubmit={handleSubmit}>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="email" className={styles.label}>Email address</label>
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="name@example.com"
+                                    className={styles.input}
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className={styles.inputGroup}>
                             <label htmlFor="password" className={styles.label}>Password</label>
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className={styles.input}
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div className={styles.inputWrapper}>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="Enter your password"
-                                className={styles.input}
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+
+                        {error && <div className={styles.errorMsg}>{error}</div>}
+
+                        <button
+                            type="submit"
+                            className={styles.loginButton}
+                            disabled={loading}
+                            style={{ background: "linear-gradient(135deg, #06b6d4, #0891b2)" }}
+                        >
+                            {loading ? "Signing in…" : "Enter Member Dashboard →"}
+                        </button>
+                    </form>
+
+                    <div className={styles.divider}><span>or</span></div>
+
+                    <div className={styles.footer}>
+                        Not a member yet?{" "}
+                        <Link href="/register-member" className={styles.signupLink}>
+                            Register here
+                        </Link>
                     </div>
-
-                    <button type="submit" className={styles.loginButton} style={{ backgroundColor: "#2563eb" }}>
-                        Login
-                    </button>
-                </form>
-
-                <div className={styles.divider}>
-                    <span>or</span>
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", textAlign: "center" }}>
-                    <Link href="/" className={styles.signupLink} style={{ textDecoration: "none", fontSize: "14px" }}>
-                        Back to Home
-                    </Link>
-                </div>
-
-                <div className={styles.footer} style={{ marginTop: "20px" }}>
-                    Not a member yet?{" "}
-                    <Link href="/register-member" className={styles.signupLink}>
-                        Register here
-                    </Link>
+                    <div style={{ textAlign: "center", marginTop: "10px" }}>
+                        <Link href="/" className={styles.signupLink} style={{ fontSize: "13px", opacity: 0.6 }}>
+                            ← Back to Home
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

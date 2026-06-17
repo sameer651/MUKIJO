@@ -1,73 +1,136 @@
 import Link from "next/link";
-import { Shield, Users } from "lucide-react";
+import { Shield, Users, ArrowRight, Zap, Trophy, Calendar, CreditCard, BarChart3 } from "lucide-react";
 import "./styles/landing.css";
 
 const ACTION_BOXES = [
   {
     href: "/login",
     title: "Login as Club Admin",
-    description: "Sign in to manage your club, members, events, and finances.",
+    description: "Manage your club, members, events, and finances with full control.",
     variant: "admin-login",
+    Icon: Shield,
   },
   {
     href: "/register",
     title: "Register as Club Admin",
-    description: "Create a new club admin account to set up your organization.",
+    description: "Create your club admin account and set up your organization in minutes.",
     variant: "admin-register",
+    Icon: Shield,
   },
   {
     href: "/login-member",
     title: "Login as Member",
-    description: "Sign in as a coach, player, parent, or referee.",
+    description: "Sign in as a coach, player, parent, or referee to access your dashboard.",
     variant: "member-login",
+    Icon: Users,
   },
   {
     href: "/register-member",
     title: "Register as Member",
-    description: "Join your club as a member with your role and details.",
+    description: "Join your club as a member and unlock your personalized member space.",
     variant: "member-register",
+    Icon: Users,
   },
+];
+
+const FEATURES = [
+  { icon: <Trophy size={13} />, label: "Group Management" },
+  { icon: <Calendar size={13} />, label: "Event Scheduling" },
+  { icon: <CreditCard size={13} />, label: "Payment Tracking" },
+  { icon: <BarChart3 size={13} />, label: "Analytics" },
+  { icon: <Zap size={13} />, label: "Real-time Updates" },
+];
+
+const STATS = [
+  { number: "5+", label: "Roles Supported" },
+  { number: "∞", label: "Members Scale" },
+  { number: "24/7", label: "Access" },
 ];
 
 export default function Home() {
   return (
     <main className="landing-page">
+      {/* ── Top Navigation ── */}
       <header className="landing-topbar">
         <strong className="logo">Mukijo</strong>
-        <span className="topbar-tag">Advanced Club Management Platform</span>
+        <div className="topbar-right">
+          <span className="topbar-tag">Advanced Club Management</span>
+        </div>
       </header>
 
-      <section className="landing-shell">
-        <div className="landing-header">
-          <span className="welcome-tag">Welcome to Mukijo Club</span>
-          <h1>Choose how you want to continue</h1>
-          <p className="welcome-sub">Select one of the options below to sign in or register</p>
+      {/* ── Hero Section ── */}
+      <section className="landing-hero">
+        {/* Floating orbs */}
+        <div className="orb orb-1" aria-hidden="true" />
+        <div className="orb orb-2" aria-hidden="true" />
+        <div className="orb orb-3" aria-hidden="true" />
+
+        {/* Badge */}
+        <div className="hero-badge">
+          Club Management Platform
         </div>
 
+        {/* Headline */}
+        <h1 className="hero-headline">
+          <span className="line-1">Your Club,</span>
+          <span className="line-2">Supercharged.</span>
+        </h1>
+
+        {/* Subheadline */}
+        <p className="hero-sub">
+          Mukijo brings together admins, coaches, players, parents, and referees
+          into one powerful platform — beautiful by design, powerful by nature.
+        </p>
+
+        {/* Feature pills */}
+        <div className="hero-features">
+          {FEATURES.map((f) => (
+            <div key={f.label} className="feat-pill">
+              {f.icon}
+              {f.label}
+            </div>
+          ))}
+        </div>
+
+        {/* Action Cards */}
         <div className="landing-boxes-grid">
-          {ACTION_BOXES.map((box) => {
-            const isAdmin = box.variant.startsWith("admin");
-            return (
-              <Link
-                key={box.variant}
-                href={box.href}
-                className="action-box"
-              >
-                <div className="action-box__icon">
-                  {isAdmin ? <Shield size={22} /> : <Users size={22} />}
-                </div>
-                <div className="action-box__content">
-                  <h2>{box.title}</h2>
-                  <p>{box.description}</p>
-                </div>
-              </Link>
-            );
-          })}
+          {ACTION_BOXES.map((box) => (
+            <Link
+              key={box.variant}
+              href={box.href}
+              className="action-box"
+              data-variant={box.variant}
+            >
+              <div className="action-box__icon">
+                <box.Icon size={24} />
+              </div>
+              <div className="action-box__content">
+                <h2>{box.title}</h2>
+                <p>{box.description}</p>
+              </div>
+              <div className="action-box__arrow">
+                <ArrowRight size={13} />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Stats */}
+        <div className="hero-stats">
+          {STATS.map((s) => (
+            <div key={s.label} className="stat-item">
+              <span className="stat-number">{s.number}</span>
+              <span className="stat-label">{s.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
+      {/* ── Footer ── */}
       <footer className="landing-footer">
-        <span>Copyrights © 2026 Mukijo Club. All rights reserved.</span>
+        <span>©</span>
+        <span>2026 Mukijo Club.</span>
+        All rights reserved.
       </footer>
     </main>
   );

@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Playo-Inspired Brand Colors
-  static const Color primary = Color(0xFF00B453); // Playo Green
-  static const Color primaryDark = Color(0xFF008F42);
-  static const Color primaryLight = Color(0xFFE5F7ED);
+  // Premium Sporty Dark Theme Colors
+  static const Color primary = Color(0xFFBFFE00); // Electric Lime
+  static const Color primaryDark = Color(0xFF9ECE00);
+  static const Color primaryLight = Color(0x1ABFFE00); // 10% opacity Lime
   
-  static const Color secondary = Color(0xFF2C3E50); // Dark Slate for contrast
+  static const Color secondary = Color(0xFF00F0FF); // Hyper Cyan
   static const Color accent = Color(0xFFFFA000); // Warm amber
 
-  // Background & Surface (Light Theme)
-  static const Color bgLight = Color(0xFFF5F6F8);
-  static const Color bgCard = Color(0xFFFFFFFF);
-  static const Color surfaceLight = Color(0xFFFAFAFA);
+  // Background & Surface (Dark Theme)
+  static const Color bgLight = Color(0xFF08080C);
+  static const Color bgCard = Color(0xFF12121A);
+  static const Color surfaceLight = Color(0xFF1E1E28);
 
   // Text
-  static const Color textPrimary = Color(0xFF1A1D1E);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textMuted = Color(0xFF9CA3AF);
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textMuted = Color(0xFF64748B);
 
   // Status Colors
   static const Color success = Color(0xFF00B453);
@@ -31,11 +31,11 @@ class AppTheme {
   static const Color cancelled = Color(0xFF9CA3AF);
 
   // Border
-  static const Color borderColor = Color(0xFFE5E7EB);
+  static const Color borderColor = Color(0xFF1E293B);
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF00B453), Color(0xFF00D260)],
+    colors: [Color(0xFFBFFE00), Color(0xFF00F0FF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -53,7 +53,7 @@ class AppTheme {
   );
 
   static const LinearGradient blueGradient = LinearGradient(
-    colors: [Color(0xFF3B82F6), Color(0xFF60A5FA)],
+    colors: [Color(0xFF00F0FF), Color(0xFF00B8FF)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -65,7 +65,7 @@ class AppTheme {
   );
 
   static const LinearGradient darkGradient = LinearGradient(
-    colors: [Color(0xFF1E293B), Color(0xFF334155)],
+    colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -73,24 +73,24 @@ class AppTheme {
   // Box Shadows for Cards
   static List<BoxShadow> softShadow = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
+      color: Colors.black.withValues(alpha: 0.3),
       blurRadius: 10,
       offset: const Offset(0, 4),
     ),
   ];
 
   static ThemeData get lightTheme {
-    final base = ThemeData.light();
+    final base = ThemeData.dark();
     return base.copyWith(
       scaffoldBackgroundColor: bgLight,
       primaryColor: primary,
-      colorScheme: const ColorScheme.light(
+      colorScheme: const ColorScheme.dark(
         primary: primary,
         secondary: secondary,
         surface: bgCard,
         error: error,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
+        onPrimary: Color(0xFF050508),
+        onSecondary: Color(0xFF050508),
         onSurface: textPrimary,
         onError: Colors.white,
       ),
@@ -107,7 +107,7 @@ class AppTheme {
         labelLarge: GoogleFonts.inter(color: textPrimary, fontSize: 14, fontWeight: FontWeight.w700),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: bgCard,
+        backgroundColor: bgLight,
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 2,
@@ -149,10 +149,10 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
-          foregroundColor: Colors.white,
+          foregroundColor: const Color(0xFF050508),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 0.5, fontStyle: FontStyle.italic),
           elevation: 0,
         ),
       ),
@@ -162,12 +162,12 @@ class AppTheme {
           side: const BorderSide(color: primary, width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700),
+          textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, fontStyle: FontStyle.italic),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primary,
-        foregroundColor: Colors.white,
+        foregroundColor: Color(0xFF050508),
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
       ),
@@ -177,7 +177,7 @@ class AppTheme {
         unselectedItemColor: textMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+        selectedLabelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 11),
         unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
       ),
       dividerTheme: const DividerThemeData(
@@ -186,9 +186,9 @@ class AppTheme {
         space: 1,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: bgLight,
+        backgroundColor: surfaceLight,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+        labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary),
         side: BorderSide.none,
       ),
       tabBarTheme: TabBarThemeData(
@@ -200,8 +200,8 @@ class AppTheme {
         indicatorSize: TabBarIndicatorSize.tab,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: textPrimary,
-        contentTextStyle: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+        backgroundColor: surfaceLight,
+        contentTextStyle: GoogleFonts.inter(color: textPrimary, fontSize: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),

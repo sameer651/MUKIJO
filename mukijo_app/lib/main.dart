@@ -22,6 +22,8 @@ import 'screens/payments/add_payment_screen.dart';
 import 'screens/members/members_screen.dart';
 import 'screens/fundraising/fundraising_screen.dart';
 import 'screens/fundraising/add_campaign_screen.dart';
+import 'screens/venues/venues_screen.dart';
+import 'screens/venues/venue_detail_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -160,7 +162,20 @@ class MukijoApp extends ConsumerWidget {
             ),
           ],
         ),
-        // Other top-level routes (No bottom bar for these)
+        GoRoute(
+          path: '/venues',
+          name: 'venues',
+          builder: (_, __) => const VenuesScreen(),
+          routes: [
+            GoRoute(
+              path: ':venueId',
+              name: 'venue-detail',
+              builder: (_, state) => VenueDetailScreen(
+                venueId: int.parse(state.pathParameters['venueId']!),
+              ),
+            ),
+          ],
+        ),
         GoRoute(
           path: '/payments',
           name: 'payments',

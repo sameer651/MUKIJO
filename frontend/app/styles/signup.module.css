@@ -1,326 +1,366 @@
-/* SignupPage.module.css */
-/* All styles for the Mukijo Club Signup Page */
-/* Easy to edit: each section is clearly labelled */
+/* ═══════════════════════════════════════════════════════════════════
+   MUKIJO SIGNUP — PREMIUM DARK DESIGN
+   ═══════════════════════════════════════════════════════════════════ */
 
-/* ─── Page Background ────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
+/* ─── Page Background ─────────────────────────────── */
 .pageWrapper {
+    --brand: #bffe00;
+    --brand-hover: #d2ff33;
+    --violet: #00f0ff;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
     min-height: 100vh;
-    background-color: #f4f6f9;
-    /* Light grey background for the whole page */
+    background: #08080f;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Outfit', -apple-system, sans-serif;
+    position: relative;
 }
 
-/* ─── Card (white box in the center) ────────────────────────────────── */
+.pageWrapper::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(191, 254, 0, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
 
+/* ─── Card ────────────────────────────────────────── */
 .card {
-    background-color: #ffffff;
-    /* White card */
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    background: rgba(15, 15, 26, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
     width: 100%;
     max-width: 560px;
-    /* Limit width on large screens */
     padding: 40px 36px;
+    position: relative;
+    z-index: 1;
+    animation: slideUpCard 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    transition: all 0.25s ease;
 }
 
-/* ─── Brand / Logo Area ──────────────────────────────────────────────── */
+.card:hover {
+    border-color: rgba(191, 254, 0, 0.25);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(191, 254, 0, 0.08);
+}
 
+@keyframes slideUpCard {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Brand Area ─────────────────────────────────── */
 .brand {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
 .brandName {
     display: block;
     font-size: 28px;
-    font-weight: 800;
-    color: #1a73e8;
-    /* Blue brand color */
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
     letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #bffe00, #00f0ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 16px rgba(191, 254, 0, 0.35));
 }
 
 .brandTag {
     display: block;
-    font-size: 13px;
-    color: #888;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.4);
     margin-top: 4px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    font-weight: 600;
 }
 
-/* ─── Step Indicator (the 1 --- 2 dots at the top) ──────────────────── */
-
+/* ─── Step Indicator ─────────────────────────────── */
 .stepIndicator {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     gap: 0;
 }
 
 .stepDot {
-    width: 36px;
-    height: 36px;
+    width: 34px; height: 34px;
     border-radius: 50%;
-    background-color: #e8e8e8;
-    /* Grey for inactive step */
-    color: #999;
-    font-size: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(148, 163, 184, 0.5);
+    font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: all 0.25s ease;
 }
 
 .activeDot {
-    background-color: #1a73e8;
-    /* Blue for active step */
-    color: #ffffff;
+    background: rgba(191, 254, 0, 0.12);
+    border-color: rgba(191, 254, 0, 0.45);
+    color: var(--brand);
+    box-shadow: 0 0 16px rgba(191, 254, 0, 0.2);
 }
 
 .stepLine {
     height: 2px;
     width: 80px;
-    background-color: #e0e0e0;
+    background: rgba(255,255,255,0.07);
     margin: 0 8px;
 }
 
-/* ─── Step Container ─────────────────────────────────────────────────── */
-
-.stepContainer {
-    display: block;
-}
+/* ─── Step Container ─────────────────────────────── */
+.stepContainer { display: block; }
 
 .stepTitle {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #f1f5f9;
     margin: 0 0 6px 0;
     text-align: center;
 }
 
 .stepSubtitle {
-    font-size: 14px;
-    color: #888;
+    font-size: 13px;
+    color: rgba(148, 163, 184, 0.5);
     text-align: center;
-    margin: 0 0 28px 0;
+    margin: 0 0 24px 0;
 }
 
-/* ─── Form Fields ────────────────────────────────────────────────────── */
-
-.fieldGroup {
-    margin-bottom: 20px;
-}
+/* ─── Form Fields ─────────────────────────────────── */
+.fieldGroup { margin-bottom: 16px; }
 
 .label {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    color: #444;
+    color: rgba(148, 163, 184, 0.6);
     margin-bottom: 6px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
-/* Text and email and phone inputs */
 .input {
     width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid #d8d8d8;
-    border-radius: 8px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
     font-size: 14px;
-    color: #1a1a1a;
-    background-color: #fafafa;
+    color: #f1f5f9;
+    font-family: 'Outfit', sans-serif;
     outline: none;
     box-sizing: border-box;
-    /* So padding doesn't break layout */
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
+}
+
+.input::placeholder { color: rgba(148, 163, 184, 0.25); }
+
+.input:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
 }
 
 .input:focus {
-    border-color: #1a73e8;
-    /* Blue border when typing */
-    background-color: #fff;
+    border-color: var(--brand);
+    background: rgba(191, 254, 0, 0.04);
+    box-shadow: 0 0 0 4px rgba(191, 254, 0, 0.08);
 }
 
-.input::placeholder {
-    color: #bbb;
-}
-
-/* Dropdowns / Selects */
+/* Selects */
 .select {
     width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid #d8d8d8;
-    border-radius: 8px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
     font-size: 14px;
-    color: #1a1a1a;
-    background-color: #fafafa;
+    color: #f1f5f9;
+    font-family: 'Outfit', sans-serif;
     outline: none;
     box-sizing: border-box;
     cursor: pointer;
     appearance: auto;
-    /* Show the default dropdown arrow */
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
+    color-scheme: dark;
+}
+
+.select option {
+    background-color: #0c0c14; /* Dark background for dropdown options */
+    color: #f1f5f9;            /* Light gray text color for options */
+}
+
+.select option[value=""] {
+    color: rgba(148, 163, 184, 0.5); /* Muted style for placeholders */
 }
 
 .select:focus {
-    border-color: #1a73e8;
-    /* Blue border when focused */
-    background-color: #fff;
+    border-color: var(--brand);
+    background: rgba(191, 254, 0, 0.04);
+    box-shadow: 0 0 0 4px rgba(191, 254, 0, 0.08);
 }
 
-/* ─── Two Columns (First name + Last name side by side) ─────────────── */
-
+/* Two columns */
 .twoColumns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* Two equal columns */
-    gap: 16px;
+    gap: 14px;
 }
 
-/* On small screens, stack them vertically */
 @media (max-width: 480px) {
-    .twoColumns {
-        grid-template-columns: 1fr;
-    }
+    .twoColumns { grid-template-columns: 1fr; }
 }
 
-/* ─── Terms Text (the paragraph above the Yes/No dropdown) ──────────── */
-
+/* Terms */
 .termsText {
-    font-size: 13px;
-    color: #555;
-    background-color: #f0f4ff;
-    /* Light blue background */
-    border-left: 3px solid #1a73e8;
+    font-size: 12px;
+    color: rgba(148, 163, 184, 0.6);
+    background: rgba(191, 254, 0, 0.06);
+    border-left: 3px solid var(--brand);
     padding: 10px 14px;
-    border-radius: 6px;
+    border-radius: 4px;
     margin-bottom: 10px;
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
-/* ─── Button Row (Previous + Next / Sign Up) ─────────────────────────── */
-
+/* ─── Button Row ──────────────────────────────────── */
 .buttonRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 28px;
+    margin-top: 24px;
 }
 
-/* Next Button (Step 1) */
+/* Next Button */
 .nextButton {
-    background-color: #1a73e8;
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--brand), var(--violet));
+    color: #050508;
     border: none;
     padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: all 0.2s ease;
     margin-left: auto;
-    /* Push to the right */
+    box-shadow: 0 4px 16px rgba(191, 254, 0, 0.25);
+    transform: skewX(-6deg);
 }
 
 .nextButton:hover {
-    background-color: #1558b0;
+    transform: translateY(-2px) skewX(-6deg);
+    box-shadow: 0 8px 28px rgba(191, 254, 0, 0.45);
+    background: linear-gradient(135deg, var(--brand-hover), #00d8e6);
 }
 
-.nextButton:active {
-    transform: scale(0.97);
-}
+.nextButton:active { transform: scale(0.97) skewX(-6deg); }
 
-/* Previous Button (Step 2) */
 .prevButton {
-    background-color: transparent;
-    color: #1a73e8;
-    border: 1.5px solid #1a73e8;
+    background: transparent;
+    color: #00f0ff;
+    border: 1.5px solid rgba(0, 240, 255, 0.3);
     padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: all 0.2s ease;
+    transform: skewX(-6deg);
 }
 
 .prevButton:hover {
-    background-color: #f0f4ff;
+    background: rgba(0, 240, 255, 0.08);
+    border-color: rgba(0, 240, 255, 0.5);
 }
 
-.prevButton:active {
-    transform: scale(0.97);
-}
+.prevButton:active { transform: scale(0.97) skewX(-6deg); }
 
-/* Sign Up Button (Step 2) */
+/* Submit Button */
 .submitButton {
-    background-color: #28a745;
-    /* Green for final submit */
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--brand), var(--violet));
+    color: #050508;
     border: none;
     padding: 12px 28px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(191, 254, 0, 0.25);
+    transform: skewX(-6deg);
 }
 
 .submitButton:hover {
-    background-color: #1e7e34;
+    transform: translateY(-2px) skewX(-6deg);
+    box-shadow: 0 8px 28px rgba(191, 254, 0, 0.45);
+    background: linear-gradient(135deg, var(--brand-hover), #00d8e6);
 }
 
-.submitButton:active {
-    transform: scale(0.97);
-}
+.submitButton:active { transform: scale(0.97) skewX(-6deg); }
 
-/* ─── Success Screen ─────────────────────────────────────────────────── */
-
+/* ─── Success Screen ─────────────────────────────── */
 .successContainer {
     text-align: center;
-    padding: 40px 20px;
+    padding: 36px 20px;
 }
 
 .successIcon {
-    width: 64px;
-    height: 64px;
-    background-color: #28a745;
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #10b981, #059669);
     color: #fff;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px auto;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
 }
 
 .successTitle {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #f1f5f9;
     margin: 0 0 10px 0;
 }
 
 .successText {
-    font-size: 15px;
-    color: #666;
+    font-size: 14px;
+    color: rgba(148, 163, 184, 0.6);
     line-height: 1.6;
 }
 
-/* ─── Responsive: smaller padding on mobile ──────────────────────────── */
-
+/* ─── Responsive ──────────────────────────────────── */
 @media (max-width: 480px) {
-    .card {
-        padding: 28px 20px;
-    }
-
-    .brandName {
-        font-size: 24px;
-    }
+    .card { padding: 28px 20px; border-radius: 18px; }
+    .brandName { font-size: 24px; }
 }
