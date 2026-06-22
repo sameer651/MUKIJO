@@ -434,6 +434,8 @@ class VenueCreate(BaseModel):
     sports_supported: Optional[str] = None
     amenities: Optional[str] = None
     rating: Optional[float] = 5.0
+    cover_image: Optional[str] = None
+    venue_images: Optional[str] = None
 
 class VenueResponse(BaseModel):
     id: int
@@ -445,6 +447,8 @@ class VenueResponse(BaseModel):
     sports_supported: Optional[str]
     amenities: Optional[str]
     rating: float
+    cover_image: Optional[str] = None
+    venue_images: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -547,5 +551,84 @@ class ActivityResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class BlockSlotsRequest(BaseModel):
+    start_date: str
+    end_date: str
+    sport: Optional[str] = None
+
+class UnblockSlotsRequest(BaseModel):
+    start_date: str
+    end_date: str
+    sport: Optional[str] = None
+
+class PayoutHistoryResponse(BaseModel):
+    id: str
+    date: str
+    amount: float
+    status: str
+    utr: str
+
+    class Config:
+        from_attributes = True
+
+class PayoutsResponse(BaseModel):
+    total_revenue: float
+    platform_fee: float
+    final_payout: float
+    payout_history: List[PayoutHistoryResponse]
+
+class PeakHourInfo(BaseModel):
+    time: str
+    bookings_count: int
+    percentage: float
+
+class RevenueTrendInfo(BaseModel):
+    month: str
+    revenue: float
+
+class CustomerRetentionInfo(BaseModel):
+    user_id: int
+    user_name: str
+    user_email: str
+    bookings_count: int
+    is_repeat: bool
+
+class SaaSAnalyticsResponse(BaseModel):
+    occupancy_rate: float
+    total_revenue: float
+    total_bookings: int
+    peak_hours: List[PeakHourInfo]
+    revenue_trends: List[RevenueTrendInfo]
+    customer_retention: List[CustomerRetentionInfo]
+
+
+class MessageCreate(BaseModel):
+    sender_id: int
+    sender_type: str
+    sender_name: str
+    group_id: Optional[int] = None
+    channel: Optional[str] = "general"
+    recipient_id: Optional[int] = None
+    recipient_type: Optional[str] = None
+    content: str
+
+class MessageResponse(BaseModel):
+    id: int
+    sender_id: int
+    sender_type: str
+    sender_name: str
+    group_id: Optional[int] = None
+    channel: Optional[str] = None
+    recipient_id: Optional[int] = None
+    recipient_type: Optional[str] = None
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 
 

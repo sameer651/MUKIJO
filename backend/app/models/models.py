@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from database import Base
+from app.core.database import Base
 
 class Group(Base):
     __tablename__ = "groups"
@@ -23,6 +23,7 @@ class Group(Base):
     events = relationship("Event", back_populates="group")
     payments = relationship("Payment", back_populates="group")
     courses = relationship("Course", back_populates="group")
+    messages = relationship("Message", back_populates="group", cascade="all, delete-orphan")
 
 class Event(Base):
     __tablename__ = "events"
@@ -264,6 +265,8 @@ class Venue(Base):
     sports_supported = Column(Text, nullable=True) # JSON Array of sports
     amenities = Column(Text, nullable=True) # JSON Array of amenities
     rating = Column(Float, default=5.0)
+    cover_image = Column(Text, nullable=True)
+    venue_images = Column(Text, nullable=True)
 
     owner = relationship("User", back_populates="venues")
     slots = relationship("Slot", back_populates="venue", cascade="all, delete-orphan")
@@ -331,4 +334,21 @@ class ActivityRSVP(Base):
 
     activity = relationship("Activity", back_populates="rsvps")
     user = relationship("User", back_populates="rsvps")
+
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, nullable=False)
+    sender_type = Column(String, nullable=False) # "admin" or "member"
+    sender_name = Column(String, nullable=False)
+    group_id = Column(Integer, ForeignKey("groups.id"), nullable=True)
+    channel = Column(String, default="general", server_default="general", nullable=True)
+    recipient_id = Column(Integer, nullable=True)
+    recipient_type = Column(String, nullable=True) # "admin" or "member"
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    group = relationship("Group", back_populates="messages")
 

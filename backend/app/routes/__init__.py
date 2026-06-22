@@ -1,0 +1,11 @@
+from app.routes.auth import router as auth_router
+from app.routes.groups import router as groups_router
+from app.routes.courses import router as courses_router
+from app.routes.payments import router as payments_router
+from app.routes.events import router as events_router
+from app.routes.fundraising import router as fundraising_router
+from app.routes.onboarding import router as onboarding_router
+from app.routes.venues import router as venues_router
+from app.routes.activities import router as activities_router
+from app.routes.dashboard import router as dashboard_router
+from app.routes.messages import router as messages_router

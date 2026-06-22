@@ -1,19 +1,9 @@
-import os
 import smtplib
 from email.message import EmailMessage
-from dotenv import load_dotenv
-
-load_dotenv()
-
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USER = os.getenv("EMAIL_USER", "sameerjansayed05@gmail.com")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "fylodmkaarbeyllt")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-
+from app.core.config import EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, FRONTEND_URL
 
 def send_verification_email(to_email: str, token: str):
-    verify_link = f"http://192.168.1.30:8000/verify?token={token}"
+    verify_link = f"http://localhost:8001/verify?token={token}"
 
     msg = EmailMessage()
     msg["Subject"] = "Verify your Mukijo Club Email"

@@ -46,6 +46,38 @@ def migrate():
         except Exception as e:
             print(f"Note on group_id alteration: {e}")
             
+        # Add columns to venues table
+        venue_cols = [
+            ("cover_image", "TEXT"),
+            ("venue_images", "TEXT")
+        ]
+        for col_name, col_type in venue_cols:
+            try:
+                conn.execute(text(f"ALTER TABLE venues ADD COLUMN IF NOT EXISTS {col_name} {col_type};"))
+                print(f"Column '{col_name}' added to venues successfully or already exists.")
+            except Exception as e:
+                print(f"Error adding '{col_name}' to venues: {e}")
+            
+        # Add columns to messages table
+        message_cols = [
+            ("channel", "VARCHAR DEFAULT 'general'"),
+            ("recipient_id", "INTEGER"),
+            ("recipient_type", "VARCHAR")
+        ]
+        for col_name, col_type in message_cols:
+            try:
+                conn.execute(text(f"ALTER TABLE messages ADD COLUMN IF NOT EXISTS {col_name} {col_type};"))
+                print(f"Column '{col_name}' added to messages successfully or already exists.")
+            except Exception as e:
+                print(f"Error adding '{col_name}' to messages: {e}")
+                
+        # Drop NOT NULL constraint on group_id in messages
+        try:
+            conn.execute(text("ALTER TABLE messages ALTER COLUMN group_id DROP NOT NULL;"))
+            print("Dropped NOT NULL from group_id in messages")
+        except Exception as e:
+            print(f"Note on group_id alteration in messages: {e}")
+            
         conn.commit()
     print("Database migration finished.")
 
