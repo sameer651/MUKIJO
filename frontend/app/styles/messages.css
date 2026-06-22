@@ -1,0 +1,992 @@
+/* Microsoft Teams-Style Messaging Workspace Stylesheet - Premium Dark Glassmorphism */
+
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 100px);
+    margin: 0 -48px -48px -48px !important;
+    background: transparent;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: #ffffff;
+    box-sizing: border-box;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Three-Panel Teams Workspace Layout */
+.teams-layout {
+    display: flex;
+    flex: 1;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+}
+
+/* 1. App Bar (Vertical Left Nav) */
+.teams-app-bar {
+    width: 72px;
+    background: rgba(10, 11, 15, 0.7);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    gap: 20px;
+    z-index: 10;
+}
+
+.app-bar-item {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    gap: 4px;
+}
+
+.app-bar-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.app-bar-item.active {
+    color: var(--brand-primary, #bffe00);
+    background: rgba(191, 254, 0, 0.08);
+    box-shadow: inset 0 0 10px rgba(191, 254, 0, 0.05);
+}
+
+.app-bar-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    background: var(--brand-primary, #bffe00);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px var(--brand-primary, #bffe00);
+}
+
+.app-bar-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.app-bar-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ff2d55;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+    border-radius: 10px;
+    min-width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(10, 11, 15, 0.9);
+    box-shadow: 0 0 8px rgba(255, 45, 85, 0.5);
+}
+
+/* 2. Channels & DM Sidebar */
+.teams-sidebar {
+    width: 290px;
+    background: rgba(15, 23, 42, 0.25);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar-header-section {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.new-chat-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.new-chat-btn:hover {
+    background: var(--brand-primary, #bffe00);
+    color: #000000;
+    border-color: var(--brand-primary, #bffe00);
+    box-shadow: 0 0 10px rgba(191, 254, 0, 0.2);
+}
+
+.sidebar-search-box {
+    position: relative;
+    width: 100%;
+}
+
+.sidebar-search-input {
+    width: 100%;
+    background: rgba(10, 11, 15, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    padding: 8px 12px 8px 34px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.sidebar-search-input:focus {
+    border-color: var(--brand-primary, #bffe00);
+}
+
+.sidebar-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+/* Sidebar List Scroll Area */
+.sidebar-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-list-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-list-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.sidebar-section-label {
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Sidebar Channel & Team accordion style */
+.team-item-accordion {
+    margin-bottom: 8px;
+}
+
+.team-header-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-size: 13px;
+    gap: 8px;
+    transition: color 0.2s ease;
+}
+
+.team-header-row:hover {
+    color: #ffffff;
+}
+
+.team-channels-list {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 2px 0;
+}
+
+.channel-sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin: 0 8px;
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+}
+
+.channel-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+}
+
+.channel-sidebar-item.active {
+    background: rgba(191, 254, 0, 0.06);
+    color: var(--brand-primary, #bffe00);
+    font-weight: 600;
+    border-left: 3px solid var(--brand-primary, #bffe00);
+}
+
+.channel-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.channel-hashtag {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.channel-sidebar-item.active .channel-hashtag {
+    color: var(--brand-primary, #bffe00);
+}
+
+/* DM Sidebar Item */
+.dm-sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin: 2px 8px;
+    transition: all 0.2s ease;
+    color: #cbd5e1;
+}
+
+.dm-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+}
+
+.dm-sidebar-item.active {
+    background: rgba(191, 254, 0, 0.06);
+    color: var(--brand-primary, #bffe00);
+    font-weight: 600;
+    border-left: 3px solid var(--brand-primary, #bffe00);
+}
+
+.dm-partner-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(191, 254, 0, 0.1);
+    color: var(--brand-primary, #bffe00);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid rgba(191, 254, 0, 0.15);
+}
+
+.dm-sidebar-item.active .dm-partner-avatar {
+    background: var(--brand-primary, #bffe00);
+    color: #000000;
+}
+
+.dm-info {
+    flex: 1;
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.dm-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dm-role {
+    font-size: 10px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.unread-pill {
+    background: #ff2d55;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 0 8px rgba(255, 45, 85, 0.4);
+}
+
+/* Contact Search Dropdown in Sidebar */
+.contact-dropdown-panel {
+    background: rgba(10, 11, 15, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    margin: 4px 16px;
+    max-height: 180px;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+}
+
+.contact-search-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    gap: 8px;
+    transition: background 0.2s ease;
+}
+
+.contact-search-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-search-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.contact-search-email {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* 3. Chat Main Workspace Pane (Right Column) */
+.teams-chat-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(5, 6, 10, 0.5);
+    height: 100%;
+}
+
+.chat-pane-header {
+    padding: 16px 24px 0 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    background: rgba(10, 11, 15, 0.3);
+}
+
+.chat-header-main-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.chat-header-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chat-header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-header-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* Chat Header Tabs */
+.chat-tabs-bar {
+    display: flex;
+    gap: 24px;
+}
+
+.chat-tab-item {
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.chat-tab-item:hover {
+    color: #ffffff;
+}
+
+.chat-tab-item.active {
+    color: var(--brand-primary, #bffe00);
+}
+
+.chat-tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--brand-primary, #bffe00);
+    box-shadow: 0 -2px 10px var(--brand-primary, #bffe00);
+}
+
+/* Tab Pane Contents */
+.chat-content-pane {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.tab-content-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Posts Tab (Chat Bubble stream) */
+.posts-tab-pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.teams-chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.teams-chat-history::-webkit-scrollbar {
+    width: 6px;
+}
+
+.teams-chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+/* Teams Message Bubble style */
+.teams-msg-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    max-width: 80%;
+    animation: bubbleFadeIn 0.25s ease-out;
+}
+
+@keyframes bubbleFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.teams-msg-wrapper.self {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.teams-msg-wrapper.other {
+    align-self: flex-start;
+}
+
+.msg-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.teams-msg-wrapper.self .msg-avatar {
+    background: var(--brand-primary, #bffe00);
+    color: #000000;
+    border-color: var(--brand-primary, #bffe00);
+}
+
+.msg-bubble-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.teams-msg-wrapper.self .msg-bubble-container {
+    align-items: flex-end;
+}
+
+.msg-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.msg-sender-name {
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.msg-sender-tag {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.msg-sender-tag.admin {
+    color: var(--brand-primary, #bffe00);
+    background: rgba(191, 254, 0, 0.05);
+    border-color: rgba(191, 254, 0, 0.15);
+}
+
+.msg-sent-time {
+    color: #64748b;
+}
+
+.msg-bubble-body {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #f1f5f9;
+    word-break: break-word;
+    border-top-left-radius: 2px;
+}
+
+.teams-msg-wrapper.self .msg-bubble-body {
+    background: rgba(191, 254, 0, 0.06);
+    border-color: rgba(191, 254, 0, 0.2);
+    color: #ffffff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 2px;
+}
+
+/* Image attachment rendering within bubble */
+.msg-attachment-img {
+    margin-top: 8px;
+    max-width: 260px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.msg-attachment-img:hover {
+    transform: scale(1.02);
+}
+
+/* Files Tab Pane */
+.files-tab-pane {
+    height: 100%;
+    overflow-y: auto;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.file-card-box {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.file-card-box:hover {
+    border-color: var(--brand-primary, #bffe00);
+    background: rgba(30, 41, 59, 0.6);
+}
+
+.file-card-preview {
+    height: 110px;
+    background: rgba(10, 11, 15, 0.4);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.file-img-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.file-meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.file-title-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-sender-credit {
+    font-size: 10px;
+    color: #64748b;
+}
+
+.file-download-action-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-download-action-btn:hover {
+    background: var(--brand-primary, #bffe00);
+    color: #000000;
+    border-color: var(--brand-primary, #bffe00);
+}
+
+/* Notes Tab Pane */
+.notes-tab-pane {
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.notes-editor-card {
+    background: rgba(30, 41, 59, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.notes-editor-header {
+    padding: 12px 18px;
+    background: rgba(10, 11, 15, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+.notes-editor-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #f1f5f9;
+    padding: 20px;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    outline: none;
+    resize: none;
+}
+
+/* 4. Styled Rich Text Composer Input Box */
+.teams-composer {
+    padding: 16px 24px;
+    background: rgba(10, 11, 15, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.composer-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding-bottom: 8px;
+}
+
+.toolbar-action-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.toolbar-action-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.toolbar-action-btn.active {
+    color: var(--brand-primary, #bffe00);
+    background: rgba(191, 254, 0, 0.06);
+}
+
+.composer-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.composer-textarea-wrapper {
+    flex: 1;
+    background: rgba(10, 11, 15, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.composer-textarea-wrapper:focus-within {
+    border-color: var(--brand-primary, #bffe00);
+}
+
+.composer-textarea {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    min-height: 24px;
+    max-height: 120px;
+    line-height: 1.4;
+    padding: 4px 0;
+}
+
+.composer-send-btn {
+    background: var(--brand-primary, #bffe00);
+    border: none;
+    color: #000000;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(191, 254, 0, 0.15);
+}
+
+.composer-send-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(191, 254, 0, 0.3);
+}
+
+.composer-send-btn:active {
+    transform: scale(0.95);
+}
+
+/* Empty State Styling for Pane */
+.pane-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #64748b;
+    gap: 16px;
+    padding: 40px;
+    text-align: center;
+}
+
+.pane-empty-state h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.pane-empty-state p {
+    margin: 0;
+    max-width: 280px;
+    line-height: 1.4;
+    font-size: 13px;
+}
+
+/* File attachment upload pill indicator in composer */
+.composer-attachment-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(191, 254, 0, 0.08);
+    border: 1px solid rgba(191, 254, 0, 0.2);
+    color: var(--brand-primary, #bffe00);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    gap: 6px;
+    margin-top: 6px;
+    align-self: flex-start;
+}
+
+.composer-attachment-remove {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+/* Toast notifications list */
+.teams-toast-stack {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .teams-layout {
+        flex-direction: column;
+    }
+    
+    .teams-app-bar {
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        padding: 0 16px;
+        justify-content: space-around;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .app-bar-item {
+        width: 60px;
+        height: 48px;
+    }
+    
+    .app-bar-item.active::before {
+        left: 14px;
+        right: 14px;
+        top: auto;
+        bottom: 0;
+        height: 3px;
+        width: auto;
+        border-radius: 4px 4px 0 0;
+    }
+    
+    .teams-sidebar {
+        width: 100%;
+        height: 260px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .teams-chat-pane {
+        width: 100%;
+        height: calc(100vh - 420px);
+    }
+}

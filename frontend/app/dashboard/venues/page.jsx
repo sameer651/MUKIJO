@@ -63,100 +63,7 @@ export default function VenuesPage() {
         }
     }, [selectedVenue, date]);
 
-    const handleCreateDemoData = async () => {
-        setLoading(true);
-        try {
-            const userId = localStorage.getItem("userId") || 9; // Fallback to test user ID
 
-            // Onboard 3 Venues
-            const demoVenues = [
-                {
-                    owner_id: userId,
-                    name: "Camp Nou Arena",
-                    location: "Sector 62, Noida",
-                    latitude: 28.62,
-                    longitude: 77.37,
-                    sports_supported: '["football", "tennis"]',
-                    amenities: '["Free Parking", "Showers", "Drinking Water"]',
-                    rating: 4.8
-                },
-                {
-                    owner_id: userId,
-                    name: "Smash Badminton Center",
-                    location: "Gachibowli, Hyderabad",
-                    latitude: 17.44,
-                    longitude: 78.34,
-                    sports_supported: '["badminton", "pickleball"]',
-                    amenities: '["AC Courts", "Pro Shop", "Locker Room"]',
-                    rating: 4.9
-                },
-                {
-                    owner_id: userId,
-                    name: "Wankhede Cricket Turf",
-                    location: "Bandra West, Mumbai",
-                    latitude: 19.05,
-                    longitude: 72.82,
-                    sports_supported: '["cricket", "football"]',
-                    amenities: '["Floodlights", "Cafeteria", "Coaching Equipment"]',
-                    rating: 4.7
-                }
-            ];
-
-            for (const dv of demoVenues) {
-                const vRes = await fetch("http://127.0.0.1:8001/venues", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(dv)
-                });
-                
-                if (vRes.ok) {
-                    const venue = await vRes.json();
-                    
-                    // Generate 4 slots for this venue starting on today, tomorrow, and day after
-                    const mockSlots = [];
-                    const sports = JSON.parse(venue.sports_supported);
-                    
-                    for (let dayOffset = 0; dayOffset < 3; dayOffset++) {
-                        const baseDate = new Date();
-                        baseDate.setDate(baseDate.getDate() + dayOffset);
-                        const datePart = baseDate.toISOString().split("T")[0];
-
-                        // Time slots
-                        const times = [
-                            { start: "07:00", end: "08:00", price: 1200 },
-                            { start: "09:00", end: "10:00", price: 1000 },
-                            { start: "17:00", end: "18:00", price: 1500 },
-                            { start: "19:00", end: "20:00", price: 1800 }
-                        ];
-
-                        times.forEach((t, i) => {
-                            mockSlots.push({
-                                venue_id: venue.id,
-                                sport: sports[i % sports.length],
-                                start_time: `${datePart}T${t.start}:00`,
-                                end_time: `${datePart}T${t.end}:00`,
-                                base_price: t.price,
-                                current_price: t.price,
-                                is_blocked: false
-                            });
-                        });
-                    }
-
-                    await fetch(`http://127.0.0.1:8001/venues/${venue.id}/slots`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(mockSlots)
-                    });
-                }
-            }
-
-            await fetchVenues();
-        } catch (error) {
-            console.error("Error creating demo data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleConfirmBooking = async () => {
         if (!selectedSlot) return;
@@ -209,15 +116,7 @@ export default function VenuesPage() {
                     <h1>Venues & Arenas</h1>
                     <p>Discover hyperlocal turfs, courts, and book your sports slots instantly.</p>
                 </div>
-                {venues.length === 0 && !loading && (
-                    <button 
-                        onClick={handleCreateDemoData} 
-                        className="sport-filter-btn active"
-                        style={{ transform: "skewX(-8deg)" }}
-                    >
-                        Pre-populate Demo Arenas
-                    </button>
-                )}
+
             </header>
 
             {/* Main view switcher */}
@@ -292,7 +191,7 @@ export default function VenuesPage() {
                             })}
                             {venues.length === 0 && (
                                 <div className="empty-slots-box" style={{ gridColumn: "1 / -1", padding: "60px" }}>
-                                    <p>No venues found. Please click "Pre-populate Demo Arenas" to load mock sports facilities.</p>
+                                    <p>No venues found. Please register a venue to check available slots.</p>
                                 </div>
                             )}
                         </div>

@@ -436,7 +436,7 @@ export default function SignupFormsDashboard() {
 
                                     return (
                                         <tr key={sub.id}>
-                                            <td style={{ fontWeight: 600, color: "#0f172a" }}>{name}</td>
+                                            <td style={{ fontWeight: 600, color: "#ffffff" }}>{name}</td>
                                             <td>
                                                 <span className={`app-role-badge ${roleClass}`}>
                                                     {sub.role}
@@ -444,7 +444,7 @@ export default function SignupFormsDashboard() {
                                             </td>
                                             <td>{email}</td>
                                             <td>
-                                                <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 10px", borderRadius: "6px", background: "#fff7ed", color: "#9a3412", fontSize: "12px", fontWeight: 700 }}>
+                                                <span style={{ display: "inline-flex", alignItems: "center", padding: "4px 10px", borderRadius: "6px", background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", fontSize: "12px", fontWeight: 700 }}>
                                                     Waiting approval
                                                 </span>
                                             </td>
@@ -556,14 +556,14 @@ export default function SignupFormsDashboard() {
                         </button>
                     </div>
 
-                    <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 20px 0", lineHeight: 1.5 }}>
-                        Accept <strong style={{ color: "#0f172a" }}>{name}</strong> ({approvingSubmission.role}) into the club. After you accept, they can log in with the email and password used during registration.
+                    <p style={{ fontSize: "14px", color: "#cbd5e1", margin: "0 0 20px 0", lineHeight: 1.5 }}>
+                        Accept <strong style={{ color: "#ffffff" }}>{name}</strong> ({approvingSubmission.role}) into the club. After you accept, they can log in with the email and password used during registration.
                     </p>
 
                     <div className="editor-form-group">
                         <label>Select Team / Group</label>
                         {groups.length === 0 ? (
-                            <div style={{ background: "#f0fdf4", color: "#166534", padding: "12px", borderRadius: "8px", fontSize: "13px", display: "flex", gap: "8px", alignItems: "center" }}>
+                            <div style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", padding: "12px", borderRadius: "8px", fontSize: "13px", display: "flex", gap: "8px", alignItems: "center" }}>
                                 <ShieldAlert size={16} />
                                 <span>No groups found. The app will create an Approved Members group automatically.</span>
                             </div>
@@ -618,9 +618,9 @@ export default function SignupFormsDashboard() {
     if (sessionError) {
         return (
             <div className="signup-forms-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
-                <div style={{ maxWidth: "520px", background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", padding: "22px", borderRadius: "8px", textAlign: "center" }}>
+                <div style={{ maxWidth: "520px", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.25)", color: "#fbbf24", padding: "22px", borderRadius: "8px", textAlign: "center" }}>
                     <ShieldAlert size={28} style={{ marginBottom: "10px" }} />
-                    <h2 style={{ margin: "0 0 8px", color: "#7c2d12", fontSize: "20px" }}>Admin Login Needed</h2>
+                    <h2 style={{ margin: "0 0 8px", color: "#ffffff", fontSize: "20px" }}>Admin Login Needed</h2>
                     <p style={{ margin: "0 0 18px", fontSize: "14px", lineHeight: 1.5 }}>{sessionError}</p>
                     <button
                         className="save-btn"
@@ -643,8 +643,8 @@ export default function SignupFormsDashboard() {
             ) : (
                 <>
                     <div style={{ marginBottom: "24px" }}>
-                        <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#0f172a", margin: 0 }}>Club Signups and Forms</h1>
-                        <p style={{ fontSize: "14px", color: "#64748b", margin: "4px 0 0" }}>Configure customized onboarding forms for player squads, parent lists, coaches, and match referees.</p>
+                        <h1 style={{ fontSize: "28px", fontWeight: 700, color: "#ffffff", margin: 0 }}>Club Signups and Forms</h1>
+                        <p style={{ fontSize: "14px", color: "#cbd5e1", margin: "4px 0 0" }}>Configure customized onboarding forms for player squads, parent lists, coaches, and match referees.</p>
                     </div>
 
                     <div className="tabs-container">

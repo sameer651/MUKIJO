@@ -93,8 +93,8 @@ export default function MemberSection() {
         <section className="event-section" style={{ borderRadius: 0, border: "none", boxShadow: "none", padding: "32px 48px", minHeight: "calc(100vh - 96px)" }}>
             <div className="event-top">
                 <span>Members</span>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#f1f5f9", borderRadius: "10px", padding: "8px 14px", border: "1px solid #e2e8f0" }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#94a3b8" strokeWidth="2" fill="none">
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "rgba(255, 255, 255, 0.05)", borderRadius: "10px", padding: "8px 14px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="rgba(148, 163, 184, 0.5)" strokeWidth="2" fill="none">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
@@ -103,7 +103,7 @@ export default function MemberSection() {
                         placeholder="Search members..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        style={{ border: "none", outline: "none", background: "transparent", fontSize: "14px", color: "#0f172a", width: "220px" }}
+                        style={{ border: "none", outline: "none", background: "transparent", fontSize: "14px", color: "#f1f5f9", width: "220px" }}
                     />
                 </div>
             </div>
@@ -111,27 +111,35 @@ export default function MemberSection() {
             {loading ? (
                 <div className="loading-box" style={{ padding: "20px", textAlign: "center", color: "var(--text-secondary)" }}>Loading members list...</div>
             ) : filteredMembers.length > 0 ? (
-                <div className="members-table-container" style={{ marginTop: "15px", width: "100%", backgroundColor: "white", borderRadius: "12px", border: "1px solid var(--border)", overflow: "visible" }}>
+                <div className="members-table-container" style={{ marginTop: "15px", width: "100%", backgroundColor: "rgba(15, 15, 26, 0.9)", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.07)", overflow: "hidden", boxShadow: "0 12px 40px rgba(0, 0, 0, 0.5)" }}>
                     <table style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
-                        <thead style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid var(--border)", borderTopLeftRadius: "12px", borderTopRightRadius: "12px" }}>
+                        <thead style={{ backgroundColor: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid rgba(255, 255, 255, 0.06)" }}>
                             <tr>
-                                <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px" }}>First Name</th>
-                                <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px" }}>Last Name</th>
-                                <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px" }}>Email</th>
-                                <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px" }}>Phone Number</th>
-                                <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px" }}>Group</th>
-                                {!isMember && <th style={{ padding: "16px", fontWeight: "600", color: "#475569", fontSize: "14px", textAlign: "center" }}>Actions</th>}
+                                <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}>First Name</th>
+                                <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Last Name</th>
+                                <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Email</th>
+                                <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Phone Number</th>
+                                <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Group</th>
+                                {!isMember && <th style={{ padding: "14px 16px", fontWeight: "700", color: "#ffffff", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", textAlign: "center" }}>Actions</th>}
                             </tr>
                         </thead>
                         <tbody>
                             {filteredMembers.map((member, index) => (
-                                <tr key={index} style={{ borderBottom: "1px solid var(--border)", backgroundColor: "white" }}>
-                                    <td style={{ padding: "16px", color: "var(--text-primary)", fontSize: "15px", fontWeight: "500" }}>{member.first_name}</td>
-                                    <td style={{ padding: "16px", color: "var(--text-primary)", fontSize: "15px" }}>{member.last_name || "-"}</td>
-                                    <td style={{ padding: "16px", color: "var(--text-secondary)", fontSize: "15px" }}>{member.email || "-"}</td>
-                                    <td style={{ padding: "16px", color: "var(--text-secondary)", fontSize: "15px" }}>{member.phone || "-"}</td>
-                                    <td style={{ padding: "16px" }}>
-                                        <span style={{ fontSize: "13px", padding: "4px 10px", backgroundColor: member.role === "Club Admin" ? "#eff6ff" : "var(--bg-secondary)", color: member.role === "Club Admin" ? "#3b82f6" : "var(--text-secondary)", borderRadius: "12px", fontWeight: "500" }}>
+                                <tr key={index} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)", backgroundColor: "transparent" }}>
+                                    <td style={{ padding: "14px 16px", color: "#f1f5f9", fontSize: "14px", fontWeight: "800" }}>{member.first_name}</td>
+                                    <td style={{ padding: "14px 16px", color: "rgba(241, 245, 249, 0.75)", fontSize: "14px" }}>{member.last_name || "-"}</td>
+                                    <td style={{ padding: "14px 16px", color: "rgba(148, 163, 184, 0.65)", fontSize: "14px" }}>{member.email || "-"}</td>
+                                    <td style={{ padding: "14px 16px", color: "rgba(148, 163, 184, 0.65)", fontSize: "14px" }}>{member.phone || "-"}</td>
+                                    <td style={{ padding: "14px 16px" }}>
+                                        <span style={{ 
+                                            fontSize: "11px", 
+                                            padding: "3px 9px", 
+                                            backgroundColor: member.role === "Club Admin" ? "rgba(59, 130, 246, 0.12)" : "rgba(255, 255, 255, 0.06)", 
+                                            color: member.role === "Club Admin" ? "#3b82f6" : "rgba(148, 163, 184, 0.7)", 
+                                            border: member.role === "Club Admin" ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid rgba(255, 255, 255, 0.08)",
+                                            borderRadius: "999px", 
+                                            fontWeight: "700" 
+                                        }}>
                                             {member.group_name}
                                         </span>
                                     </td>

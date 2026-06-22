@@ -258,7 +258,7 @@ export default function ActivitiesPage() {
         <div className="activities-container">
             <div className="activities-header">
                 <div>
-                    <h1>Rec Games & Squad Coordination</h1>
+                    <h1>Games Hub</h1>
                     <p>Discover pickup matches, find players, and coordinate community games</p>
                 </div>
                 {!isMember && (
@@ -390,7 +390,7 @@ export default function ActivitiesPage() {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <button className="modal-close" onClick={() => setIsModalOpen(false)}>×</button>
-                        <h2 style={{ fontSize: "22px", fontWeight: "800", color: "#ffffff", marginBottom: "20px" }}>Coordinate Rec Game</h2>
+                        <h2 style={{ fontSize: "22px", fontWeight: "800", color: "#ffffff", marginBottom: "20px" }}>Create a Game</h2>
                         
                         <form onSubmit={handleFormSubmit}>
                             <div className="form-group" style={{ marginBottom: "18px" }}>

@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import "../../app/styles/messages.css";
 
 export default function Sidebar() {
     const [groups, setGroups] = useState([]);
     const [clubName, setClubName] = useState("My Club");
     const [isMember, setIsMember] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
     const pathname = usePathname();
 
     useEffect(() => {
@@ -28,11 +30,23 @@ export default function Sidebar() {
             }
         };
 
+        const updateUnreadCount = () => {
+            const count = parseInt(localStorage.getItem("total_unread_messages") || "0");
+            setUnreadCount(count);
+        };
+
         fetchGroups();
+        updateUnreadCount();
 
         // Listen for groups updates to refresh the list
         window.addEventListener("groupsUpdated", fetchGroups);
-        return () => window.removeEventListener("groupsUpdated", fetchGroups);
+        // Listen for unread message counts updates
+        window.addEventListener("unreadMessagesUpdated", updateUnreadCount);
+
+        return () => {
+            window.removeEventListener("groupsUpdated", fetchGroups);
+            window.removeEventListener("unreadMessagesUpdated", updateUnreadCount);
+        };
     }, []);
 
     return (
@@ -61,12 +75,13 @@ export default function Sidebar() {
                 </Link>
             )}
 
-            <div className="menu-item">
+            <Link href="/dashboard/messages" className={`menu-item ${pathname === '/dashboard/messages' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
                 <span className="icon">
                     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 </span>
                 <span>Messages</span>
-            </div>
+                {unreadCount > 0 && <span className="sidebar-unread-badge">{unreadCount}</span>}
+            </Link>
 
             <Link href="/dashboard/members" className={`menu-item ${pathname === '/dashboard/members' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
                 <span className="icon">
@@ -117,6 +132,20 @@ export default function Sidebar() {
                 </span>
                 <span>Venues</span>
             </Link>
+
+            {!isMember && (
+                <Link href="/dashboard/venue-partner" className={`menu-item ${pathname.startsWith('/dashboard/venue-partner') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
+                    <span className="icon">
+                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <line x1="9" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="15" x2="21" y2="15"></line>
+                        </svg>
+                    </span>
+                    <span>Venue Partner Portal</span>
+                </Link>
+            )}
 
             <Link href="/dashboard/activities" className={`menu-item ${pathname.startsWith('/dashboard/activities') ? 'active' : ''}`} style={{ textDecoration: 'none' }}>
                 <span className="icon">

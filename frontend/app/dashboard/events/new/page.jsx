@@ -139,8 +139,8 @@ export default function NewEventPage() {
 
             <div className="form-card">
                 <div style={{ marginBottom: "30px" }}>
-                    <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#0f172a", margin: "0" }}>Schedule New Club Event</h1>
-                    <p style={{ color: "#64748b", margin: "6px 0 0 0" }}>Fill out event information and customize registration settings</p>
+                    <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#ffffff", margin: "0" }}>Schedule New Club Event</h1>
+                    <p style={{ color: "#94a3b8", margin: "6px 0 0 0" }}>Fill out event information and customize registration settings</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -274,7 +274,7 @@ export default function NewEventPage() {
                         </div>
 
                         <div style={{ marginTop: "16px" }}>
-                            <label htmlFor="coverUrl" style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Or paste custom cover image URL</label>
+                            <label htmlFor="coverUrl" style={{ fontSize: "13px", fontWeight: "600", color: "#ffffff" }}>Or paste custom cover image URL</label>
                             <input 
                                 type="url" 
                                 id="coverUrl" 

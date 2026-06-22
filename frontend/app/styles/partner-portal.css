@@ -1,0 +1,749 @@
+/* Venue Partner SaaS Portal CSS Stylesheet */
+
+.partner-portal-container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: var(--foreground);
+}
+
+.portal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 20px;
+}
+
+.portal-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+}
+
+.portal-header p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.venue-selector-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.venue-select-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+}
+
+.venue-select {
+    background: var(--dark-800);
+    border: 1px solid var(--glass-border);
+    color: var(--foreground);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.venue-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 12px rgba(191, 254, 0, 0.25);
+}
+
+/* Quick Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--brand-secondary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--glass-shadow);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card.primary::before {
+    background: var(--brand-primary);
+}
+
+.stat-card.accent::before {
+    background: var(--brand-accent);
+}
+
+.stat-info h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -1px;
+}
+
+.stat-value.primary-color {
+    color: var(--brand-primary);
+}
+
+.stat-value.secondary-color {
+    color: var(--brand-secondary);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-card:hover .stat-icon {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--brand-secondary);
+}
+
+.stat-card.primary:hover .stat-icon {
+    color: var(--brand-primary);
+}
+
+.payout-btn {
+    background: linear-gradient(135deg, var(--brand-primary), #a6d800);
+    border: none;
+    color: #000000;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payout-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(191, 254, 0, 0.4);
+}
+
+/* Two Column Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 12px;
+}
+
+.panel-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.2px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Chart Styles */
+.chart-container {
+    height: 240px;
+    position: relative;
+    margin-top: 16px;
+}
+
+.svg-chart {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.chart-grid-line {
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 1;
+}
+
+.chart-bar {
+    fill: url(#chart-gradient);
+    rx: 4;
+    transition: height 0.5s ease, y 0.5s ease;
+}
+
+.chart-bar:hover {
+    fill: url(#chart-gradient-hover);
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.6));
+    cursor: pointer;
+}
+
+.chart-axis-text {
+    fill: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    text-anchor: middle;
+}
+
+/* Block Slots / Holiday Form */
+.block-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    background: var(--dark-800);
+    border: 1px solid var(--glass-border);
+    color: var(--foreground);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: var(--brand-secondary);
+}
+
+.action-buttons-wrap {
+    display: flex;
+    gap: 10px;
+    grid-column: 1 / -1;
+    margin-top: 12px;
+}
+
+.block-btn {
+    flex: 1;
+    background: linear-gradient(135deg, var(--brand-accent), #d6183c);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.block-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(255, 45, 85, 0.4);
+}
+
+.unblock-btn {
+    flex: 1;
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid var(--glass-border);
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.unblock-btn:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Peak Hours list */
+.peak-hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.peak-hour-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.peak-hour-item:hover {
+    border-color: rgba(0, 240, 255, 0.15);
+}
+
+.peak-hour-time {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.peak-hour-metrics {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.peak-hour-bar-outer {
+    width: 60px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.peak-hour-bar-inner {
+    height: 100%;
+    background: var(--brand-secondary);
+    border-radius: 3px;
+}
+
+.peak-hour-pct {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-secondary);
+    width: 36px;
+    text-align: right;
+}
+
+/* Customer Retention Logs Table */
+.retention-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.retention-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.retention-table td {
+    padding: 12px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.customer-email {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.badge-loyal {
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    color: var(--brand-secondary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-new {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Payouts Section */
+.payouts-table-container {
+    overflow-x: auto;
+}
+
+.payouts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payouts-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.payouts-table td {
+    padding: 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.payout-id {
+    font-family: monospace;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.payout-status {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.payout-status.transferred {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--brand-emerald);
+}
+
+.payout-status.processing {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--brand-amber);
+}
+
+.payout-utr {
+    color: #64748b;
+    font-family: monospace;
+}
+
+/* Notifications / Status Feedback */
+.status-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    background: var(--dark-800);
+    border-left: 4px solid var(--brand-primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 16px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.status-toast.success {
+    border-left-color: var(--brand-primary);
+}
+
+.status-toast.error {
+    border-left-color: var(--brand-accent);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Registration Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-card.register-modal-card {
+    background: #0f172a;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 12px;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: -0.2px;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 24px;
+    font-weight: 300;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: #ffffff;
+}
+
+.register-venue-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.register-venue-form .form-input {
+    background: var(--dark-800);
+    border: 1px solid var(--glass-border);
+    color: var(--foreground);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.register-venue-form .form-input:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 8px rgba(191, 254, 0, 0.2);
+}
+
+.checkbox-grid label {
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.checkbox-grid label:hover {
+    color: var(--brand-primary);
+}
+
+.checkbox-grid input[type="checkbox"] {
+    accent-color: var(--brand-primary);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.confirm-booking-btn {
+    background: linear-gradient(135deg, var(--brand-primary), #a6d800);
+    color: #000000;
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.confirm-booking-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(191, 254, 0, 0.4);
+}
+
+/* Page-based Registration Layout Styles */
+.register-page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+.form-section-card {
+    background: rgba(30, 41, 59, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-section-card:hover {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.image-preview-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.image-preview-wrapper:hover {
+    transform: scale(1.01);
+}
+
+.venue-photo-card {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.venue-photo-card:hover {
+    transform: scale(1.05);
+    border-color: var(--brand-primary) !important;
+}
+
+.remove-img-btn {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.remove-img-btn:hover {
+    background-color: rgb(220, 38, 38) !important;
+    transform: scale(1.05);
+}
+
+.register-page-form .form-input {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.register-page-form .form-input:focus {
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 0 10px rgba(191, 254, 0, 0.3) !important;
+    background-color: #1e293b !important;
+}
+
+/* File Upload input custom styling */
+.register-page-form input[type="file"] {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    padding: 14px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.register-page-form input[type="file"]:hover {
+    border-color: var(--brand-primary);
+    background: rgba(255, 255, 255, 0.05);
+}

@@ -59,6 +59,8 @@ export default function OverviewPage() {
     const [coachData, setCoachData] = useState(null);
     const [realEvents, setRealEvents] = useState([]);
     const [realMembers, setRealMembers] = useState([]);
+    const [realCourses, setRealCourses] = useState([]);
+    const [memberRegistrations, setMemberRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // Event response status
@@ -114,10 +116,12 @@ export default function OverviewPage() {
                         setCoachData(d);
                     }
                 } else {
-                    // Fetch real events and members for member-based schedules
-                    const [eventsRes, membersRes] = await Promise.all([
-                        fetch(`http://127.0.0.1:8001/events?owner_id=${userId || 1}`),
-                        fetch(`http://127.0.0.1:8001/members?owner_id=${userId || 1}`).catch(() => null)
+                    // Fetch real events, members, courses, and registrations for member-based schedules
+                    const [eventsRes, membersRes, coursesRes, registrationsRes] = await Promise.all([
+                        fetch(`http://127.0.0.1:8001/events?owner_id=${userId || 1}&member_email=${encodeURIComponent(storedEmail)}`),
+                        fetch(`http://127.0.0.1:8001/members?owner_id=${userId || 1}`).catch(() => null),
+                        fetch(`http://127.0.0.1:8001/courses?owner_id=${userId || 1}&member_email=${encodeURIComponent(storedEmail)}`).catch(() => null),
+                        fetch(`http://127.0.0.1:8001/members/registrations?member_email=${encodeURIComponent(storedEmail)}`).catch(() => null)
                     ]);
 
                     if (eventsRes && eventsRes.ok) {
@@ -127,6 +131,14 @@ export default function OverviewPage() {
                     if (membersRes && membersRes.ok) {
                         const mems = await membersRes.json();
                         setRealMembers(mems);
+                    }
+                    if (coursesRes && coursesRes.ok) {
+                        const crs = await coursesRes.json();
+                        setRealCourses(crs);
+                    }
+                    if (registrationsRes && registrationsRes.ok) {
+                        const regs = await registrationsRes.json();
+                        setMemberRegistrations(regs);
                     }
                 }
             } catch (err) {
@@ -142,6 +154,27 @@ export default function OverviewPage() {
             setLoading(false);
         }
     }, [userId]);
+    
+    // Calculate player presence rate from memberRegistrations
+    const presenceRate = (() => {
+        if (!memberRegistrations || memberRegistrations.length === 0) return "0%";
+        
+        let markedCount = 0;
+        let presentCount = 0;
+        memberRegistrations.forEach((r) => {
+            if (r.attendance && ["present", "absent", "late"].includes(r.attendance)) {
+                markedCount++;
+                if (["present", "late"].includes(r.attendance)) {
+                    presentCount++;
+                }
+            }
+        });
+        
+        if (markedCount > 0) {
+            return `${((presentCount / markedCount) * 100).toFixed(1)}%`;
+        }
+        return "0%";
+    })();
 
     // Handle interactive player response
     const handlePlayerResponse = async (eventId, responseType) => {
@@ -474,18 +507,18 @@ export default function OverviewPage() {
                 <div className={styles.statsGrid}>
                     <StatCard
                         loading={loading} color="indigo" label="Upcoming Games"
-                        value={realEvents.length || 3} sub="Fixtures this week"
+                        value={realEvents.length} sub="Fixtures this week"
                         href="/dashboard/events"
                         icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="emerald" label="My Presence Rate"
-                        value="96.8%" sub="Perfect attendance score"
+                        value={presenceRate} sub="Perfect attendance score"
                         icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>}
                     />
                     <StatCard
                         loading={loading} color="amber" label="Registered Classes"
-                        value="2 Batches" sub="Elite Skill Development"
+                        value={`${realCourses.length} ${realCourses.length === 1 ? "Batch" : "Batches"}`} sub="Elite Skill Development"
                         href="/dashboard/courses"
                         icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /></svg>}
                     />
@@ -493,51 +526,6 @@ export default function OverviewPage() {
 
                 {/* Content Panels */}
                 <div className={styles.panels}>
-                    <div className={styles.panel} style={{ gridColumn: "span 2" }}>
-                        <div className={styles.panelHeader}>
-                            <h3 className={styles.panelTitle}>Respond to Invited Matches & Practices</h3>
-                            <span style={{ fontSize: "12px", color: "#64748b" }}>Respond here to secure your team day spot</span>
-                        </div>
-                        <ul className={styles.eventList} style={{ gap: "20px" }}>
-                            {(realEvents.length > 0 ? realEvents.slice(0, 2) : [
-                                { id: 1, name: "Weekend Cup - Semifinals vs Warriors", venue: "East Arena Pitch 2", start_time: "2026-05-23T09:00", category: "Match" },
-                                { id: 2, name: "Intense Drills with Coach", venue: "Indoor Courts", start_time: "2026-05-25T18:00", category: "Training" }
-                            ]).map((ev) => {
-                                const { month, day } = getEventDateParts(ev);
-                                const hasResponded = responses[ev.id];
-
-                                return (
-                                    <li key={ev.id} className={styles.eventRow} style={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
-                                        <div className={styles.eventDateBox} style={{ background: "#f5f3ff" }}>
-                                            <span className={styles.eventMonth} style={{ color: "#8b5cf6" }}>{month}</span>
-                                            <span className={styles.eventDay} style={{ color: "#7c3aed" }}>{day}</span>
-                                        </div>
-                                        <div className={styles.eventInfo} style={{ flex: 1 }}>
-                                            <span className={styles.eventName}>{ev.name || ev.title}</span>
-                                            <div className={styles.eventMeta}>
-                                                <span className={styles.eventType}>{ev.category || "Practice"}</span>
-                                                <span>Location: {ev.venue || ev.location}</span>
-                                            </div>
-                                        </div>
-                                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                            {hasResponded ? (
-                                                <span style={{ fontSize: "11px", fontWeight: "bold", background: hasResponded === "accepted" ? "#d1fae5" : hasResponded === "declined" ? "#fee2e2" : "#fef3c7", color: hasResponded === "accepted" ? "#065f46" : hasResponded === "declined" ? "#991b1b" : "#92400e", padding: "6px 12px", borderRadius: "12px" }}>
-                                                    Response: {hasResponded.toUpperCase()}
-                                                </span>
-                                            ) : (
-                                                <>
-                                                    <button onClick={() => handlePlayerResponse(ev.id, "accepted")} style={{ padding: "6px 10px", background: "#10b981", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Accept</button>
-                                                    <button onClick={() => handlePlayerResponse(ev.id, "maybe")} style={{ padding: "6px 10px", background: "#f59e0b", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Maybe</button>
-                                                    <button onClick={() => handlePlayerResponse(ev.id, "declined")} style={{ padding: "6px 10px", background: "#ef4444", color: "white", border: "none", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>Decline</button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-
                     <div className={styles.panel}>
                         <div className={styles.panelHeader}>
                             <h3 className={styles.panelTitle}>Active Teammates</h3>
