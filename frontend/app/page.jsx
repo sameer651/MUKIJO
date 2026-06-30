@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Shield, Users, ArrowRight, Zap, Trophy, Calendar, CreditCard, BarChart3 } from "lucide-react";
+// Added Building2 icon from lucide-react for the venues
+import { Shield, Users, ArrowRight, Zap, Trophy, Calendar, CreditCard, BarChart3, Building2 } from "lucide-react";
 import "./styles/landing.css";
 
 const ACTION_BOXES = [
@@ -30,6 +31,20 @@ const ACTION_BOXES = [
     description: "Join your club as a member and unlock your personalized member space.",
     variant: "member-register",
     Icon: Users,
+  },
+  {
+    href: "/login-venue",
+    title: "Login as Venue Owner",
+    description: "Access your venue dashboard to track schedules, pricing, and reservations.",
+    variant: "venue-login",
+    Icon: Building2,
+  },
+  {
+    href: "/register-venue",
+    title: "Register a Venue",
+    description: "List your sports facility, court, or turf and start managing bookings effortlessly.",
+    variant: "venue-register",
+    Icon: Building2,
   },
 ];
 

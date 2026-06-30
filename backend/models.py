@@ -332,3 +332,12 @@ class ActivityRSVP(Base):
     activity = relationship("Activity", back_populates="rsvps")
     user = relationship("User", back_populates="rsvps")
 
+
+class VenueOwner(Base):
+    __tablename__ = "venue_owners"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    phone_number = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)

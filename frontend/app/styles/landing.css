@@ -250,10 +250,11 @@
 /* ─── ACTION CARDS GRID ──────────────────────────────────────────── */
 .landing-boxes-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* Change grid-template-columns to handle 3 columns on desktop by default */
+  grid-template-columns: repeat(3, 1fr); 
   gap: 16px;
   width: 100%;
-  max-width: 680px;
+  max-width: 1024px; /* Expanded from 680px so 3 columns aren't squished */
   margin: 0 auto;
   animation: fadeInUp 1.1s ease 0.35s both;
 }
@@ -346,6 +347,23 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(191, 254, 0, 0.12);
   border-color: rgba(191, 254, 0, 0.45);
 }
+.action-box[data-variant="venue-login"] {
+  background: rgba(0, 240, 255, 0.04);
+  border-color: rgba(0, 240, 255, 0.15);
+}
+.action-box[data-variant="venue-login"]:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 240, 255, 0.12);
+  border-color: rgba(0, 240, 255, 0.45);
+}
+
+.action-box[data-variant="venue-register"] {
+  background: rgba(191, 254, 0, 0.04);
+  border-color: rgba(191, 254, 0, 0.15);
+}
+.action-box[data-variant="venue-register"]:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(191, 254, 0, 0.12);
+  border-color: rgba(191, 254, 0, 0.45);
+}
 
 /* Icon container */
 .action-box__icon {
@@ -381,6 +399,16 @@
 .action-box:hover .action-box__icon {
   transform: scale(1.1) rotate(-5deg);
   box-shadow: 0 0 30px currentColor;
+}
+.action-box[data-variant="venue-login"] .action-box__icon {
+  background: rgba(0, 240, 255, 0.15);
+  color: #00f0ff;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+.action-box[data-variant="venue-register"] .action-box__icon {
+  background: rgba(191, 254, 0, 0.15);
+  color: #bffe00;
+  box-shadow: 0 0 20px rgba(191, 254, 0, 0.15);
 }
 
 /* Card Content */
@@ -493,6 +521,16 @@
 }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+/* Tablet Breakpoint (Transitions 3 columns to 2 columns) */
+@media (max-width: 1024px) {
+  .landing-boxes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 680px;
+  }
+}
+
+/* Mobile Breakpoint (Transitions 2 columns to 1 column stacked) */
 @media (max-width: 680px) {
   .landing-topbar { padding: 0 24px; }
   .topbar-tag { display: none; }

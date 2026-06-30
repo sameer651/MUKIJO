@@ -1,0 +1,136 @@
+.register-venue-main {
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #06060c;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Beautiful uniform structural card width matching images 1 and 2 */
+.workspace-slim-card {
+  width: 100%;
+  max-width: 28rem; 
+  background-color: #0d0d1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* 2-Step Stepper Header Indicator Line */
+.simple-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2.25rem;
+}
+
+.step-circle {
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+.step-circle.active {
+  background-color: transparent;
+  color: #bffe00;
+  border: 1px solid #bffe00;
+  box-shadow: 0 0 10px rgba(191, 254, 0, 0.25);
+}
+
+.step-circle.inactive {
+  background-color: #16162a;
+  color: #4b5563;
+  border: 1px solid #242442;
+}
+
+.step-line {
+  width: 4rem;
+  height: 1px;
+  background-color: #242442;
+}
+
+/* Standardized Form Stack Groups across all pages */
+.form-stack-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1.35rem;
+}
+
+.form-label-mini {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.slim-input,
+.slim-select,
+.slim-textarea {
+  width: 100%;
+  background-color: #111122;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.slim-input:focus,
+.slim-select:focus,
+.slim-textarea:focus {
+  outline: none;
+  border-color: #00f0ff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+/* Neon Gradient Action Buttons */
+.glow-btn-next {
+  background: linear-gradient(to right, #bffe00, #00f0ff);
+  color: #000000;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.8rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 15px rgba(191, 254, 0, 0.25);
+  transition: opacity 0.2s ease;
+}
+
+.glow-btn-next:hover {
+  opacity: 0.9;
+}
+
+.btn-prev-outline {
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  background-color: rgba(0, 240, 255, 0.02);
+  color: #00f0ff;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.8rem 1.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-prev-outline:hover {
+  background-color: rgba(0, 240, 255, 0.08);
+}
